@@ -1,0 +1,4613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aulas Particulares</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --bg:#030b15;
+  --panel:#071522;
+  --panel2:#0a1c2b;
+  --line:#12384a;
+  --text:#eef7ff;
+  --muted:#8da5b8;
+  --blue:#21a9ff;
+  --green:#2de38a;
+  --purple:#b56cff;
+  --yellow:#ffd34d;
+  --pink:#ff5fa2;
+  --red:#ff5b68;
+}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,Arial,Helvetica,sans-serif
+}
+
+body{
+  background:
+  radial-gradient(circle at 15% 5%,rgba(33,169,255,.10),transparent 28%),
+  radial-gradient(circle at 90% 10%,rgba(181,108,255,.08),transparent 25%),
+  var(--bg)
+}
+
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+.blue{color:var(--blue)}
+.green{color:var(--green)}
+.purple{color:var(--purple)}
+.yellow{color:var(--yellow)}
+.pink{color:var(--pink)}
+.muted{color:var(--muted)}
+
+.empty{
+  padding:24px;
+  text-align:center;
+  color:var(--muted)
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.4px
+}
+
+.badge.green{
+  background:rgba(45,227,138,.13);
+  color:var(--green)
+}
+
+.badge.yellow{
+  background:rgba(255,211,77,.13);
+  color:var(--yellow)
+}
+
+.badge.red{
+  background:rgba(255,91,104,.13);
+  color:var(--red)
+}
+
+.btn{
+  border:1px solid var(--line);
+  background:#0b2232;
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 14px;
+  transition:.18s
+}
+
+.btn:hover{
+  border-color:#28789b;
+  transform:translateY(-1px)
+}
+
+.btn.primary{
+  background:linear-gradient(135deg,#0b79bb,#168ed4);
+  border-color:#25aaf2
+}
+
+.btn.danger{
+  background:rgba(255,91,104,.10);
+  border-color:rgba(255,91,104,.35);
+  color:#ff8d96
+}
+
+.btn.mini{
+  padding:6px 9px;
+  font-size:12px
+}
+
+.row-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap
+}
+
+input,select,textarea{
+  width:100%;
+  background:#06131f;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px 12px;
+  outline:none
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(33,169,255,.08)
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical
+}
+
+label{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:#a9bdcc;
+  margin:0 0 6px
+}
+
+.field{
+  margin-bottom:14px
+}
+
+.login-wrap{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px
+}
+
+.login{
+  width:min(430px,100%);
+  background:rgba(7,21,34,.94);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:30px;
+  box-shadow:0 25px 80px rgba(0,0,0,.4)
+}
+
+.logo{
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:.4px
+}
+
+.logo span{color:var(--blue)}
+
+.login h1{
+  margin:8px 0 8px;
+  font-size:28px
+}
+
+.login p{
+  color:var(--muted);
+  line-height:1.5
+}
+
+#loginMsg{
+  min-height:20px;
+  color:var(--yellow);
+  font-size:13px;
+  margin-top:12px
+}
+
+.app{
+  min-height:100vh;
+  display:flex
+}
+
+.sidebar{
+  width:245px;
+  position:fixed;
+  inset:0 auto 0 0;
+  padding:20px 14px;
+  background:rgba(4,16,27,.96);
+  border-right:1px solid var(--line);
+  z-index:20
+}
+
+.side-logo{
+  padding:8px 10px 20px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:14px
+}
+
+.side-logo small{
+  display:block;
+  color:var(--muted);
+  margin-top:4px
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:6px
+}
+
+.nav button{
+  border:1px solid transparent;
+  background:transparent;
+  color:#9bb2c3;
+  text-align:left;
+  border-radius:10px;
+  padding:11px 12px;
+  font-weight:700
+}
+
+.nav button:hover,
+.nav button.active{
+  background:#092337;
+  border-color:#164b65;
+  color:#fff
+}
+
+.nav button.active{
+  box-shadow:inset 3px 0 var(--blue)
+}
+
+.nav-spacer{height:10px}
+
+.main{
+  margin-left:245px;
+  width:calc(100% - 245px);
+  padding:24px
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:center;
+  margin-bottom:20px
+}
+
+.topbar h1{
+  margin:0;
+  font-size:25px
+}
+
+.topbar p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-size:13px
+}
+
+.section{display:none}
+.section.active{display:block}
+
+.grid{
+  display:grid;
+  gap:14px
+}
+
+.stats{
+  grid-template-columns:repeat(4,minmax(0,1fr))
+}
+
+.card{
+  background:linear-gradient(145deg,rgba(8,28,43,.96),rgba(5,18,29,.96));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:17px
+}
+
+.stat .label{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700
+}
+
+.stat .value{
+  font-size:27px;
+  font-weight:900;
+  margin-top:7px
+}
+
+.hero{
+  margin:14px 0;
+  background:
+  linear-gradient(110deg,rgba(33,169,255,.14),rgba(181,108,255,.08)),
+  #071522;
+  border:1px solid #18506c;
+  border-radius:18px;
+  padding:24px
+}
+
+.hero h2{
+  margin:0 0 8px;
+  font-size:25px
+}
+
+.hero p{
+  margin:0;
+  color:#abc1d0;
+  max-width:800px;
+  line-height:1.5
+}
+
+.two{
+  grid-template-columns:minmax(0,1.4fr) minmax(300px,.8fr)
+}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:0 0 13px
+}
+
+.section-head h2{
+  margin:0;
+  font-size:18px
+}
+
+.table-wrap{
+  overflow:auto
+}
+
+table{
+  width:100%;
+  border-collapse:collapse
+}
+
+th,td{
+  text-align:left;
+  padding:11px 9px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+  white-space:nowrap
+}
+
+th{
+  color:#8eaabd;
+  font-size:11px;
+  letter-spacing:.5px
+}
+
+.schedule{
+  display:grid;
+  grid-template-columns:90px repeat(3,minmax(150px,1fr));
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden
+}
+
+.cell{
+  min-height:86px;
+  padding:10px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line)
+}
+
+.cell:nth-child(4n){
+  border-right:0
+}
+
+.cell.head{
+  min-height:auto;
+  background:#081d2d;
+  color:#8faabc;
+  font-size:11px;
+  font-weight:800
+}
+
+.cell.busy{
+  background:rgba(33,169,255,.06);
+  cursor:pointer
+}
+
+.cell.busy:hover{
+  background:rgba(33,169,255,.11)
+}
+
+.cell.free{
+  color:#3d657a;
+  cursor:pointer
+}
+
+.cell.free:hover{
+  background:rgba(45,227,138,.05);
+  color:var(--green)
+}
+
+.cell.blocked{
+  background:#06101a;
+  color:#2e4655;
+  cursor:not-allowed
+}
+
+.next-list{
+  max-height:370px;
+  overflow:auto
+}
+
+.promo-grid,
+.plan-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:14px
+}
+
+.promo{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  background:#071723
+}
+
+.promo h3{
+  margin:0 0 7px
+}
+
+.promo p{
+  margin:0;
+  color:#9fb4c3;
+  line-height:1.5
+}
+
+.plan{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  background:#071723
+}
+
+.plan h3{
+  margin:0 0 8px
+}
+
+.plan .price{
+  font-size:18px;
+  font-weight:900;
+  margin:12px 0
+}
+
+.toolbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:13px
+}
+
+.toolbar .search{
+  max-width:320px
+}
+
+.settings-grid{
+  max-width:760px
+}
+
+/* =========================================================
+   APRESENTAÇÃO DE PREÇOS
+   ========================================================= */
+
+.price-presentation{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto
+}
+
+.price-slide-area{
+  position:relative;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at center,rgba(33,169,255,.05),transparent 60%),
+    #06131f;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+  min-height:300px;
+  overflow:hidden
+}
+
+.price-slide{
+  display:block;
+  width:100%;
+  max-width:1100px;
+  height:auto;
+  max-height:75vh;
+  object-fit:contain;
+  border-radius:12px;
+  user-select:none
+}
+
+.price-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:48px;
+  height:70px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(3,11,21,.78);
+  backdrop-filter:blur(8px);
+  color:white;
+  border-radius:12px;
+  font-size:38px;
+  line-height:1;
+  z-index:5;
+  transition:.18s
+}
+
+.price-arrow:hover{
+  background:rgba(33,169,255,.22);
+  border-color:var(--blue);
+  transform:translateY(-50%) scale(1.04)
+}
+
+.price-left{left:14px}
+.price-right{right:14px}
+
+.price-controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin-top:14px;
+  flex-wrap:wrap
+}
+
+.price-page{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+  min-width:100px;
+  text-align:center
+}
+
+/* =========================================================
+   APRESENTAÇÃO DE BANNERS
+   ========================================================= */
+
+.banner-presentation{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto
+}
+
+.banner-slide-area{
+  position:relative;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at center,rgba(181,108,255,.05),transparent 60%),
+    #06131f;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+  min-height:300px;
+  overflow:hidden
+}
+
+.banner-slide{
+  display:block;
+  width:100%;
+  max-width:1100px;
+  height:auto;
+  max-height:75vh;
+  object-fit:contain;
+  border-radius:12px;
+  user-select:none
+}
+
+.banner-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:48px;
+  height:70px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(3,11,21,.78);
+  backdrop-filter:blur(8px);
+  color:white;
+  border-radius:12px;
+  font-size:38px;
+  line-height:1;
+  z-index:5;
+  transition:.18s
+}
+
+.banner-arrow:hover{
+  background:rgba(181,108,255,.22);
+  border-color:var(--purple);
+  transform:translateY(-50%) scale(1.04)
+}
+
+.banner-left{left:14px}
+.banner-right{right:14px}
+
+.banner-controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin-top:14px;
+  flex-wrap:wrap
+}
+
+.banner-page{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+  min-width:100px;
+  text-align:center
+}
+
+/* =========================================================
+   MODAIS
+   ========================================================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.68);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:100
+}
+
+.modal.open{
+  display:flex
+}
+
+.modal-box{
+  width:min(620px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#071522;
+  border:1px solid #1b526d;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 25px 80px #000
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px
+}
+
+.modal-head h2{
+  margin:0;
+  font-size:19px
+}
+
+.close{
+  border:0;
+  background:transparent;
+  color:#8da5b8;
+  font-size:25px;
+  line-height:1
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
+
+.form-grid .full{
+  grid-column:1/-1
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:16px
+}
+
+.toast{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  background:#0a2435;
+  border:1px solid #1c607f;
+  color:#fff;
+  padding:12px 16px;
+  border-radius:11px;
+  z-index:200;
+  opacity:0;
+  transform:translateY(10px);
+  pointer-events:none;
+  transition:.2s
+}
+
+.toast.show{
+  opacity:1;
+  transform:none
+}
+
+@media(max-width:950px){
+  .sidebar{
+    width:210px
+  }
+
+  .main{
+    margin-left:210px;
+    width:calc(100% - 210px)
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .two{
+    grid-template-columns:1fr
+  }
+}
+
+@media(max-width:700px){
+  .sidebar{
+    position:static;
+    width:100%;
+    height:auto;
+    border-right:0;
+    border-bottom:1px solid var(--line)
+  }
+
+  .app{
+    display:block
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+    padding:14px
+  }
+
+  .nav{
+    display:grid;
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .nav button:last-child{
+    grid-column:auto
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr
+  }
+
+  .schedule{
+    grid-template-columns:70px repeat(3,minmax(125px,1fr));
+    overflow:auto
+  }
+
+  .form-grid{
+    grid-template-columns:1fr
+  }
+
+  .form-grid .full{
+    grid-column:auto
+  }
+
+  .topbar{
+    align-items:flex-start;
+    flex-direction:column
+  }
+
+  .price-slide-area,
+  .banner-slide-area{
+    padding:10px
+  }
+
+  .price-arrow,
+  .banner-arrow{
+    width:40px;
+    height:55px;
+    font-size:30px
+  }
+
+  .price-left,
+  .banner-left{
+    left:8px
+  }
+
+  .price-right,
+  .banner-right{
+    right:8px
+  }
+
+  .price-slide,
+  .banner-slide{
+    max-height:65vh
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loginView" class="login-wrap">
+  <div class="login">
+    <div class="logo">AULAS <span>PARTICULARES</span></div>
+    <h1>Área administrativa</h1>
+    <p>Entre para gerenciar alunos, agenda, planos, preços, banners e financeiro.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" autocomplete="email" required>
+      </div>
+
+      <div class="field">
+        <label for="password">Senha</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+      </div>
+
+      <button class="btn primary" style="width:100%" type="submit">
+        Entrar
+      </button>
+    </form>
+
+    <button id="signup" class="btn" style="width:100%;margin-top:9px">
+      Criar conta
+    </button>
+
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+
+<div id="appView" class="app hidden">
+
+  <aside class="sidebar">
+
+    <div class="side-logo">
+      <div class="logo">AULAS <span>PARTICULARES</span></div>
+      <small>Painel de gerenciamento</small>
+    </div>
+
+    <nav class="nav">
+      <button data-page="dashboard" class="active">▣ Dashboard</button>
+      <button data-page="agenda">▦ Agenda</button>
+      <button data-page="students">♙ Alunos</button>
+      <button data-page="plans">◆ Planos</button>
+      <button data-page="prices">◇ Preços</button>
+      <button data-page="banners">▰ Banners</button>
+      <button data-page="finance">◈ Financeiro</button>
+      <button data-page="settings">⚙ Configurações</button>
+
+      <div class="nav-spacer"></div>
+
+      <button id="logout">↪ Sair</button>
+    </nav>
+
+  </aside>
+
+
+  <main class="main">
+
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p>Organize suas aulas e acompanhe seu trabalho.</p>
+      </div>
+
+      <button id="newLesson2" class="btn primary">
+        + Nova aula
+      </button>
+    </div>
+
+
+    <!-- DASHBOARD -->
+
+    <section id="dashboard" class="section active">
+
+      <div class="grid stats">
+
+        <div class="card stat">
+          <div class="label">ALUNOS ATIVOS</div>
+          <div id="s1" class="value blue">0</div>
+        </div>
+
+        <div class="card stat">
+          <div class="label">AULAS</div>
+          <div id="s2" class="value green">0</div>
+        </div>
+
+        <div class="card stat">
+          <div class="label">HORAS</div>
+          <div id="s3" class="value purple">0h</div>
+        </div>
+
+        <div class="card stat">
+          <div class="label">TOTAL PREVISTO</div>
+          <div id="s4" class="value yellow">R$ 0,00</div>
+        </div>
+
+      </div>
+
+
+      <div class="hero">
+        <h2 id="heroTitle">
+          ★ VAMOS JUNTOS ALCANÇAR SEUS OBJETIVOS!
+        </h2>
+
+        <p id="heroText">
+          Alunos, agenda, planos, preços, banners e financeiro.
+        </p>
+      </div>
+
+
+      <div class="grid two">
+
+        <div class="card">
+
+          <div class="section-head">
+            <h2>Próximas aulas</h2>
+            <button id="newLesson" class="btn mini primary">
+              + Aula
+            </button>
+          </div>
+
+          <div id="next" class="next-list"></div>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="section-head">
+            <h2>Informações</h2>
+          </div>
+
+          <div id="dashBanners" class="promo-grid"></div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- AGENDA -->
+
+    <section id="agenda" class="section">
+
+      <div class="card">
+
+        <div class="section-head">
+          <h2>Agenda semanal</h2>
+
+          <button id="agendaNew" class="btn primary">
+            + Nova aula
+          </button>
+        </div>
+
+        <div id="schedule" class="schedule"></div>
+
+        <p class="muted" style="font-size:12px;margin-bottom:0">
+          Horários disponíveis: terça e quinta 09–10, 10–11 e 18–19; sexta 09–10 e 10–11. Segunda e quarta não têm aulas.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ALUNOS -->
+
+    <section id="students" class="section">
+
+      <div class="card">
+
+        <div class="toolbar">
+
+          <div>
+            <h2 style="margin:0">Alunos</h2>
+          </div>
+
+          <div style="display:flex;gap:8px">
+
+            <input
+              id="studentSearch"
+              class="search"
+              placeholder="Pesquisar aluno..."
+            >
+
+            <button id="newStudent" class="btn primary">
+              + Novo aluno
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>ALUNO</th>
+                <th>CURSO</th>
+                <th>PLANO</th>
+                <th>FORMATO</th>
+                <th>STATUS</th>
+                <th>AÇÕES</th>
+              </tr>
+            </thead>
+
+            <tbody id="studentsTableBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PLANOS -->
+
+    <section id="plans" class="section">
+
+      <div class="section-head">
+
+        <h2>Planos de aulas</h2>
+
+        <button id="newPlan" class="btn primary">
+          + Novo plano
+        </button>
+
+      </div>
+
+      <div id="plansGrid" class="plan-grid"></div>
+
+    </section>
+
+
+    <!-- PREÇOS -->
+
+    <section id="prices" class="section">
+
+      <div class="section-head">
+
+        <h2>Preços</h2>
+
+        <button id="newPrice" class="btn primary">
+          + Novo preço
+        </button>
+
+      </div>
+
+
+      <div class="price-presentation">
+
+        <div class="price-slide-area">
+
+          <button
+            id="pricePrev"
+            class="price-arrow price-left"
+            aria-label="Página anterior"
+          >
+            ‹
+          </button>
+
+
+          <img
+            id="priceSlide"
+            class="price-slide"
+            src="precos/slide-1.png"
+            alt="Apresentação de preços"
+          >
+
+
+          <button
+            id="priceNext"
+            class="price-arrow price-right"
+            aria-label="Próxima página"
+          >
+            ›
+          </button>
+
+        </div>
+
+
+        <div class="price-controls">
+
+          <button id="pricePrevBottom" class="btn">
+            ← Anterior
+          </button>
+
+          <span id="pricePage" class="price-page">
+            Página 1 / 9
+          </span>
+
+          <button id="priceNextBottom" class="btn primary">
+            Próxima →
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- BANNERS -->
+
+    <section id="banners" class="section">
+
+      <div class="section-head">
+
+        <h2>Banners</h2>
+
+        <button id="newBanner" class="btn primary">
+          + Novo banner
+        </button>
+
+      </div>
+
+
+      <div class="banner-presentation">
+
+        <div class="banner-slide-area">
+
+          <button
+            id="bannerPrev"
+            class="banner-arrow banner-left"
+            aria-label="Banner anterior"
+          >
+            ‹
+          </button>
+
+
+          <img
+            id="bannerSlide"
+            class="banner-slide"
+            src="banners/Banner.png"
+            alt="Banner"
+          >
+
+
+          <button
+            id="bannerNext"
+            class="banner-arrow banner-right"
+            aria-label="Próximo banner"
+          >
+            ›
+          </button>
+
+        </div>
+
+
+        <div class="banner-controls">
+
+          <button id="bannerPrevBottom" class="btn">
+            ← Anterior
+          </button>
+
+          <span id="bannerPage" class="banner-page">
+            Página 1 / 4
+          </span>
+
+          <button id="bannerNextBottom" class="btn primary">
+            Próxima →
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- Mantido para o sistema e dashboard -->
+      <div id="bannersGrid" style="display:none"></div>
+
+    </section>
+
+
+    <!-- FINANCEIRO -->
+
+    <section id="finance" class="section">
+
+      <div class="grid stats">
+
+        <div class="card stat">
+          <div class="label">TOTAL</div>
+          <div id="f1" class="value blue">R$ 0,00</div>
+        </div>
+
+        <div class="card stat">
+          <div class="label">RECEBIDO</div>
+          <div id="f2" class="value green">R$ 0,00</div>
+        </div>
+
+        <div class="card stat">
+          <div class="label">A RECEBER</div>
+          <div id="f3" class="value yellow">R$ 0,00</div>
+        </div>
+
+        <div class="card stat">
+          <div class="label">LANÇAMENTOS</div>
+          <div id="f4" class="value purple">0</div>
+        </div>
+
+      </div>
+
+
+      <div class="card" style="margin-top:14px">
+
+        <div class="section-head">
+          <h2>Lançamentos das aulas</h2>
+        </div>
+
+        <div id="fin"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CONFIGURAÇÕES -->
+
+    <section id="settings" class="section">
+
+      <div class="card settings-grid">
+
+        <div class="section-head">
+          <h2>Configurações</h2>
+        </div>
+
+
+        <form id="settingsForm">
+
+          <div class="field">
+            <label for="setTitle">Título principal</label>
+            <input id="setTitle">
+          </div>
+
+          <div class="field">
+            <label for="setSubtitle">Subtítulo</label>
+            <input id="setSubtitle">
+          </div>
+
+          <div class="field">
+            <label for="setPhone">Contato / telefone</label>
+            <input id="setPhone">
+          </div>
+
+          <div class="field">
+            <label for="setBanner">Texto adicional</label>
+            <textarea id="setBanner"></textarea>
+          </div>
+
+          <button class="btn primary" type="submit">
+            Salvar configurações
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL AULA
+     ===================================================== -->
+
+<div id="lessonModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+      <h2>Nova aula</h2>
+      <button class="close" data-close="lessonModal">×</button>
+    </div>
+
+
+    <form id="lessonForm">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Aluno</label>
+          <select id="lessonStudent" required></select>
+        </div>
+
+        <div class="field">
+          <label>Tipo de aula</label>
+          <select id="lessonCourse" required></select>
+        </div>
+
+        <div class="field">
+          <label>Dia</label>
+          <select id="lessonDay">
+            <option>Terça</option>
+            <option>Quinta</option>
+            <option>Sexta</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Horário</label>
+          <select id="lessonTime" required></select>
+        </div>
+
+        <div class="field">
+          <label>Pagamento</label>
+
+          <select id="lessonPaid">
+            <option value="0">A receber</option>
+            <option value="1">Pago</option>
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label>Status</label>
+
+          <select id="lessonStatus">
+            <option>Agendada</option>
+            <option>Concluída</option>
+            <option>Cancelada</option>
+          </select>
+
+        </div>
+
+        <div class="field full">
+
+          <label>Observações</label>
+
+          <textarea id="lessonNotes"></textarea>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+  <button
+    type="button"
+    id="deleteLessonBtn"
+    class="btn danger"
+    style="display:none;margin-right:auto"
+  >
+    Excluir aula
+  </button>
+
+  <button
+    type="button"
+    class="btn"
+    data-close="lessonModal"
+  >
+    Cancelar
+  </button>
+
+  <button class="btn primary" type="submit">
+    Salvar aula
+  </button>
+
+</div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL ALUNO
+     ===================================================== -->
+
+<div id="studentModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Aluno</h2>
+
+      <button
+        class="close"
+        data-close="studentModal"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="studentForm">
+
+      <input id="studentId" type="hidden">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Nome</label>
+          <input id="studentName" required>
+        </div>
+
+        <div class="field">
+          <label>Telefone</label>
+          <input id="studentPhone">
+        </div>
+
+        <div class="field">
+          <label>Curso / área</label>
+          <input id="studentCourse" required>
+        </div>
+
+        <div class="field">
+          <label>Plano</label>
+          <input
+            id="studentPlan"
+            placeholder="Básico, Intermediário..."
+          >
+        </div>
+
+        <div class="field">
+
+          <label>Formato</label>
+
+          <select id="studentFormat">
+            <option>Online</option>
+            <option>Presencial</option>
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label>Status</label>
+
+          <select id="studentStatus">
+            <option>Ativo</option>
+            <option>Inativo</option>
+          </select>
+
+        </div>
+
+        <div class="field full">
+
+          <label>Observações</label>
+
+          <textarea id="studentNotes"></textarea>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn"
+          data-close="studentModal"
+        >
+          Cancelar
+        </button>
+
+        <button class="btn primary">
+          Salvar aluno
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL PLANO
+     ===================================================== -->
+
+<div id="planModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Plano</h2>
+
+      <button
+        class="close"
+        data-close="planModal"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="planForm">
+
+      <input id="planId" type="hidden">
+
+      <div class="form-grid">
+
+        <div class="field">
+
+          <label>Nome</label>
+
+          <input id="planName" required>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Aulas por semana</label>
+
+          <input
+            id="planWeekly"
+            type="number"
+            min="0"
+            max="6"
+            required
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Aulas por mês</label>
+
+          <input
+            id="planMonthly"
+            type="number"
+            min="0"
+            required
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Preço mensal</label>
+
+          <input
+            id="planPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+          >
+
+        </div>
+
+
+        <div class="field full">
+
+          <label>Descrição</label>
+
+          <textarea id="planDesc"></textarea>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn"
+          data-close="planModal"
+        >
+          Cancelar
+        </button>
+
+        <button class="btn primary">
+          Salvar plano
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL PREÇO
+     ===================================================== -->
+
+<div id="priceModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Preço</h2>
+
+      <button
+        class="close"
+        data-close="priceModal"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="priceForm">
+
+      <input id="priceId" type="hidden">
+
+      <div class="form-grid">
+
+        <div class="field full">
+
+          <label>Nome da aula</label>
+
+          <input id="priceName" required>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Duração</label>
+
+          <input
+            id="priceDuration"
+            value="1h"
+            required
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Preço</label>
+
+          <input
+            id="priceValue"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn"
+          data-close="priceModal"
+        >
+          Cancelar
+        </button>
+
+        <button class="btn primary">
+          Salvar preço
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL BANNER
+     ===================================================== -->
+
+<div id="bannerModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>Banner</h2>
+
+      <button
+        class="close"
+        data-close="bannerModal"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="bannerForm">
+
+      <input id="bannerId" type="hidden">
+
+      <div class="form-grid">
+
+        <div class="field full">
+
+          <label>Título</label>
+
+          <input id="bannerTitle" required>
+
+        </div>
+
+
+        <div class="field full">
+
+          <label>Texto</label>
+
+          <textarea id="bannerText"></textarea>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Cor</label>
+
+          <select id="bannerColor">
+
+            <option value="blue">Azul</option>
+            <option value="green">Verde</option>
+            <option value="purple">Roxo</option>
+            <option value="yellow">Amarelo</option>
+            <option value="pink">Rosa</option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Ordem</label>
+
+          <input
+            id="bannerOrder"
+            type="number"
+            min="0"
+            value="0"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Ativo</label>
+
+          <select id="bannerActive">
+
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="btn"
+          data-close="bannerModal"
+        >
+          Cancelar
+        </button>
+
+        <button class="btn primary">
+          Salvar banner
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+
+const cfg = window.SUPABASE_CONFIG || {};
+
+if(!cfg.url || !cfg.key){
+
+  document.body.innerHTML=
+    '<div style="padding:30px;color:white;background:#030c19;font-family:Arial">'+
+    '<h1>Configuração necessária</h1>'+
+    '<p>Abra <b>config.js</b> e coloque a Project URL e a Publishable Key do Supabase.</p>'+
+    '</div>';
+
+  throw new Error('Configuração Supabase ausente');
+}
+
+const client = supabase.createClient(
+  cfg.url,
+  cfg.key
+);
+
+const $ = id => document.getElementById(id);
+
+const money = n =>
+  new Intl.NumberFormat('pt-BR',{
+    style:'currency',
+    currency:'BRL'
+  }).format(Number(n)||0);
+
+const esc = x =>
+  String(x??'').replace(
+    /[&<>"']/g,
+    m=>({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m])
+  );
+
+const colors={
+  blue:'var(--blue)',
+  green:'var(--green)',
+  purple:'var(--purple)',
+  yellow:'var(--yellow)',
+  pink:'var(--pink)'
+};
+
+
+let data={
+  students:[],
+  lessons:[],
+  plans:[],
+  prices:[],
+  payments:[],
+  banners:[],
+  settings:{}
+};
+
+
+/* =========================================================
+   AGENDA
+   ========================================================= */
+
+const slots=[
+  '09:00',
+  '10:00',
+  '18:00'
+];
+
+const days=[
+  'Terça',
+  'Quinta',
+  'Sexta'
+];
+
+const allowedSlots={
+
+  'Terça':[
+    '09:00',
+    '10:00',
+    '18:00'
+  ],
+
+  'Quinta':[
+    '09:00',
+    '10:00',
+    '18:00'
+  ],
+
+  'Sexta':[
+    '09:00',
+    '10:00'
+  ]
+
+};
+
+
+/* =========================================================
+   PREÇOS — APRESENTAÇÃO
+   ========================================================= */
+
+const priceSlides=[
+  'precos/1.png',
+  'precos/2.png',
+  'precos/3.png',
+  'precos/4.png',
+  'precos/5.png',
+  'precos/6.png',
+  'precos/7.png',
+  'precos/8.png',
+  'precos/9.png'
+];
+
+let currentPriceSlide=0;
+
+
+function renderPriceSlide(){
+
+  const img=$('priceSlide');
+  const page=$('pricePage');
+
+  if(!img || !page)return;
+
+  img.src=priceSlides[currentPriceSlide];
+
+  page.textContent=
+    `Página ${currentPriceSlide+1} / ${priceSlides.length}`;
+
+}
+
+
+function nextPriceSlide(){
+
+  currentPriceSlide++;
+
+  if(currentPriceSlide>=priceSlides.length){
+    currentPriceSlide=0;
+  }
+
+  renderPriceSlide();
+
+}
+
+
+function previousPriceSlide(){
+
+  currentPriceSlide--;
+
+  if(currentPriceSlide<0){
+    currentPriceSlide=priceSlides.length-1;
+  }
+
+  renderPriceSlide();
+
+}
+
+
+/* =========================================================
+   BANNERS — APRESENTAÇÃO
+   ========================================================= */
+
+const bannerSlides=[
+  'banners/Banner.png',
+  'banners/Planos.png',
+  'banners/Planos de Aula.png',
+  'banners/Descrição.png'
+];
+
+let currentBannerSlide=0;
+
+
+function renderBannerSlide(){
+
+  const img=$('bannerSlide');
+  const page=$('bannerPage');
+
+  if(!img || !page)return;
+
+  img.src=bannerSlides[currentBannerSlide];
+
+  page.textContent=
+    `Página ${currentBannerSlide+1} / ${bannerSlides.length}`;
+
+}
+
+
+function nextBannerSlide(){
+
+  currentBannerSlide++;
+
+  if(currentBannerSlide>=bannerSlides.length){
+    currentBannerSlide=0;
+  }
+
+  renderBannerSlide();
+
+}
+
+
+function previousBannerSlide(){
+
+  currentBannerSlide--;
+
+  if(currentBannerSlide<0){
+    currentBannerSlide=bannerSlides.length-1;
+  }
+
+  renderBannerSlide();
+
+}
+
+
+/* =========================================================
+   TOAST / MODAIS
+   ========================================================= */
+
+function toast(t){
+
+  $('toast').textContent=t;
+
+  $('toast').classList.add('show');
+
+  clearTimeout(window.__toastTimer);
+
+  window.__toastTimer=setTimeout(
+    ()=>$('toast').classList.remove('show'),
+    2600
+  );
+
+}
+
+
+function openModal(id){
+  $(id).classList.add('open');
+}
+
+
+function closeModal(id){
+  $(id).classList.remove('open');
+}
+
+
+document
+  .querySelectorAll('[data-close]')
+  .forEach(
+    b=>b.onclick=()=>closeModal(b.dataset.close)
+  );
+
+
+/* =========================================================
+   NAVEGAÇÃO
+   ========================================================= */
+
+function nav(p){
+
+  document
+    .querySelectorAll('.section')
+    .forEach(x=>x.classList.remove('active'));
+
+  $(p).classList.add('active');
+
+  document
+    .querySelectorAll('.nav button[data-page]')
+    .forEach(
+      b=>b.classList.toggle(
+        'active',
+        b.dataset.page===p
+      )
+    );
+
+  const names={
+    dashboard:'Dashboard',
+    agenda:'Agenda',
+    students:'Alunos',
+    plans:'Planos',
+    prices:'Preços',
+    banners:'Banners',
+    finance:'Financeiro',
+    settings:'Configurações'
+  };
+
+  $('pageTitle').textContent=
+    names[p]||'Dashboard';
+
+  render();
+
+}
+
+
+document
+  .querySelectorAll('.nav button[data-page]')
+  .forEach(
+    b=>b.onclick=()=>nav(b.dataset.page)
+  );
+
+
+/* =========================================================
+   USUÁRIO / SUPABASE
+   ========================================================= */
+
+async function user(){
+
+  const {data:d,error}=
+    await client.auth.getUser();
+
+  if(error)throw error;
+
+  if(!d?.user)
+    throw new Error('Usuário não autenticado.');
+
+  return d.user;
+
+}
+
+
+async function loadTable(name){
+
+  const u=await user();
+
+  const {
+    data:d,
+    error
+  }=await client
+    .from(name)
+    .select('*')
+    .eq('user_id',u.id);
+
+  if(error)throw error;
+
+  return d||[];
+
+}
+
+
+async function loadAll(){
+
+  data.students=await loadTable('students');
+
+  data.lessons=await loadTable('lessons');
+
+  data.plans=await loadTable('plans');
+
+  data.prices=await loadTable('prices');
+
+  data.payments=await loadTable('payments');
+
+  data.banners=await loadTable('banners');
+
+
+  const s=await loadTable('settings');
+
+  data.settings={};
+
+  s.forEach(x=>{
+
+    let value=x.value;
+
+    if(typeof value==='string'){
+
+      try{
+        value=JSON.parse(value);
+      }catch(_){}
+
+    }
+
+    data.settings[x.key]=value;
+
+  });
+
+
+  render();
+
+}
+
+
+async function insert(table,row){
+
+  const u=await user();
+
+  const {
+    data:d,
+    error
+  }=await client
+    .from(table)
+    .insert({
+      ...row,
+      user_id:u.id
+    })
+    .select()
+    .single();
+
+  if(error)throw error;
+
+  return d;
+
+}
+
+
+async function update(table,id,row){
+
+  const u=await user();
+
+  const {
+    data:d,
+    error
+  }=await client
+    .from(table)
+    .update(row)
+    .eq('id',id)
+    .eq('user_id',u.id)
+    .select()
+    .single();
+
+  if(error)throw error;
+
+  return d;
+
+}
+
+
+async function remove(table,id){
+
+  const u=await user();
+
+  const {error}=await client
+    .from(table)
+    .delete()
+    .eq('id',id)
+    .eq('user_id',u.id);
+
+  if(error)throw error;
+
+}
+
+
+/* =========================================================
+   PREÇO DAS AULAS
+   ========================================================= */
+
+function priceFor(course){
+
+  const p=data.prices.find(
+    x=>
+      (x.name||x.course)===course &&
+      x.active!==false
+  );
+
+  return Number(p?.price||0);
+
+}
+
+
+function timeOf(x){
+  return String(x?.start_time||'').slice(0,5);
+}
+
+
+/* =========================================================
+   RENDER PRINCIPAL
+   ========================================================= */
+
+function render(){
+
+  const activeStudents=
+    data.students.filter(
+      x=>x.status!=='Inativo'
+    );
+
+  const lessons=
+    data.lessons.filter(
+      x=>x.status!=='Cancelada'
+    );
+
+  const total=
+    lessons.reduce(
+      (n,x)=>n+priceFor(x.course),
+      0
+    );
+
+  const paid=
+    lessons
+      .filter(x=>x.paid)
+      .reduce(
+        (n,x)=>n+priceFor(x.course),
+        0
+      );
+
+
+  $('s1').textContent=
+    activeStudents.length;
+
+  $('s2').textContent=
+    lessons.length;
+
+  $('s3').textContent=
+    lessons.length+'h';
+
+  $('s4').textContent=
+    money(total);
+
+  $('f1').textContent=
+    money(total);
+
+  $('f2').textContent=
+    money(paid);
+
+  $('f3').textContent=
+    money(total-paid);
+
+  $('f4').textContent=
+    data.payments.length;
+
+
+  $('heroTitle').textContent=
+    data.settings.title||
+    '★ VAMOS JUNTOS ALCANÇAR SEUS OBJETIVOS!';
+
+  $('heroText').textContent=
+    data.settings.subtitle||
+    'Alunos, agenda, planos, preços, banners e financeiro.';
+
+
+  renderNext(lessons);
+  renderSchedule();
+  renderStudents();
+  renderPlans();
+
+  /*
+   * Agora renderPrices não tenta mais escrever
+   * dentro de #prices como acontecia anteriormente.
+   */
+  renderPrices();
+
+  renderBanners();
+  renderFinance();
+
+  fillCourseSelect();
+  fillStudentSelect();
+  fillSettings();
+
+}
+
+
+/* =========================================================
+   PRÓXIMAS AULAS
+   ========================================================= */
+
+function renderNext(a){
+
+  const ordered=
+    a.slice().sort((x,y)=>{
+
+      const dx=[
+        'Terça',
+        'Quarta',
+        'Quinta',
+        'Sexta',
+        'Sábado',
+        'Domingo'
+      ].indexOf(x.day);
+
+      const dy=[
+        'Terça',
+        'Quarta',
+        'Quinta',
+        'Sexta',
+        'Sábado',
+        'Domingo'
+      ].indexOf(y.day);
+
+      return dx-dy ||
+        timeOf(x).localeCompare(
+          timeOf(y)
+        );
+
+    }).slice(0,8);
+
+
+  $('next').innerHTML=
+    ordered.length
+    ?
+    ordered.map(x=>`
+
+      <div style="padding:11px;border-top:1px solid #12384a">
+
+        <b class="blue">
+          ${esc(x.day)} ${esc(timeOf(x))}
+        </b>
+
+        —
+        ${esc(x.student_name)}
+        ·
+        ${esc(x.course)}
+        ·
+        ${money(priceFor(x.course))}
+
+      </div>
+
+    `).join('')
+    :
+    '<div class="empty">Nenhuma aula cadastrada.</div>';
+
+}
+
+
+/* =========================================================
+   AGENDA
+   ========================================================= */
+
+function renderSchedule(){
+
+  let h=
+    '<div class="cell head">HORÁRIO</div>'+
+    days
+      .map(
+        d=>`<div class="cell head">${d.toUpperCase()}</div>`
+      )
+      .join('');
+
+
+  for(const time of slots){
+
+    h+=`
+      <div class="cell head">
+        ${time.slice(0,5)}–${String(
+          Number(time.slice(0,2))+1
+        ).padStart(2,'0')}
+      </div>
+    `;
+
+
+    for(const day of days){
+
+      if(!allowedSlots[day].includes(time)){
+
+        h+=`
+          <div class="cell blocked">
+            INDISPONÍVEL
+          </div>
+        `;
+
+        continue;
+
+      }
+
+
+      const x=data.lessons.find(
+        l=>
+          l.day===day &&
+          timeOf(l)===time &&
+          l.status!=='Cancelada'
+      );
+
+
+      if(x){
+
+        h+=`
+
+          <div
+            class="cell busy"
+            data-lesson="${x.id}"
+          >
+
+            <b>${esc(x.student_name)}</b>
+            <br>
+
+            <small>${esc(x.course)}</small>
+            <br>
+
+            <span class="badge ${x.paid?'green':'yellow'}">
+              ${x.paid?'PAGO':'A RECEBER'}
+            </span>
+
+          </div>
+
+        `;
+
+      }else{
+
+        h+=`
+
+          <div
+            class="cell free"
+            data-day="${day}"
+            data-time="${time}"
+          >
+            DISPONÍVEL
+          </div>
+
+        `;
+
+      }
+
+    }
+
+  }
+
+
+  $('schedule').innerHTML=h;
+
+
+  document
+    .querySelectorAll('.free')
+    .forEach(
+      c=>
+        c.onclick=()=>
+          openLesson(
+            c.dataset.day,
+            c.dataset.time
+          )
+    );
+
+
+  document
+    .querySelectorAll('.busy')
+    .forEach(
+      c=>
+        c.onclick=()=>
+          editLesson(c.dataset.lesson)
+    );
+
+}
+
+
+/* =========================================================
+   ALUNOS
+   ========================================================= */
+
+function renderStudents(){
+
+  const q=
+    ($('studentSearch')?.value||'')
+      .toLowerCase();
+
+
+  const rows=
+    data.students.filter(
+      x=>
+        `${x.name} ${x.course}`
+          .toLowerCase()
+          .includes(q)
+    );
+
+
+  $('studentsTableBody').innerHTML=
+    rows.map(x=>`
+
+      <tr>
+
+        <td>
+          <b>${esc(x.name)}</b>
+          <br>
+          <small>${esc(x.phone||'')}</small>
+        </td>
+
+        <td>${esc(x.course)}</td>
+
+        <td>${esc(x.plan||'-')}</td>
+
+        <td>
+          ${esc(x.format||x.modality||'-')}
+        </td>
+
+        <td>
+
+          <span class="badge ${
+            x.status==='Ativo'
+            ?'green'
+            :'red'
+          }">
+
+            ${esc(x.status)}
+
+          </span>
+
+        </td>
+
+        <td>
+
+          <div class="row-actions">
+
+            <button
+              class="btn mini"
+              onclick="editStudent('${x.id}')"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn danger mini"
+              onclick="deleteStudent('${x.id}')"
+            >
+              Excluir
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `).join('')
+    ||
+    '<tr><td colspan="6" class="empty">Nenhum aluno.</td></tr>';
+
+}
+
+
+/* =========================================================
+   PLANOS
+   ========================================================= */
+
+function renderPlans(){
+
+  $('plansGrid').innerHTML=
+    data.plans.map(x=>{
+
+      const weekly=
+        Number(
+          x.weekly_lessons ??
+          x.lessons_per_week ??
+          0
+        );
+
+      const monthly=
+        Number(x.monthly_lessons)||0;
+
+
+      return `
+
+        <div class="plan">
+
+          <h3 class="${esc(x.color||'blue')}">
+            ${esc(x.name)}
+          </h3>
+
+          <p>
+            ${
+              weekly
+              ? weekly+' aula(s)/semana'
+              : 'Conforme necessidade'
+            }
+          </p>
+
+          <div class="price">
+            ${
+              monthly
+              ? monthly+' aulas/mês'
+              : 'Flexível'
+            }
+          </div>
+
+          <p>
+            ${money(x.monthly_price||0)}
+          </p>
+
+          <p class="muted">
+            ${esc(x.description||'')}
+          </p>
+
+          <div class="row-actions">
+
+            <button
+              class="btn mini"
+              onclick="editPlan('${x.id}')"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn danger mini"
+              onclick="deletePlan('${x.id}')"
+            >
+              Excluir
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join('')
+    ||
+    '<div class="empty">Nenhum plano.</div>';
+
+}
+
+
+/* =========================================================
+   PREÇOS
+   ========================================================= */
+
+function renderPrices(){
+
+  /*
+   * A página de preços agora é uma apresentação
+   * de 9 imagens.
+   *
+   * Os preços continuam carregados pelo Supabase
+   * para que agenda, aulas e financeiro continuem
+   * funcionando normalmente.
+   */
+
+  renderPriceSlide();
+
+}
+
+
+/* =========================================================
+   BANNER CARD — DASHBOARD
+   ========================================================= */
+
+function bannerCard(x,admin=true){
+
+  return `
+
+    <div
+      class="promo"
+      style="border-color:${
+        colors[x.color]||colors.blue
+      }"
+    >
+
+      <h3
+        style="color:${
+          colors[x.color]||colors.blue
+        }"
+      >
+        ${esc(x.title)}
+      </h3>
+
+      <p>
+        ${esc(x.text||x.body||'')}
+      </p>
+
+      ${
+        admin
+        ?
+        `
+          <div
+            class="row-actions"
+            style="margin-top:12px"
+          >
+
+            <button
+              class="btn mini"
+              onclick="editBanner('${x.id}')"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn danger mini"
+              onclick="deleteBanner('${x.id}')"
+            >
+              Excluir
+            </button>
+
+          </div>
+        `
+        :
+        ''
+      }
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   BANNERS
+   ========================================================= */
+
+function renderBanners(){
+
+  const active=
+    data.banners
+      .filter(x=>x.active!==false)
+      .sort(
+        (a,b)=>
+          (a.sort_order||0)-
+          (b.sort_order||0)
+      );
+
+
+  /*
+   * O painel de banners agora usa as imagens locais.
+   * Os dados do Supabase continuam sendo usados no
+   * dashboard e no gerenciamento interno.
+   */
+
+  renderBannerSlide();
+
+
+  /*
+   * Mantém o conteúdo interno para o dashboard.
+   */
+
+  $('bannersGrid').innerHTML=
+    active.map(
+      x=>bannerCard(x,true)
+    ).join('')
+    ||
+    '<div class="empty">Nenhum banner ativo.</div>';
+
+
+  $('dashBanners').innerHTML=
+    active.slice(0,4)
+      .map(
+        x=>bannerCard(x,false)
+      )
+      .join('')
+    ||
+    '<div class="empty">Nenhum banner.</div>';
+
+}
+
+
+/* =========================================================
+   FINANCEIRO
+   ========================================================= */
+
+function renderFinance(){
+
+  $('fin').innerHTML=
+    data.lessons.map(x=>`
+
+      <div
+        style="padding:10px;border-top:1px solid #12384a"
+      >
+
+        <b>${esc(x.student_name)}</b>
+        —
+        ${esc(x.course)}
+        —
+        ${money(priceFor(x.course))}
+
+        <span
+          class="badge ${
+            x.paid
+            ?'green'
+            :'yellow'
+          }"
+        >
+          ${x.paid?'RECEBIDO':'A RECEBER'}
+        </span>
+
+      </div>
+
+    `).join('')
+    ||
+    '<div class="empty">Nenhum lançamento.</div>';
+
+}
+
+
+/* =========================================================
+   SELECTS
+   ========================================================= */
+
+function fillCourseSelect(){
+
+  $('lessonCourse').innerHTML=
+    data.prices
+      .filter(x=>x.active!==false)
+      .map(
+        x=>
+          `<option value="${esc(x.name||x.course)}">
+            ${esc(x.name||x.course)}
+          </option>`
+      )
+      .join('')
+    ||
+    '<option value="">Cadastre preços primeiro</option>';
+
+}
+
+
+function fillStudentSelect(){
+
+  const current=
+    $('lessonStudent').value;
+
+
+  $('lessonStudent').innerHTML=
+    data.students
+      .filter(x=>x.status!=='Inativo')
+      .map(
+        x=>
+          `<option value="${esc(x.id)}">
+            ${esc(x.name)}
+          </option>`
+      )
+      .join('')
+    ||
+    '<option value="">Cadastre um aluno primeiro</option>';
+
+
+  if(
+    current &&
+    data.students.some(
+      x=>x.id===current
+    )
+  ){
+    $('lessonStudent').value=current;
+  }
+
+}
+
+
+function fillSettings(){
+
+  $('setTitle').value=
+    data.settings.title||'';
+
+  $('setSubtitle').value=
+    data.settings.subtitle||'';
+
+  $('setPhone').value=
+    data.settings.phone||'';
+
+  $('setBanner').value=
+    data.settings.banner||'';
+
+}
+
+
+/* =========================================================
+   HORÁRIOS
+   ========================================================= */
+
+function updateLessonTimes(selected=''){
+
+  const day=
+    $('lessonDay').value;
+
+  const times=
+    allowedSlots[day]||[];
+
+
+  $('lessonTime').innerHTML=
+    times.map(
+      t=>
+        `<option value="${t}">
+          ${t}–${String(
+            Number(t.slice(0,2))+1
+          ).padStart(2,'0')}
+        </option>`
+    ).join('');
+
+
+  if(
+    selected &&
+    times.includes(selected)
+  ){
+    $('lessonTime').value=selected;
+  }
+
+}
+
+
+/* =========================================================
+   NOVA / EDITAR AULA
+   ========================================================= */
+
+function openLesson(day='', time=''){
+
+  const form = $('lessonForm');
+
+  if(!form) return;
+
+  form.reset();
+
+  form.removeAttribute('data-edit');
+
+  const deleteBtn =
+    $('deleteLessonBtn');
+
+  if(deleteBtn)
+    deleteBtn.style.display='none';
+
+  fillStudentSelect();
+  fillCourseSelect();
+
+  if(day)
+    $('lessonDay').value=day;
+
+  updateLessonTimes(time);
+
+  $('lessonPaid').value='0';
+  $('lessonStatus').value='Agendada';
+
+  openModal('lessonModal');
+
+}
+
+
+async function editLesson(id){
+
+  const x =
+    data.lessons.find(
+      a=>a.id===id
+    );
+
+  if(!x){
+
+    toast(
+      'Aula não encontrada.'
+    );
+
+    return;
+
+  }
+
+  openLesson(
+    x.day,
+    timeOf(x)
+  );
+
+
+  $('lessonStudent').value =
+    x.student_id||'';
+
+
+  if(
+    !$('lessonStudent').value &&
+    x.student_name
+  ){
+
+    const s =
+      data.students.find(
+        a=>a.name===x.student_name
+      );
+
+    if(s)
+      $('lessonStudent').value=s.id;
+
+  }
+
+
+  $('lessonCourse').value =
+    x.course||'';
+
+
+  $('lessonPaid').value =
+    x.paid?'1':'0';
+
+
+  $('lessonStatus').value =
+    x.status||'Agendada';
+
+
+  $('lessonNotes').value =
+    x.notes||'';
+
+
+  $('lessonForm').setAttribute(
+    'data-edit',
+    id
+  );
+
+
+  const deleteBtn =
+    $('deleteLessonBtn');
+
+  if(deleteBtn)
+    deleteBtn.style.display='block';
+
+}
+
+
+async function deleteLesson(id){
+  if(!id) return;
+
+  if(!confirm('Tem certeza que deseja excluir esta aula?')) return;
+
+  try{
+    await remove('lessons',id);
+
+    // Remove imediatamente da memória local
+    data.lessons = data.lessons.filter(l => l.id !== id);
+
+    // Fecha o modal
+    $('lessonForm').removeAttribute('data-edit');
+    closeModal('lessonModal');
+
+    // Atualiza a agenda e o restante da interface
+    render();
+
+    toast('Aula excluída!');
+  }catch(err){
+    console.error('Erro ao excluir aula:',err);
+    toast('Erro ao excluir aula: '+(err.message||err));
+  }
+}
+
+
+$('deleteLessonBtn').onclick =
+  async()=>{
+
+    const id =
+      $('lessonForm')
+        .getAttribute('data-edit');
+
+    if(id)
+      await deleteLesson(id);
+
+  };
+
+
+$('lessonDay').onchange =
+  () => updateLessonTimes();
+
+
+$('lessonForm').onsubmit =
+  async e=>{
+
+    e.preventDefault();
+
+    try{
+
+      const form =
+        e.currentTarget;
+
+
+      const id =
+        form.getAttribute(
+          'data-edit'
+        )||'';
+
+
+      const student =
+        data.students.find(
+          s=>
+            s.id===
+            $('lessonStudent').value
+        );
+
+
+      if(!student){
+
+        toast(
+          'Selecione um aluno.'
+        );
+
+        return;
+
+      }
+
+
+      const day =
+        $('lessonDay').value;
+
+
+      const start =
+        $('lessonTime').value;
+
+
+      if(
+        !allowedSlots[day]?.includes(start)
+      ){
+
+        toast(
+          'Esse horário não está disponível.'
+        );
+
+        return;
+
+      }
+
+
+      const conflict =
+        data.lessons.find(
+          l=>
+            l.id!==id &&
+            l.day===day &&
+            timeOf(l)===start &&
+            l.status!=='Cancelada'
+        );
+
+
+      if(conflict){
+
+        toast(
+          'Esse horário já está ocupado.'
+        );
+
+        return;
+
+      }
+
+
+      const row={
+
+        student_id:
+          student.id,
+
+        student_name:
+          student.name,
+
+        course:
+          $('lessonCourse').value,
+
+        day,
+
+        start_time:
+          start+':00',
+
+        duration_minutes:
+          60,
+
+        paid:
+          $('lessonPaid').value==='1',
+
+        status:
+          $('lessonStatus').value,
+
+        notes:
+          $('lessonNotes').value
+
+      };
+
+
+      if(id){
+
+        await update(
+          'lessons',
+          id,
+          row
+        );
+
+      }else{
+
+        await insert(
+          'lessons',
+          row
+        );
+
+      }
+
+
+      form.removeAttribute(
+        'data-edit'
+      );
+
+
+      closeModal(
+        'lessonModal'
+      );
+
+
+      await loadAll();
+
+
+      toast(
+        id
+          ? 'Aula atualizada!'
+          : 'Aula salva!'
+      );
+
+
+    }catch(err){
+
+      console.error(
+        'Erro ao salvar aula:',
+        err
+      );
+
+
+      toast(
+        'Erro ao salvar aula: '+
+        (err.message||err)
+      );
+
+    }
+
+  };
+
+
+$('newLesson').onclick =
+  () => openLesson();
+
+
+$('newLesson2').onclick =
+  () => openLesson();
+
+
+$('agendaNew').onclick =
+  () => openLesson();
+
+
+/* =========================================================
+   ALUNOS
+   ========================================================= */
+
+$('newStudent').onclick=()=>{
+
+  $('studentForm').reset();
+
+  $('studentId').value='';
+
+  $('studentFormat').value='Online';
+
+  $('studentStatus').value='Ativo';
+
+  openModal('studentModal');
+
+};
+
+
+window.editStudent=id=>{
+
+  const x=
+    data.students.find(
+      a=>a.id===id
+    );
+
+  if(!x)return;
+
+
+  $('studentId').value=id;
+
+  $('studentName').value=x.name;
+
+  $('studentPhone').value=
+    x.phone||'';
+
+  $('studentCourse').value=
+    x.course;
+
+  $('studentPlan').value=
+    x.plan||'';
+
+  $('studentFormat').value=
+    x.format||
+    x.modality||
+    'Online';
+
+  $('studentStatus').value=
+    x.status||
+    'Ativo';
+
+  $('studentNotes').value=
+    x.notes||'';
+
+  openModal('studentModal');
+
+};
+
+
+window.deleteStudent=
+  async id=>{
+
+    if(
+      !confirm(
+        'Excluir este aluno?'
+      )
+    )return;
+
+    try{
+
+      await remove(
+        'students',
+        id
+      );
+
+      await loadAll();
+
+      toast(
+        'Aluno excluído.'
+      );
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+$('studentForm').onsubmit=
+  async e=>{
+
+    e.preventDefault();
+
+    try{
+
+      const row={
+
+        name:
+          $('studentName')
+            .value
+            .trim(),
+
+        phone:
+          $('studentPhone')
+            .value
+            .trim(),
+
+        course:
+          $('studentCourse')
+            .value
+            .trim(),
+
+        plan:
+          $('studentPlan')
+            .value
+            .trim(),
+
+        format:
+          $('studentFormat')
+            .value,
+
+        modality:
+          $('studentFormat')
+            .value,
+
+        status:
+          $('studentStatus')
+            .value,
+
+        notes:
+          $('studentNotes')
+            .value
+            .trim()
+
+      };
+
+
+      const id=
+        $('studentId').value;
+
+
+      if(id)
+        await update(
+          'students',
+          id,
+          row
+        );
+      else
+        await insert(
+          'students',
+          row
+        );
+
+
+      closeModal('studentModal');
+
+      await loadAll();
+
+      toast('Aluno salvo!');
+
+    }catch(err){
+
+      toast(err.message);
+
+    }
+
+  };
+
+
+$('studentSearch').oninput=
+  renderStudents;
+
+
+/* =========================================================
+   PLANOS
+   ========================================================= */
+
+$('newPlan').onclick=()=>{
+
+  $('planForm').reset();
+
+  $('planId').value='';
+
+  $('planWeekly').value='1';
+
+  $('planMonthly').value='4';
+
+  $('planPrice').value='0';
+
+  openModal('planModal');
+
+};
+
+
+window.editPlan=id=>{
+
+  const x=
+    data.plans.find(
+      a=>a.id===id
+    );
+
+  if(!x)return;
+
+
+  $('planId').value=id;
+
+  $('planName').value=x.name;
+
+  $('planWeekly').value=
+    x.weekly_lessons ??
+    Number(
+      x.lessons_per_week||0
+    );
+
+  $('planMonthly').value=
+    Number(
+      x.monthly_lessons||0
+    );
+
+  $('planPrice').value=
+    x.monthly_price||0;
+
+  $('planDesc').value=
+    x.description||'';
+
+  openModal('planModal');
+
+};
+
+
+window.deletePlan=
+  async id=>{
+
+    if(
+      !confirm(
+        'Excluir plano?'
+      )
+    )return;
+
+    try{
+
+      await remove(
+        'plans',
+        id
+      );
+
+      await loadAll();
+
+      toast(
+        'Plano excluído.'
+      );
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+$('planForm').onsubmit=
+  async e=>{
+
+    e.preventDefault();
+
+    try{
+
+      const weekly=
+        Math.max(
+          0,
+          Number(
+            $('planWeekly').value||0
+          )
+        );
+
+      const monthly=
+        Math.max(
+          0,
+          Number(
+            $('planMonthly').value||0
+          )
+        );
+
+
+      const old=
+        data.plans.find(
+          x=>
+            x.id===
+            $('planId').value
+        );
+
+
+      const row={
+
+        name:
+          $('planName')
+            .value
+            .trim(),
+
+        lessons_per_week:
+          String(weekly),
+
+        monthly_lessons:
+          String(monthly),
+
+        duration:
+          '1h por aula',
+
+        description:
+          $('planDesc')
+            .value
+            .trim(),
+
+        color:
+          old?.color||'blue',
+
+        sort_order:
+          old?.sort_order||0,
+
+        weekly_lessons:
+          weekly,
+
+        monthly_price:
+          Math.max(
+            0,
+            Number(
+              $('planPrice').value||0
+            )
+          )
+
+      };
+
+
+      const id=
+        $('planId').value;
+
+
+      if(id)
+        await update(
+          'plans',
+          id,
+          row
+        );
+      else
+        await insert(
+          'plans',
+          row
+        );
+
+
+      closeModal('planModal');
+
+      await loadAll();
+
+      toast('Plano salvo!');
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+/* =========================================================
+   PREÇOS — CRUD
+   ========================================================= */
+
+$('newPrice').onclick=()=>{
+
+  $('priceForm').reset();
+
+  $('priceId').value='';
+
+  $('priceDuration').value='1h';
+
+  openModal('priceModal');
+
+};
+
+
+window.editPrice=id=>{
+
+  const x=
+    data.prices.find(
+      a=>a.id===id
+    );
+
+  if(!x)return;
+
+
+  $('priceId').value=id;
+
+  $('priceName').value=
+    x.name||
+    x.course||
+    '';
+
+  $('priceValue').value=
+    x.price;
+
+  $('priceDuration').value=
+    x.duration||
+    '1h';
+
+  openModal('priceModal');
+
+};
+
+
+window.deletePrice=
+  async id=>{
+
+    if(
+      !confirm(
+        'Excluir preço?'
+      )
+    )return;
+
+    try{
+
+      await remove(
+        'prices',
+        id
+      );
+
+      await loadAll();
+
+      toast(
+        'Preço excluído.'
+      );
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+$('priceForm').onsubmit=
+  async e=>{
+
+    e.preventDefault();
+
+    try{
+
+      const id=
+        $('priceId').value;
+
+      const old=
+        data.prices.find(
+          x=>x.id===id
+        );
+
+      const name=
+        $('priceName')
+          .value
+          .trim();
+
+
+      const row={
+
+        name,
+
+        course:name,
+
+        duration:
+          $('priceDuration')
+            .value
+            .trim()||
+          '1h',
+
+        price:
+          Math.max(
+            0,
+            Number(
+              $('priceValue')
+                .value||0
+            )
+          ),
+
+        active:
+          old?.active!==false
+
+      };
+
+
+      if(id)
+        await update(
+          'prices',
+          id,
+          row
+        );
+      else
+        await insert(
+          'prices',
+          row
+        );
+
+
+      closeModal('priceModal');
+
+      await loadAll();
+
+      toast('Preço salvo!');
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+/* =========================================================
+   BANNERS — CRUD
+   ========================================================= */
+
+$('newBanner').onclick=()=>{
+
+  $('bannerForm').reset();
+
+  $('bannerId').value='';
+
+  $('bannerColor').value='blue';
+
+  $('bannerOrder').value='0';
+
+  $('bannerActive').value='true';
+
+  openModal('bannerModal');
+
+};
+
+
+window.editBanner=id=>{
+
+  const x=
+    data.banners.find(
+      a=>a.id===id
+    );
+
+  if(!x)return;
+
+
+  $('bannerId').value=id;
+
+  $('bannerTitle').value=
+    x.title||'';
+
+  $('bannerText').value=
+    x.text||
+    x.body||
+    '';
+
+  $('bannerColor').value=
+    x.color||
+    x.accent||
+    'blue';
+
+  $('bannerOrder').value=
+    x.sort_order||0;
+
+  $('bannerActive').value=
+    String(
+      x.active!==false
+    );
+
+  openModal('bannerModal');
+
+};
+
+
+window.deleteBanner=
+  async id=>{
+
+    if(
+      !confirm(
+        'Excluir banner?'
+      )
+    )return;
+
+    try{
+
+      await remove(
+        'banners',
+        id
+      );
+
+      await loadAll();
+
+      toast(
+        'Banner excluído.'
+      );
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+$('bannerForm').onsubmit=
+  async e=>{
+
+    e.preventDefault();
+
+    try{
+
+      const row={
+
+        title:
+          $('bannerTitle')
+            .value
+            .trim(),
+
+        text:
+          $('bannerText')
+            .value
+            .trim(),
+
+        body:
+          $('bannerText')
+            .value
+            .trim(),
+
+        subtitle:'',
+
+        kind:'info',
+
+        accent:
+          $('bannerColor')
+            .value,
+
+        color:
+          $('bannerColor')
+            .value,
+
+        sort_order:
+          Number(
+            $('bannerOrder')
+              .value||0
+          ),
+
+        active:
+          $('bannerActive')
+            .value==='true'
+
+      };
+
+
+      const id=
+        $('bannerId').value;
+
+
+      if(id)
+        await update(
+          'banners',
+          id,
+          row
+        );
+      else
+        await insert(
+          'banners',
+          row
+        );
+
+
+      closeModal('bannerModal');
+
+      await loadAll();
+
+      toast('Banner salvo!');
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+/* =========================================================
+   CONFIGURAÇÕES
+   ========================================================= */
+
+$('settingsForm').onsubmit=
+  async e=>{
+
+    e.preventDefault();
+
+    try{
+
+      const vals={
+
+        title:
+          $('setTitle').value,
+
+        subtitle:
+          $('setSubtitle').value,
+
+        phone:
+          $('setPhone').value,
+
+        banner:
+          $('setBanner').value
+
+      };
+
+
+      const u=await user();
+
+
+      for(
+        const [key,value]
+        of Object.entries(vals)
+      ){
+
+        const {
+          data:rows,
+          error
+        }=await client
+
+          .from('settings')
+
+          .select('id')
+
+          .eq('user_id',u.id)
+
+          .eq('key',key)
+
+          .order(
+            'created_at',
+            {ascending:false}
+          )
+
+          .limit(1);
+
+
+        if(error)throw error;
+
+
+        const existing=
+          rows?.[0];
+
+
+        if(existing){
+
+          await update(
+            'settings',
+            existing.id,
+            {value}
+          );
+
+        }else{
+
+          await insert(
+            'settings',
+            {
+              key,
+              value
+            }
+          );
+
+        }
+
+      }
+
+
+      await loadAll();
+
+      toast(
+        'Configurações salvas!'
+      );
+
+    }catch(e){
+
+      toast(e.message);
+
+    }
+
+  };
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+$('loginForm').onsubmit=
+  async e=>{
+
+    e.preventDefault();
+
+    $('loginMsg').textContent=
+      'Entrando...';
+
+
+    const {
+      error
+    }=await client.auth.signInWithPassword({
+
+      email:
+        $('email')
+          .value
+          .trim(),
+
+      password:
+        $('password')
+          .value
+
+    });
+
+
+    $('loginMsg').textContent=
+      error
+      ? error.message
+      : '';
+
+
+    if(!error)
+      await boot();
+
+  };
+
+
+/* =========================================================
+   CADASTRO
+   ========================================================= */
+
+$('signup').onclick=
+  async()=>{
+
+    const email=
+      $('email')
+        .value
+        .trim();
+
+    const password=
+      $('password')
+        .value;
+
+
+    if(
+      !email ||
+      password.length<6
+    ){
+
+      $('loginMsg').textContent=
+        'Informe um e-mail e senha com pelo menos 6 caracteres.';
+
+      return;
+
+    }
+
+
+    const {
+      error
+    }=await client.auth.signUp({
+
+      email,
+      password
+
+    });
+
+
+    $('loginMsg').textContent=
+      error
+      ? error.message
+      :
+      'Conta criada. Se o Supabase pedir confirmação, confirme seu e-mail e depois entre.';
+
+  };
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+$('logout').onclick=
+  async()=>{
+
+    await client.auth.signOut();
+
+    location.reload();
+
+  };
+
+
+/* =========================================================
+   SEED
+   ========================================================= */
+
+async function seed(){
+
+  if(data.prices.length===0){
+
+    const ps=[
+
+      [
+        'Matérias escolares — 4º ao 5º ano',
+        30
+      ],
+
+      [
+        'Matérias escolares — 6º ao 8º ano',
+        35
+      ],
+
+      [
+        'Programação',
+        45
+      ],
+
+      [
+        'Inteligência Artificial',
+        45
+      ],
+
+      [
+        'Minecraft / Comandos / Skript',
+        40
+      ],
+
+      [
+        'Informática / PC',
+        40
+      ],
+
+      [
+        'Canva / Apresentações',
+        35
+      ]
+
+    ];
+
+
+    for(
+      const [name,price]
+      of ps
+    ){
+
+      await insert(
+        'prices',
+        {
+          name,
+          course:name,
+          price,
+          duration:'1h',
+          active:true
+        }
+      );
+
+    }
+
+  }
+
+
+  if(data.plans.length===0){
+
+    const plans=[
+
+      {
+        name:'BÁSICO',
+        weekly:1,
+        monthly:4,
+        color:'green',
+        description:'Foco e constância.'
+      },
+
+      {
+        name:'INTERMEDIÁRIO',
+        weekly:2,
+        monthly:8,
+        color:'blue',
+        description:'Equilíbrio perfeito.'
+      },
+
+      {
+        name:'AVANÇADO',
+        weekly:3,
+        monthly:12,
+        color:'purple',
+        description:'Máximo desempenho.'
+      },
+
+      {
+        name:'PERSONALIZADO',
+        weekly:0,
+        monthly:0,
+        color:'yellow',
+        description:'Conforme sua necessidade.'
+      }
+
+    ];
+
+
+    for(const p of plans){
+
+      await insert(
+        'plans',
+        {
+
+          name:p.name,
+
+          lessons_per_week:
+            String(p.weekly),
+
+          monthly_lessons:
+            String(p.monthly),
+
+          duration:
+            '1h por aula',
+
+          description:
+            p.description,
+
+          color:
+            p.color,
+
+          sort_order:
+            0,
+
+          weekly_lessons:
+            p.weekly,
+
+          monthly_price:
+            0
+
+        }
+      );
+
+    }
+
+  }
+
+
+  if(data.banners.length===0){
+
+    const bs=[
+
+      {
+        title:'AULAS PERSONALIZADAS',
+        text:'Aprenda do seu jeito, no seu ritmo!',
+        color:'blue',
+        sort_order:1
+      },
+
+      {
+        title:'AULAS 100% ONLINE',
+        text:'Ou presenciais, conforme disponibilidade.',
+        color:'green',
+        sort_order:2
+      },
+
+      {
+        title:'APRENDA MAIS',
+        text:'Programação, IA, Minecraft, informática e apresentações.',
+        color:'purple',
+        sort_order:3
+      },
+
+      {
+        title:'VAMOS JUNTOS!',
+        text:'Alcance seus objetivos com um plano feito para você.',
+        color:'yellow',
+        sort_order:4
+      }
+
+    ];
+
+
+    for(const b of bs){
+
+      await insert(
+        'banners',
+        {
+
+          title:b.title,
+
+          text:b.text,
+
+          body:b.text,
+
+          subtitle:'',
+
+          kind:'info',
+
+          accent:b.color,
+
+          color:b.color,
+
+          sort_order:b.sort_order,
+
+          active:true
+
+        }
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   TECLADO — PREÇOS E BANNERS
+   ========================================================= */
+
+document.addEventListener(
+  'keydown',
+  e=>{
+
+    const pricesSection=
+      $('prices');
+
+    const bannersSection=
+      $('banners');
+
+
+    if(
+      pricesSection?.classList.contains('active')
+    ){
+
+      if(e.key==='ArrowRight')
+        nextPriceSlide();
+
+      if(e.key==='ArrowLeft')
+        previousPriceSlide();
+
+    }
+
+
+    if(
+      bannersSection?.classList.contains('active')
+    ){
+
+      if(e.key==='ArrowRight')
+        nextBannerSlide();
+
+      if(e.key==='ArrowLeft')
+        previousBannerSlide();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   BOTÕES DA APRESENTAÇÃO
+   ========================================================= */
+
+$('priceNext')?.addEventListener(
+  'click',
+  nextPriceSlide
+);
+
+$('pricePrev')?.addEventListener(
+  'click',
+  previousPriceSlide
+);
+
+$('priceNextBottom')?.addEventListener(
+  'click',
+  nextPriceSlide
+);
+
+$('pricePrevBottom')?.addEventListener(
+  'click',
+  previousPriceSlide
+);
+
+
+$('bannerNext')?.addEventListener(
+  'click',
+  nextBannerSlide
+);
+
+$('bannerPrev')?.addEventListener(
+  'click',
+  previousBannerSlide
+);
+
+$('bannerNextBottom')?.addEventListener(
+  'click',
+  nextBannerSlide
+);
+
+$('bannerPrevBottom')?.addEventListener(
+  'click',
+  previousBannerSlide
+);
+
+
+/* =========================================================
+   INICIALIZAÇÃO DAS APRESENTAÇÕES
+   ========================================================= */
+
+renderPriceSlide();
+renderBannerSlide();
+
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+
+async function boot(){
+
+  try{
+
+    const {
+      data:d
+    }=await client.auth.getSession();
+
+
+    if(!d?.session){
+
+      $('loginView').style.display='flex';
+
+      $('appView')
+        .classList
+        .add('hidden');
+
+      return;
+
+    }
+
+
+    $('loginView').style.display='none';
+
+    $('appView')
+      .classList
+      .remove('hidden');
+
+
+    await loadAll();
+
+    await seed();
+
+    await loadAll();
+
+
+  }catch(e){
+
+    console.error(e);
+
+    toast(
+      e.message||
+      'Erro ao carregar o sistema.'
+    );
+
+  }
+
+}
+
+
+boot();
+
+</script>
+
+</body>
+</html>
