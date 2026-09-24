@@ -5608,6 +5608,13 @@ function showLogin(){
   hideAllViews(); $('loginView').style.display='flex';
 }
 
+function normalizePortalRole(role){
+  const r=String(role||'').trim().toLowerCase();
+  if(['student','aluno','estudante'].includes(r)) return 'student';
+  if(['responsible','responsavel','responsável','parent','pai','mae','mãe'].includes(r)) return 'responsible';
+  return 'admin';
+}
+
 async function getProfile(){
   const u=await user();
   const {data:p,error}=await client.from('portal_profiles').select('*').eq('id',u.id).maybeSingle();
@@ -5618,6 +5625,7 @@ async function getProfile(){
   }
   return p||{id:u.id,role:'admin',owner_id:u.id};
 }
+
 
 async function portalQuery(table, studentId, ownerId){
   let q=client.from(table).select('*');
@@ -5637,7 +5645,7 @@ async function portalQuery(table, studentId, ownerId){
 
 async function loadPortal(){
   portalProfile=await getProfile();
-  currentRole=portalProfile.role||'admin';
+  currentRole=normalizePortalRole(portalProfile.role);
   if(currentRole==='admin') return;
 
   const studentId=portalProfile.student_id;
@@ -5710,6 +5718,7 @@ function renderResponsiblePortal(){
 }
 
 function showPortal(role){
+  role=normalizePortalRole(role);
   hideAllViews();
   try{
     if(role==='student'){
@@ -5719,6 +5728,7 @@ function showPortal(role){
       $('responsiblePortal').style.display='block';
       renderResponsiblePortal();
     }else{
+      $('appView').classList.remove('hidden');
       $('appView').style.display='flex';
     }
   }catch(err){
@@ -5764,9 +5774,10 @@ $('loginForm').onsubmit=
       });
       if(error)throw error;
       const profile=await getProfile();
-      currentRole=profile.role||'admin';
+      currentRole=normalizePortalRole(profile.role);
       if(currentRole==='admin'){
         hideAllViews();
+        $('appView').classList.remove('hidden');
         $('appView').style.display='flex';
         await loadAll();
         await seed();
@@ -6169,9 +6180,10 @@ async function boot(){
       return;
     }
     const profile=await getProfile();
-    currentRole=profile.role||'admin';
+    currentRole=normalizePortalRole(profile.role);
     if(currentRole==='admin'){
       hideAllViews();
+      $('appView').classList.remove('hidden');
       $('appView').style.display='flex';
       await loadAll();
       await seed();
