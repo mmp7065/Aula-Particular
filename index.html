@@ -5621,12 +5621,16 @@ async function getProfile(){
 
 async function portalQuery(table, studentId, ownerId){
   let q=client.from(table).select('*');
+  // Para aluno/responsável, o vínculo principal é o student_id.
+  // Não combinamos com user_id, porque os registros das aulas/atividades
+  // normalmente pertencem à conta administrativa que criou o conteúdo.
   if(studentId) q=q.eq('student_id',studentId);
-  if(ownerId) q=q.eq('user_id',ownerId);
+  else if(ownerId) q=q.eq('user_id',ownerId);
   const {data:d,error}=await q;
   if(error){
     if(error.code==='42P01') return [];
-    throw error;
+    console.error('Erro ao carregar portal na tabela '+table, error);
+    return [];
   }
   return d||[];
 }
@@ -5707,9 +5711,29 @@ function renderResponsiblePortal(){
 
 function showPortal(role){
   hideAllViews();
-  if(role==='student'){ $('studentPortal').style.display='block'; renderStudentPortal(); }
-  else if(role==='responsible'){ $('responsiblePortal').style.display='block'; renderResponsiblePortal(); }
-  else { $('appView').style.display='flex'; }
+  try{
+    if(role==='student'){
+      $('studentPortal').style.display='block';
+      renderStudentPortal();
+    }else if(role==='responsible'){
+      $('responsiblePortal').style.display='block';
+      renderResponsiblePortal();
+    }else{
+      $('appView').style.display='flex';
+    }
+  }catch(err){
+    console.error('Erro ao renderizar portal:',err);
+    const shell=role==='student'?$('studentPortal'):role==='responsible'?$('responsiblePortal'):null;
+    if(shell){
+      shell.style.display='block';
+      const main=shell.querySelector('.portal-main');
+      if(main){
+        const old=main.querySelector('.portal-render-error');
+        if(old) old.remove();
+        main.insertAdjacentHTML('beforeend',`<div class="portal-card portal-render-error" style="margin-top:18px;border-color:#8b3a3a"><h3>Não foi possível carregar esta página</h3><p style="color:#b9c9d5">O login foi realizado, mas ocorreu um erro ao montar o portal. Atualize a página e tente novamente.</p><button class="btn mini" onclick="location.reload()">Atualizar página</button></div>`);
+      }
+    }
+  }
 }
 
 document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
