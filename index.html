@@ -1096,7 +1096,7 @@ th{
       <button data-page="plans">◆ Planos</button>
       <button data-page="planning">▤ Planejamentos</button>
       <button data-page="progress">◉ Progresso</button>
-      <button data-page="records">▤ Registro de aulas</button>
+      <button data-page="records">▤ Aulas / Registros</button>
       <button data-page="tasks">☑ Tarefas</button>
       <button data-page="assessments">▣ Avaliações</button>
       <button data-page="calendar">▦ Calendário</button>
@@ -1518,7 +1518,7 @@ th{
     <!-- NOVOS MÓDULOS -->
     <section id="progress" class="section"><div class="section-head"><div><h2>Progresso dos alunos</h2><p class="muted">Dados automáticos + avaliação pedagógica manual.</p></div></div><div class="card"><div class="toolbar"><select id="progressStudent"></select><button id="newProgress" class="btn primary">+ Registrar progresso</button></div><div id="progressContent"></div></div></section>
 
-    <section id="records" class="section"><div class="section-head"><div><h2>Registro de aulas</h2><p class="muted">Registre o que aconteceu em cada aula.</p></div><button id="newRecord" class="btn primary">+ Novo registro</button></div><div class="card"><div id="recordsList"></div></div></section>
+    <section id="records" class="section"><div class="section-head"><div><h2>Aulas / Registros</h2><p class="muted">Aqui você cadastra o que aconteceu em cada aula: realizada, faltou, cancelada, reagendada e outros detalhes. A Agenda serve apenas para visualizar os horários e alunos.</p></div><button id="newRecord" class="btn primary">+ Registrar aula</button></div><div class="card"><div id="recordsList"></div></div></section>
 
     <section id="tasks" class="section"><div class="section-head"><div><h2>Tarefas</h2><p class="muted">Crie, acompanhe e corrija tarefas.</p></div><button id="newTask" class="btn primary">+ Nova tarefa</button></div><div class="card"><div id="tasksList"></div></div></section>
 
@@ -1643,35 +1643,7 @@ th{
           <select id="lessonTime" required></select>
         </div>
 
-        <div class="field">
-          <label>Pagamento</label>
 
-          <select id="lessonPaid">
-            <option value="0">A receber</option>
-            <option value="1">Pago</option>
-          </select>
-
-        </div>
-
-        <div class="field">
-
-          <label>Status</label>
-
-          <select id="lessonStatus">
-            <option>Agendada</option>
-            <option>Concluída</option>
-            <option>Cancelada</option>
-          </select>
-
-        </div>
-
-        <div class="field full">
-
-          <label>Observações</label>
-
-          <textarea id="lessonNotes"></textarea>
-
-        </div>
 
       </div>
 
@@ -2298,7 +2270,7 @@ th{
 
 
 <!-- MODAIS DOS NOVOS MÓDULOS -->
-<div id="recordModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registro de aula</h2><button class="close" data-close="recordModal">×</button></div><form id="recordForm"><input id="recordId" type="hidden"><div class="form-grid"><div class="field"><label>Aula</label><select id="recordLesson" required></select></div><div class="field"><label>Status</label><select id="recordStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><label>Conteúdo trabalhado</label><textarea id="recordContent" style="min-height:120px"></textarea></div><div class="field full"><label>Como foi a aula?</label><textarea id="recordObservation" style="min-height:120px"></textarea></div><div class="field full"><label>Tarefa de casa</label><textarea id="recordHomework"></textarea></div><div class="field full"><label>Observações</label><textarea id="recordNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="recordModal">Cancelar</button><button class="btn primary">Salvar registro</button></div></form></div></div>
+<div id="recordModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registro de aula</h2><button class="close" data-close="recordModal">×</button></div><form id="recordForm"><input id="recordId" type="hidden"><div class="form-grid"><div class="field"><label>Aula</label><select id="recordLesson" required></select></div><div class="field"><label>Data da aula</label><input id="recordDate" type="date" required></div><div class="field"><label>Status da aula</label><select id="recordStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option><option>Não realizada</option><option>Reposição</option></select></div><div class="field full"><label>Conteúdo trabalhado</label><textarea id="recordContent" style="min-height:120px"></textarea></div><div class="field full"><label>Como foi a aula?</label><textarea id="recordObservation" style="min-height:120px"></textarea></div><div class="field full"><label>Tarefa de casa</label><textarea id="recordHomework"></textarea></div><div class="field full"><label>Observações</label><textarea id="recordNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="recordModal">Cancelar</button><button class="btn primary">Salvar registro</button></div></form></div></div>
 <div id="taskModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Tarefa</h2><button class="close" data-close="taskModal">×</button></div><form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="taskStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="taskCourse" required></select></div><div class="field full"><label>Título</label><input id="taskTitle" required></div><div class="field full"><label>Descrição</label><textarea id="taskDescription"></textarea></div><div class="field"><label>Entrega</label><input id="taskDue" type="date"></div><div class="field"><label>Status</label><select id="taskStatus"><option>Pendente</option><option>Entregue</option><option>Corrigida</option><option>Atrasada</option></select></div><div class="field full"><label>Observações / correção</label><textarea id="taskNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="taskModal">Cancelar</button><button class="btn primary">Salvar tarefa</button></div></form></div></div>
 <div id="assessmentModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Avaliação</h2><button class="close" data-close="assessmentModal">×</button></div><form id="assessmentForm"><input id="assessmentId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="assessmentStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="assessmentCourse" required></select></div><div class="field full"><label>Título</label><input id="assessmentTitle" required></div><div class="field"><label>Nota</label><input id="assessmentScore" type="number" min="0" step="0.01"></div><div class="field"><label>Nota máxima</label><input id="assessmentMax" type="number" min="1" step="0.01" value="10"></div><div class="field"><label>Data</label><input id="assessmentDate" type="date"></div><div class="field full"><label>Conteúdos</label><textarea id="assessmentContent"></textarea></div><div class="field full"><label>Observações</label><textarea id="assessmentNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="assessmentModal">Cancelar</button><button class="btn primary">Salvar avaliação</button></div></form></div></div>
 <div id="reminderModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Lembrete</h2><button class="close" data-close="reminderModal">×</button></div><form id="reminderForm"><input id="reminderId" type="hidden"><div class="form-grid"><div class="field full"><label>Título</label><input id="reminderTitle" required></div><div class="field"><label>Data</label><input id="reminderDate" type="date" required></div><div class="field"><label>Tipo</label><select id="reminderType"><option>Aula</option><option>Tarefa</option><option>Avaliação</option><option>Pagamento</option><option>Outro</option></select></div><div class="field full"><label>Descrição</label><textarea id="reminderText"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="reminderModal">Cancelar</button><button class="btn primary">Salvar lembrete</button></div></form></div></div>
@@ -3000,17 +2972,13 @@ function renderSchedule(){
           <div
             class="cell busy"
             data-lesson="${x.id}"
+            title="Clique para editar o horário desta aula"
           >
 
             <b>${esc(x.student_name)}</b>
             <br>
 
             <small>${esc(x.course)}</small>
-            <br>
-
-            <span class="badge ${x.paid?'green':'yellow'}">
-              ${x.paid?'PAGO':'A RECEBER'}
-            </span>
 
           </div>
 
@@ -4404,8 +4372,6 @@ function openLesson(day='', time=''){
 
   updateLessonTimes(time);
 
-  $('lessonPaid').value='0';
-  $('lessonStatus').value='Agendada';
 
   openModal('lessonModal');
 
@@ -4459,16 +4425,6 @@ async function editLesson(id){
     x.course||'';
 
 
-  $('lessonPaid').value =
-    x.paid?'1':'0';
-
-
-  $('lessonStatus').value =
-    x.status||'Agendada';
-
-
-  $('lessonNotes').value =
-    x.notes||'';
 
 
   $('lessonForm').setAttribute(
@@ -4608,33 +4564,12 @@ $('lessonForm').onsubmit =
 
 
       const row={
-
-        student_id:
-          student.id,
-
-        student_name:
-          student.name,
-
-        course:
-          $('lessonCourse').value,
-
+        student_id: student.id,
+        student_name: student.name,
+        course: $('lessonCourse').value,
         day,
-
-        start_time:
-          start+':00',
-
-        duration_minutes:
-          60,
-
-        paid:
-          $('lessonPaid').value==='1',
-
-        status:
-          $('lessonStatus').value,
-
-        notes:
-          $('lessonNotes').value
-
+        start_time: start+':00',
+        duration_minutes: 60
       };
 
 
@@ -5412,7 +5347,30 @@ function renderNewModules(){
   renderProgress(); renderRecords(); renderTasks(); renderAssessments(); renderCalendar(); renderReminders(); renderReports(); renderMaterials(); renderActivities(); renderTemplates(); renderPublic(); renderReceipts(); renderAttendance(); renderAchievements(); renderParent();
 }
 function renderProgress(){const el=$('progressContent');if(!el)return;const sid=$('progressStudent')?.value||data.students[0]?.id; if($('progressStudent'))studentOptions('progressStudent',sid||''); const p=data.progress.filter(x=>!sid||x.student_id===sid); const lessons=data.lessons.filter(x=>x.student_id===sid&&x.status==='Concluída').length; const records=data.records.filter(x=>x.student_id===sid&&x.status==='Realizada').length; const tasks=data.tasks.filter(x=>x.student_id===sid); const done=tasks.filter(x=>['Entregue','Corrigida'].includes(x.status)).length; const avg=p.length?p.reduce((a,x)=>a+Number(x.percent||0),0)/p.length:0; el.innerHTML=`<div class="small-grid"><div class="card"><div class="muted">AULAS CONCLUÍDAS</div><h2>${lessons||records}</h2></div><div class="card"><div class="muted">TAREFAS CONCLUÍDAS</div><h2>${done}/${tasks.length}</h2></div><div class="card"><div class="muted">PROGRESSO MÉDIO</div><h2>${Math.round(avg)}%</h2></div></div>${p.length?p.map(x=>`<div class="progress-row"><div class="top"><b>${esc(x.topic)}</b><span>${Number(x.percent||0)}% · ${esc(x.status||'')}</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,Number(x.percent||0)))}%"></span></div><small class="muted">${esc(x.course||'')} ${x.notes?'— '+esc(x.notes):''}</small></div>`).join(''):'<div class="empty">Nenhum progresso manual registrado para este aluno.</div>'}`;}
-function renderRecords(){const el=$('recordsList');if(!el)return;el.innerHTML=data.records.slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(studentName(x.student_id)||x.student_name)}</b> · ${esc(x.status)}<p>${esc(x.content||'Sem conteúdo registrado.')}</p><small class="muted">${esc(x.observation||'')}</small><div class="row-actions" style="margin-top:10px"><button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';}
+function renderRecords(){
+  const el=$('recordsList');
+  if(!el)return;
+  const ordered=data.records.slice().reverse();
+  el.innerHTML=ordered.map(x=>{
+    const lesson=data.lessons.find(l=>l.id===x.lesson_id);
+    const lessonInfo=lesson?`${lesson.day} ${timeOf(lesson)} — ${lesson.course||x.course||''}`:(x.course||'');
+    return `<div class="feature-card" style="margin-bottom:10px">
+      <div class="planning-meta">
+        <span class="badge blue">${esc(studentName(x.student_id)||x.student_name||'Aluno')}</span>
+        <span class="badge purple">${esc(lessonInfo)}</span>
+        <span class="badge ${x.status==='Realizada'?'green':x.status==='Cancelada'?'yellow':'blue'}">${esc(x.status||'Sem status')}</span>
+        <span class="badge">${esc(x.date||'Sem data')}</span>
+      </div>
+      <p><b>Conteúdo:</b> ${esc(x.content||'Não informado.')}</p>
+      ${x.observation?`<p><b>Como foi:</b> ${esc(x.observation)}</p>`:''}
+      ${x.homework?`<p><b>Tarefa:</b> ${esc(x.homework)}</p>`:''}
+      ${x.notes?`<p><b>Observações:</b> ${esc(x.notes)}</p>`:''}
+      <div class="row-actions" style="margin-top:10px">
+        <button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="empty">Nenhum registro de aula. Use “Registrar aula” para lançar o que aconteceu em uma aula.</div>';
+}
 function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge yellow">${esc(x.status)}</span><span class="badge purple">${esc(x.due_date||'Sem data')}</span></div><p>${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editTask('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteTask('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>';}
 function renderAssessments(){const el=$('assessmentsList');if(!el)return;el.innerHTML=data.assessments.slice().reverse().map(x=>{const pct=Number(x.max_score)?Number(x.score||0)/Number(x.max_score)*100:0;return `<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge green">${Number(x.score||0)} / ${Number(x.max_score||10)}</span><span class="badge purple">${Math.round(pct)}%</span></div><p>${esc(x.content||'')}</p><div class="row-actions"><button class="btn mini" onclick="editAssessment('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteAssessment('${x.id}')">Excluir</button></div></div>`}).join('')||'<div class="empty">Nenhuma avaliação.</div>';}
 function renderCalendar(){
@@ -5440,7 +5398,7 @@ function renderParent(){const el=$('parentContent');if(!el)return;const sid=$('p
 
 async function saveSimple(table,id,row){return id?update(table,id,row):insert(table,row);}
 function setupNewModules(){
-  $('newRecord').onclick=()=>{ $('recordForm').reset();$('recordId').value='';renderNewModules();openModal('recordModal'); };
+  $('newRecord').onclick=()=>{ $('recordForm').reset();$('recordId').value='';$('recordDate').value=todayISO();renderNewModules();openModal('recordModal'); };
   $('newTask').onclick=()=>{ $('taskForm').reset();$('taskId').value='';$('taskDue').value=todayISO();renderNewModules();openModal('taskModal'); };
   $('newAssessment').onclick=()=>{ $('assessmentForm').reset();$('assessmentId').value='';$('assessmentDate').value=todayISO();renderNewModules();openModal('assessmentModal'); };
   $('newReminder').onclick=()=>{ $('reminderForm').reset();$('reminderId').value='';$('reminderDate').value=todayISO();openModal('reminderModal'); };
@@ -5451,7 +5409,7 @@ function setupNewModules(){
   $('progressStudent').onchange=renderProgress;$('parentStudent').onchange=renderParent;$('globalSearch').oninput=globalSearch;
   $('generateReport').onclick=()=>{renderReports();toast('Relatório atualizado!')};
   $('calendarToday').onclick=()=>{renderCalendar();toast('Calendário atualizado!')};
-  $('recordForm').onsubmit=async e=>{e.preventDefault();try{const l=data.lessons.find(x=>x.id===$('recordLesson').value);const s=l?.student_id;await saveSimple('lesson_records',$('recordId').value,{lesson_id:l?.id||null,student_id:s,student_name:l?.student_name||'',course:l?.course||'',status:$('recordStatus').value,content:$('recordContent').value.trim(),observation:$('recordObservation').value.trim(),homework:$('recordHomework').value.trim(),notes:$('recordNotes').value.trim(),date:todayISO()});closeModal('recordModal');await loadAll();toast('Registro salvo!')}catch(e){toast(e.message)}};
+  $('recordForm').onsubmit=async e=>{e.preventDefault();try{const l=data.lessons.find(x=>x.id===$('recordLesson').value);const s=l?.student_id;await saveSimple('lesson_records',$('recordId').value,{lesson_id:l?.id||null,student_id:s,student_name:l?.student_name||'',course:l?.course||'',status:$('recordStatus').value,content:$('recordContent').value.trim(),observation:$('recordObservation').value.trim(),homework:$('recordHomework').value.trim(),notes:$('recordNotes').value.trim(),date:$('recordDate').value||todayISO()});closeModal('recordModal');await loadAll();toast('Registro salvo!')}catch(e){toast(e.message)}};
   $('taskForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('tasks',$('taskId').value,{student_id:$('taskStudent').value,student_name:studentName($('taskStudent').value),course:$('taskCourse').value,title:$('taskTitle').value.trim(),description:$('taskDescription').value.trim(),due_date:$('taskDue').value||null,status:$('taskStatus').value,notes:$('taskNotes').value.trim()});closeModal('taskModal');await loadAll();toast('Tarefa salva!')}catch(e){toast(e.message)}};
   $('assessmentForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('assessments',$('assessmentId').value,{student_id:$('assessmentStudent').value,student_name:studentName($('assessmentStudent').value),course:$('assessmentCourse').value,title:$('assessmentTitle').value.trim(),score:Number($('assessmentScore').value||0),max_score:Number($('assessmentMax').value||10),date:$('assessmentDate').value||null,content:$('assessmentContent').value.trim(),notes:$('assessmentNotes').value.trim()});closeModal('assessmentModal');await loadAll();toast('Avaliação salva!')}catch(e){toast(e.message)}};
   $('reminderForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('reminders',$('reminderId').value,{title:$('reminderTitle').value.trim(),date:$('reminderDate').value,type:$('reminderType').value,text:$('reminderText').value.trim(),done:false});closeModal('reminderModal');await loadAll();toast('Lembrete salvo!')}catch(e){toast(e.message)}};
@@ -5728,32 +5686,9 @@ function renderResponsiblePortal(){
 
 function showPortal(role){
   hideAllViews();
-  const normalized=String(role||'').trim().toLowerCase();
-  if(normalized==='student' || normalized==='aluno' || normalized==='estudante'){
-    const el=$('studentPortal');
-    if(!el) throw new Error('Portal do aluno não foi encontrado no HTML.');
-    el.classList.remove('hidden');
-    el.style.setProperty('display','block','important');
-    try{ renderStudentPortal(); }catch(err){
-      console.error('Erro ao renderizar portal do aluno:',err);
-      const home=$('studentHome');
-      if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Erro ao carregar o portal</h3><p>${esc(err?.message||'Erro desconhecido.')}</p></div>`;
-    }
-    return;
-  }
-  if(normalized==='responsible' || normalized==='responsavel' || normalized==='responsável'){
-    const el=$('responsiblePortal');
-    if(!el) throw new Error('Portal do responsável não foi encontrado no HTML.');
-    el.classList.remove('hidden');
-    el.style.setProperty('display','block','important');
-    try{ renderResponsiblePortal(); }catch(err){
-      console.error('Erro ao renderizar portal do responsável:',err);
-      const home=$('respHome');
-      if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Erro ao carregar o portal</h3><p>${esc(err?.message||'Erro desconhecido.')}</p></div>`;
-    }
-    return;
-  }
-  showAdminPortal();
+  if(role==='student'){ $('studentPortal').style.display='block'; renderStudentPortal(); }
+  else if(role==='responsible'){ $('responsiblePortal').style.display='block'; renderResponsiblePortal(); }
+  else { showAdminPortal(); }
 }
 
 document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
@@ -5796,21 +5731,8 @@ $('loginForm').onsubmit=
           toast(adminLoadError?.message||'O painel abriu, mas houve um erro ao carregar os dados.');
         }
       }else{
-        try{
-          await loadPortal();
-          showPortal(currentRole);
-        }catch(portalError){
-          console.error('Erro ao carregar o portal:',portalError);
-          const target=String(currentRole||'').toLowerCase();
-          hideAllViews();
-          const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
-          if(el){
-            el.classList.remove('hidden');
-            el.style.setProperty('display','block','important');
-            const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
-            if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
-          }
-        }
+        await loadPortal();
+        showPortal(currentRole);
       }
     }catch(err){
       console.error(err);
@@ -6218,21 +6140,8 @@ async function boot(){
         toast(adminLoadError?.message||'O painel abriu, mas houve um erro ao carregar os dados.');
       }
     }else{
-      try{
-        await loadPortal();
-        showPortal(currentRole);
-      }catch(portalError){
-        console.error('Erro ao carregar o portal:',portalError);
-        const target=String(currentRole||'').toLowerCase();
-        hideAllViews();
-        const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
-        if(el){
-          el.classList.remove('hidden');
-          el.style.setProperty('display','block','important');
-          const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
-          if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
-        }
-      }
+      await loadPortal();
+      showPortal(currentRole);
     }
   }catch(e){
     console.error(e);
