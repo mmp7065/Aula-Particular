@@ -5728,27 +5728,31 @@ function renderResponsiblePortal(){
 
 function showPortal(role){
   hideAllViews();
-
-  const normalizedRole=String(role||'').trim().toLowerCase();
-
-  if(normalizedRole==='student' || normalizedRole==='aluno' || normalizedRole==='estudante'){
+  const normalized=String(role||'').trim().toLowerCase();
+  if(normalized==='student' || normalized==='aluno' || normalized==='estudante'){
     const el=$('studentPortal');
     if(!el) throw new Error('Portal do aluno não foi encontrado no HTML.');
     el.classList.remove('hidden');
     el.style.setProperty('display','block','important');
-    renderStudentPortal();
+    try{ renderStudentPortal(); }catch(err){
+      console.error('Erro ao renderizar portal do aluno:',err);
+      const home=$('studentHome');
+      if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Erro ao carregar o portal</h3><p>${esc(err?.message||'Erro desconhecido.')}</p></div>`;
+    }
     return;
   }
-
-  if(normalizedRole==='responsible' || normalizedRole==='responsavel' || normalizedRole==='responsável'){
+  if(normalized==='responsible' || normalized==='responsavel' || normalized==='responsável'){
     const el=$('responsiblePortal');
     if(!el) throw new Error('Portal do responsável não foi encontrado no HTML.');
     el.classList.remove('hidden');
     el.style.setProperty('display','block','important');
-    renderResponsiblePortal();
+    try{ renderResponsiblePortal(); }catch(err){
+      console.error('Erro ao renderizar portal do responsável:',err);
+      const home=$('respHome');
+      if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Erro ao carregar o portal</h3><p>${esc(err?.message||'Erro desconhecido.')}</p></div>`;
+    }
     return;
   }
-
   showAdminPortal();
 }
 
@@ -5792,8 +5796,21 @@ $('loginForm').onsubmit=
           toast(adminLoadError?.message||'O painel abriu, mas houve um erro ao carregar os dados.');
         }
       }else{
-        await loadPortal();
-        showPortal(currentRole);
+        try{
+          await loadPortal();
+          showPortal(currentRole);
+        }catch(portalError){
+          console.error('Erro ao carregar o portal:',portalError);
+          const target=String(currentRole||'').toLowerCase();
+          hideAllViews();
+          const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
+          if(el){
+            el.classList.remove('hidden');
+            el.style.setProperty('display','block','important');
+            const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
+            if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
+          }
+        }
       }
     }catch(err){
       console.error(err);
@@ -6201,8 +6218,21 @@ async function boot(){
         toast(adminLoadError?.message||'O painel abriu, mas houve um erro ao carregar os dados.');
       }
     }else{
-      await loadPortal();
-      showPortal(currentRole);
+      try{
+        await loadPortal();
+        showPortal(currentRole);
+      }catch(portalError){
+        console.error('Erro ao carregar o portal:',portalError);
+        const target=String(currentRole||'').toLowerCase();
+        hideAllViews();
+        const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
+        if(el){
+          el.classList.remove('hidden');
+          el.style.setProperty('display','block','important');
+          const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
+          if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
+        }
+      }
     }
   }catch(e){
     console.error(e);
