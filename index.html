@@ -5659,12 +5659,21 @@ async function loadPortal(){
   portalData.student=student;
 
   const tables=['lessons','plans','payments','tasks','assessments','reminders','lesson_records','lesson_plans','student_progress','materials'];
-  const values=await Promise.all(tables.map(t=>portalQuery(t,studentId,ownerId).catch(()=>[])));
+  const values=await Promise.all(tables.map(async t=>{
+    try{ return await portalQuery(t,studentId,ownerId); }
+    catch(e){ console.error('Erro ao carregar '+t,e); return []; }
+  }));
   [portalData.lessons,portalData.plans,portalData.payments,portalData.tasks,portalData.assessments,portalData.reminders,portalData.records,portalData.planning,portalData.progress,portalData.materials]=values;
 
   if(ownerId){
-    const {data:b}=await client.from('banners').select('*').eq('user_id',ownerId).catch(()=>({data:[]}));
-    portalData.banners=b||[];
+    try{
+      const {data:b,error}=await client.from('banners').select('*').eq('user_id',ownerId);
+      if(error) console.error('Erro ao carregar banners',error);
+      portalData.banners=b||[];
+    }catch(e){
+      console.error('Erro ao carregar banners',e);
+      portalData.banners=[];
+    }
   }
 }
 
