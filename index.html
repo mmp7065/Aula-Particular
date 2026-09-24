@@ -928,6 +928,19 @@ th{
   }
 }
 
+
+/* =========================================================
+   NOVOS MÓDULOS
+   ========================================================= */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.feature-card{background:#071723;border:1px solid var(--line);border-radius:16px;padding:17px}
+.feature-card h3{margin:0 0 8px}.feature-card p{color:#9fb4c3;line-height:1.5}
+.progress-bar{height:9px;background:#07101a;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.progress-bar span{display:block;height:100%;background:linear-gradient(90deg,#168ed4,#2de38a);border-radius:99px}
+.progress-row{margin:12px 0}.progress-row .top{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;font-size:13px}
+.status-select{min-width:150px}.small-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.public-site{background:linear-gradient(135deg,#071522,#0a2030);border:1px solid #18506c;border-radius:20px;padding:30px}.public-site .public-hero{padding:35px 10px;text-align:center}.public-site .public-hero h2{font-size:36px;margin:0 0 10px}.public-site .public-hero p{color:#a9bdcc;font-size:16px}.public-course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:25px}.public-course{padding:20px;border:1px solid var(--line);border-radius:15px;background:#06131f}.public-course h3{margin-top:0}.search-results{display:grid;gap:8px}.search-result{padding:12px;border:1px solid var(--line);border-radius:11px;background:#06131f;cursor:pointer}.search-result:hover{border-color:var(--blue)}
+@media(max-width:700px){.small-grid{grid-template-columns:1fr}.public-site .public-hero h2{font-size:28px}}
+
 </style>
 </head>
 
@@ -979,6 +992,22 @@ th{
       <button data-page="students">♙ Alunos</button>
       <button data-page="plans">◆ Planos</button>
       <button data-page="planning">▤ Planejamentos</button>
+      <button data-page="progress">◉ Progresso</button>
+      <button data-page="records">▤ Registro de aulas</button>
+      <button data-page="tasks">☑ Tarefas</button>
+      <button data-page="assessments">▣ Avaliações</button>
+      <button data-page="calendar">▦ Calendário</button>
+      <button data-page="reminders">🔔 Lembretes</button>
+      <button data-page="reports">▤ Relatórios</button>
+      <button data-page="materials">▤ Materiais</button>
+      <button data-page="activities">✦ Banco de atividades</button>
+      <button data-page="templates">▤ Modelos</button>
+      <button data-page="public">◈ Página pública</button>
+      <button data-page="receipts">▤ Recibos</button>
+      <button data-page="attendance">✓ Presença</button>
+      <button data-page="achievements">★ Conquistas</button>
+      <button data-page="search">⌕ Busca</button>
+      <button data-page="parent">♙ Portal do responsável</button>
       <button data-page="prices">◇ Preços</button>
       <button data-page="banners">▰ Banners</button>
       <button data-page="finance">◈ Financeiro</button>
@@ -1383,6 +1412,39 @@ th{
     </section>
 
 
+    <!-- NOVOS MÓDULOS -->
+    <section id="progress" class="section"><div class="section-head"><div><h2>Progresso dos alunos</h2><p class="muted">Dados automáticos + avaliação pedagógica manual.</p></div></div><div class="card"><div class="toolbar"><select id="progressStudent"></select><button id="newProgress" class="btn primary">+ Registrar progresso</button></div><div id="progressContent"></div></div></section>
+
+    <section id="records" class="section"><div class="section-head"><div><h2>Registro de aulas</h2><p class="muted">Registre o que aconteceu em cada aula.</p></div><button id="newRecord" class="btn primary">+ Novo registro</button></div><div class="card"><div id="recordsList"></div></div></section>
+
+    <section id="tasks" class="section"><div class="section-head"><div><h2>Tarefas</h2><p class="muted">Crie, acompanhe e corrija tarefas.</p></div><button id="newTask" class="btn primary">+ Nova tarefa</button></div><div class="card"><div id="tasksList"></div></div></section>
+
+    <section id="assessments" class="section"><div class="section-head"><div><h2>Avaliações</h2><p class="muted">Provas, quizzes e avaliações de evolução.</p></div><button id="newAssessment" class="btn primary">+ Nova avaliação</button></div><div class="card"><div id="assessmentsList"></div></div></section>
+
+    <section id="calendar" class="section"><div class="section-head"><div><h2>Calendário mensal</h2><p class="muted">Visão resumida das aulas, avaliações e tarefas.</p></div><button id="calendarToday" class="btn">Hoje</button></div><div class="card"><div id="calendarContent"></div></div></section>
+
+    <section id="reminders" class="section"><div class="section-head"><div><h2>Lembretes</h2><p class="muted">Alertas de aulas, tarefas, provas e pagamentos.</p></div><button id="newReminder" class="btn primary">+ Lembrete</button></div><div class="card"><div id="remindersList"></div></div></section>
+
+    <section id="reports" class="section"><div class="section-head"><div><h2>Relatórios</h2><p class="muted">Resumo do desempenho e da frequência.</p></div><button id="generateReport" class="btn primary">Gerar relatório</button></div><div class="card"><div id="reportContent" class="planning-view"></div></div></section>
+
+    <section id="materials" class="section"><div class="section-head"><div><h2>Materiais</h2><p class="muted">Organize materiais por matéria e aluno.</p></div><button id="newMaterial" class="btn primary">+ Material</button></div><div class="card"><div id="materialsList"></div></div></section>
+
+    <section id="activities" class="section"><div class="section-head"><div><h2>Banco de atividades</h2><p class="muted">Salve atividades para reutilizar em diferentes aulas.</p></div><button id="newActivity" class="btn primary">+ Atividade</button></div><div class="card"><div id="activitiesList"></div></div></section>
+
+    <section id="templates" class="section"><div class="section-head"><div><h2>Modelos de planejamento</h2><p class="muted">Crie modelos e use-os em novos planejamentos.</p></div><button id="newTemplate" class="btn primary">+ Modelo</button></div><div class="card"><div id="templatesList"></div></div></section>
+
+    <section id="public" class="section"><div class="section-head"><div><h2>Página pública</h2><p class="muted">Página em formato de site, sem exibir preços.</p></div></div><div id="publicSitePreview" class="public-site"></div></section>
+
+    <section id="receipts" class="section"><div class="section-head"><div><h2>Recibos</h2><p class="muted">Gere um recibo a partir de um pagamento.</p></div></div><div class="card"><div id="receiptsList"></div></div></section>
+
+    <section id="attendance" class="section"><div class="section-head"><div><h2>Presença</h2><p class="muted">A presença é calculada a partir dos registros das aulas.</p></div></div><div class="card"><div id="attendanceList"></div></div></section>
+
+    <section id="achievements" class="section"><div class="section-head"><div><h2>Conquistas</h2><p class="muted">Conquistas são liberadas automaticamente com base nos dados.</p></div></div><div id="achievementsList" class="feature-grid"></div></section>
+
+    <section id="search" class="section"><div class="section-head"><div><h2>Busca global</h2><p class="muted">Pesquise alunos, aulas, planejamentos, tarefas e pagamentos.</p></div></div><div class="card"><input id="globalSearch" placeholder="Digite o nome do aluno, matéria, tarefa..." style="max-width:520px"><div id="globalResults" class="search-results" style="margin-top:14px"></div></div></section>
+
+    <section id="parent" class="section"><div class="section-head"><div><h2>Portal do responsável</h2><p class="muted">Visualização do acompanhamento de um aluno/responsável.</p></div></div><div class="card"><div class="toolbar"><select id="parentStudent"></select></div><div id="parentContent"></div></div></section>
+
     <!-- CONFIGURAÇÕES -->
 
     <section id="settings" class="section">
@@ -1414,6 +1476,11 @@ th{
           <div class="field">
             <label for="setBanner">Texto adicional</label>
             <textarea id="setBanner"></textarea>
+          </div>
+          <div class="small-grid">
+            <div class="field"><label>Avise antes (dias)</label><input id="setPaymentNotice" type="number" min="0" value="3"></div>
+            <div class="field"><label>Tolerância após vencimento</label><input id="setPaymentGrace" type="number" min="0" value="3"></div>
+            <div class="field"><label>Percentual por dia</label><input id="setPaymentLate" type="number" min="0" step="0.01" value="0"></div>
           </div>
 
           <button class="btn primary" type="submit">
@@ -1455,7 +1522,7 @@ th{
         </div>
 
         <div class="field">
-          <label>Tipo de aula</label>
+          <label>Matéria / curso</label>
           <select id="lessonCourse" required></select>
         </div>
 
@@ -1587,7 +1654,7 @@ th{
 
         <div class="field">
           <label>Plano</label>
-          <select id="studentPlan" required></select>
+          <select id="studentPlan"></select>
         </div>
 
         <div class="field">
@@ -2126,6 +2193,17 @@ th{
 </div>
 
 
+
+<!-- MODAIS DOS NOVOS MÓDULOS -->
+<div id="recordModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registro de aula</h2><button class="close" data-close="recordModal">×</button></div><form id="recordForm"><input id="recordId" type="hidden"><div class="form-grid"><div class="field"><label>Aula</label><select id="recordLesson" required></select></div><div class="field"><label>Status</label><select id="recordStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><label>Conteúdo trabalhado</label><textarea id="recordContent" style="min-height:120px"></textarea></div><div class="field full"><label>Como foi a aula?</label><textarea id="recordObservation" style="min-height:120px"></textarea></div><div class="field full"><label>Tarefa de casa</label><textarea id="recordHomework"></textarea></div><div class="field full"><label>Observações</label><textarea id="recordNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="recordModal">Cancelar</button><button class="btn primary">Salvar registro</button></div></form></div></div>
+<div id="taskModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Tarefa</h2><button class="close" data-close="taskModal">×</button></div><form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="taskStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="taskCourse" required></select></div><div class="field full"><label>Título</label><input id="taskTitle" required></div><div class="field full"><label>Descrição</label><textarea id="taskDescription"></textarea></div><div class="field"><label>Entrega</label><input id="taskDue" type="date"></div><div class="field"><label>Status</label><select id="taskStatus"><option>Pendente</option><option>Entregue</option><option>Corrigida</option><option>Atrasada</option></select></div><div class="field full"><label>Observações / correção</label><textarea id="taskNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="taskModal">Cancelar</button><button class="btn primary">Salvar tarefa</button></div></form></div></div>
+<div id="assessmentModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Avaliação</h2><button class="close" data-close="assessmentModal">×</button></div><form id="assessmentForm"><input id="assessmentId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="assessmentStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="assessmentCourse" required></select></div><div class="field full"><label>Título</label><input id="assessmentTitle" required></div><div class="field"><label>Nota</label><input id="assessmentScore" type="number" min="0" step="0.01"></div><div class="field"><label>Nota máxima</label><input id="assessmentMax" type="number" min="1" step="0.01" value="10"></div><div class="field"><label>Data</label><input id="assessmentDate" type="date"></div><div class="field full"><label>Conteúdos</label><textarea id="assessmentContent"></textarea></div><div class="field full"><label>Observações</label><textarea id="assessmentNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="assessmentModal">Cancelar</button><button class="btn primary">Salvar avaliação</button></div></form></div></div>
+<div id="reminderModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Lembrete</h2><button class="close" data-close="reminderModal">×</button></div><form id="reminderForm"><input id="reminderId" type="hidden"><div class="form-grid"><div class="field full"><label>Título</label><input id="reminderTitle" required></div><div class="field"><label>Data</label><input id="reminderDate" type="date" required></div><div class="field"><label>Tipo</label><select id="reminderType"><option>Aula</option><option>Tarefa</option><option>Avaliação</option><option>Pagamento</option><option>Outro</option></select></div><div class="field full"><label>Descrição</label><textarea id="reminderText"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="reminderModal">Cancelar</button><button class="btn primary">Salvar lembrete</button></div></form></div></div>
+<div id="materialModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Material</h2><button class="close" data-close="materialModal">×</button></div><form id="materialForm"><input id="materialId" type="hidden"><div class="form-grid"><div class="field full"><label>Nome</label><input id="materialName" required></div><div class="field"><label>Matéria / curso</label><select id="materialCourse"></select></div><div class="field"><label>Aluno</label><select id="materialStudent"></select></div><div class="field full"><label>Link ou caminho do arquivo</label><input id="materialUrl" placeholder="https://... ou materiais/arquivo.pdf"></div><div class="field full"><label>Descrição</label><textarea id="materialDescription"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="materialModal">Cancelar</button><button class="btn primary">Salvar material</button></div></form></div></div>
+<div id="activityModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Atividade</h2><button class="close" data-close="activityModal">×</button></div><form id="activityForm"><input id="activityId" type="hidden"><div class="form-grid"><div class="field full"><label>Título</label><input id="activityTitle" required></div><div class="field"><label>Matéria / curso</label><select id="activityCourse"></select></div><div class="field"><label>Nível</label><select id="activityLevel"><option>Fácil</option><option>Médio</option><option>Difícil</option></select></div><div class="field full"><label>Enunciado</label><textarea id="activityText" style="min-height:150px"></textarea></div><div class="field full"><label>Resposta / gabarito</label><textarea id="activityAnswer"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="activityModal">Cancelar</button><button class="btn primary">Salvar atividade</button></div></form></div></div>
+<div id="templateModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Modelo de planejamento</h2><button class="close" data-close="templateModal">×</button></div><form id="templateForm"><input id="templateId" type="hidden"><div class="field"><label>Nome do modelo</label><input id="templateName" required></div><div class="field"><label>Matéria / curso</label><select id="templateCourse"></select></div><div class="field"><label>Conteúdo base</label><textarea id="templateContent" style="min-height:180px"></textarea></div><div class="modal-actions"><button type="button" class="btn" data-close="templateModal">Cancelar</button><button class="btn primary">Salvar modelo</button></div></form></div></div>
+<div id="progressModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registrar progresso</h2><button class="close" data-close="progressModal">×</button></div><form id="progressForm"><input id="progressId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="progressFormStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="progressCourse"></select></div><div class="field full"><label>Conteúdo / habilidade</label><input id="progressTopic" required></div><div class="field"><label>Progresso (%)</label><input id="progressPercent" type="number" min="0" max="100" value="0" required></div><div class="field"><label>Status</label><select id="progressStatus"><option>Em desenvolvimento</option><option>Dominado</option><option>Precisa revisar</option><option>Não iniciado</option></select></div><div class="field full"><label>Observações</label><textarea id="progressNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="progressModal">Cancelar</button><button class="btn primary">Salvar progresso</button></div></form></div></div>
+<div id="receiptModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Recibo</h2><button class="close" data-close="receiptModal">×</button></div><div id="receiptContent" class="planning-view"></div><div class="modal-actions"><button class="btn" onclick="printReceipt()">Imprimir / salvar PDF</button><button class="btn" data-close="receiptModal">Fechar</button></div></div></div>
 <div id="toast" class="toast"></div>
 
 
@@ -2190,7 +2268,8 @@ let data={
   payments:[],
   banners:[],
   settings:{},
-  planning:[]
+  planning:[],
+  records:[], tasks:[], assessments:[], reminders:[], materials:[], activities:[], templates:[], progress:[]
 };
 
 
@@ -2410,8 +2489,7 @@ function nav(p){
     agenda:'Agenda',
     students:'Alunos',
     plans:'Planos',
-    planning:'Planejamentos de Aulas',
-    prices:'Preços',
+    planning:'Planejamentos de Aulas', progress:'Progresso', records:'Registro de aulas', tasks:'Tarefas', assessments:'Avaliações', calendar:'Calendário', reminders:'Lembretes', reports:'Relatórios', materials:'Materiais', activities:'Banco de atividades', templates:'Modelos', public:'Página pública', receipts:'Recibos', attendance:'Presença', achievements:'Conquistas', search:'Busca', parent:'Portal do responsável', prices:'Preços',
     banners:'Banners',
     finance:'Financeiro',
     settings:'Configurações'
@@ -2486,11 +2564,15 @@ async function loadAll(){
 
   // Planejamentos são opcionais para manter o sistema compatível
   // com bancos que ainda não receberam a tabela.
-  try{
-    data.planning=await loadTable('lesson_plans');
-  }catch(_){
-    data.planning=[];
-  }
+  try{ data.planning=await loadTable('lesson_plans'); }catch(_){ data.planning=[]; }
+  try{ data.records=await loadTable('lesson_records'); }catch(_){ data.records=[]; }
+  try{ data.tasks=await loadTable('tasks'); }catch(_){ data.tasks=[]; }
+  try{ data.assessments=await loadTable('assessments'); }catch(_){ data.assessments=[]; }
+  try{ data.reminders=await loadTable('reminders'); }catch(_){ data.reminders=[]; }
+  try{ data.materials=await loadTable('materials'); }catch(_){ data.materials=[]; }
+  try{ data.activities=await loadTable('activities'); }catch(_){ data.activities=[]; }
+  try{ data.templates=await loadTable('planning_templates'); }catch(_){ data.templates=[]; }
+  try{ data.progress=await loadTable('student_progress'); }catch(_){ data.progress=[]; }
 
 
   const s=await loadTable('settings');
@@ -2679,6 +2761,7 @@ function render(){
 
   renderBanners();
   renderFinance();
+  renderNewModules();
 
   fillCourseSelect();
   fillStudentSelect();
@@ -4097,27 +4180,7 @@ function fillPlanningCourseSelect(selected=''){
 
 
 function fillCourseSelect(){
-
-  const select=$('lessonCourse');
-  if(!select)return;
-
-  const current=select.value;
-
-  select.innerHTML=
-    courseNames()
-      .map(
-        c=>
-          `<option value="${esc(c)}">
-            ${esc(c)}
-          </option>`
-      )
-      .join('')
-    ||
-    '<option value="">Cadastre preços primeiro</option>';
-
-  if(current)
-    select.value=current;
-
+  const select=$('lessonCourse'); if(!select)return; const current=select.value; subjectOptions('lessonCourse',current);
 }
 
 
@@ -4164,8 +4227,10 @@ function fillSettings(){
   $('setPhone').value=
     data.settings.phone||'';
 
-  $('setBanner').value=
-    data.settings.banner||'';
+  $('setBanner').value=data.settings.banner||'';
+  $('setPaymentNotice').value=data.settings.payment_notice_days??3;
+  $('setPaymentGrace').value=data.settings.payment_grace_days??3;
+  $('setPaymentLate').value=data.settings.payment_late_percent??0;
 
 }
 
@@ -4724,6 +4789,8 @@ $('newPlan').onclick=()=>{
   $('planMonthly').value='4';
 
   $('planPrice').value='0';
+  $('planExamReview').value='true';
+  $('planType').value='semanal';
 
   openModal('planModal');
 
@@ -4758,8 +4825,9 @@ window.editPlan=id=>{
   $('planPrice').value=
     x.monthly_price||0;
 
-  $('planDesc').value=
-    x.description||'';
+  $('planDesc').value=x.description||'';
+  $('planExamReview').value=String(x.exam_review!==false);
+  $('planType').value=x.plan_type||'semanal';
 
   openModal('planModal');
 
@@ -4859,13 +4927,9 @@ $('planForm').onsubmit=
         weekly_lessons:
           weekly,
 
-        monthly_price:
-          Math.max(
-            0,
-            Number(
-              $('planPrice').value||0
-            )
-          )
+        monthly_price: Math.max(0,Number($('planPrice').value||0)),
+        exam_review: $('planExamReview').value==='true',
+        plan_type: $('planType').value
 
       };
 
@@ -5226,6 +5290,95 @@ $('bannerForm').onsubmit=
   };
 
 
+
+/* =========================================================
+   NOVOS MÓDULOS — DADOS E RENDERIZAÇÃO
+   ========================================================= */
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function studentName(id){ return data.students.find(s=>s.id===id)?.name||'Aluno não encontrado'; }
+function subjectOptions(selectId,selected=''){ const el=$(selectId); if(!el)return; const vals=[...new Set([...courseNames(),'Matemática','Português','Inglês','Ciências','História','Geografia','Programação','Inteligência Artificial','Minecraft / Comandos / Skript','Informática / PC','Canva / Apresentações'])]; el.innerHTML=vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''); if(selected)el.value=selected; }
+function studentOptions(selectId,selected=''){ const el=$(selectId); if(!el)return; el.innerHTML=data.students.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('')||'<option value="">Cadastre um aluno primeiro</option>'; if(selected)el.value=selected; }
+function renderNewModules(){
+  subjectOptions('taskCourse'); subjectOptions('assessmentCourse'); subjectOptions('materialCourse'); subjectOptions('activityCourse'); subjectOptions('templateCourse'); subjectOptions('progressCourse');
+  ['recordLesson'].forEach(id=>{const el=$(id);if(el){el.innerHTML=data.lessons.map(l=>`<option value="${esc(l.id)}">${esc(l.day)} ${esc(timeOf(l))} — ${esc(l.student_name)} — ${esc(l.course)}</option>`).join('')||'<option value="">Nenhuma aula</option>';}});
+  ['taskStudent','assessmentStudent','materialStudent','progressFormStudent','parentStudent'].forEach(id=>studentOptions(id,$(id)?.value||''));
+  renderProgress(); renderRecords(); renderTasks(); renderAssessments(); renderCalendar(); renderReminders(); renderReports(); renderMaterials(); renderActivities(); renderTemplates(); renderPublic(); renderReceipts(); renderAttendance(); renderAchievements(); renderParent();
+}
+function renderProgress(){const el=$('progressContent');if(!el)return;const sid=$('progressStudent')?.value||data.students[0]?.id; if($('progressStudent'))studentOptions('progressStudent',sid||''); const p=data.progress.filter(x=>!sid||x.student_id===sid); const lessons=data.lessons.filter(x=>x.student_id===sid&&x.status==='Concluída').length; const records=data.records.filter(x=>x.student_id===sid&&x.status==='Realizada').length; const tasks=data.tasks.filter(x=>x.student_id===sid); const done=tasks.filter(x=>['Entregue','Corrigida'].includes(x.status)).length; const avg=p.length?p.reduce((a,x)=>a+Number(x.percent||0),0)/p.length:0; el.innerHTML=`<div class="small-grid"><div class="card"><div class="muted">AULAS CONCLUÍDAS</div><h2>${lessons||records}</h2></div><div class="card"><div class="muted">TAREFAS CONCLUÍDAS</div><h2>${done}/${tasks.length}</h2></div><div class="card"><div class="muted">PROGRESSO MÉDIO</div><h2>${Math.round(avg)}%</h2></div></div>${p.length?p.map(x=>`<div class="progress-row"><div class="top"><b>${esc(x.topic)}</b><span>${Number(x.percent||0)}% · ${esc(x.status||'')}</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,Number(x.percent||0)))}%"></span></div><small class="muted">${esc(x.course||'')} ${x.notes?'— '+esc(x.notes):''}</small></div>`).join(''):'<div class="empty">Nenhum progresso manual registrado para este aluno.</div>'}`;}
+function renderRecords(){const el=$('recordsList');if(!el)return;el.innerHTML=data.records.slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(studentName(x.student_id)||x.student_name)}</b> · ${esc(x.status)}<p>${esc(x.content||'Sem conteúdo registrado.')}</p><small class="muted">${esc(x.observation||'')}</small><div class="row-actions" style="margin-top:10px"><button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';}
+function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge yellow">${esc(x.status)}</span><span class="badge purple">${esc(x.due_date||'Sem data')}</span></div><p>${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editTask('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteTask('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>';}
+function renderAssessments(){const el=$('assessmentsList');if(!el)return;el.innerHTML=data.assessments.slice().reverse().map(x=>{const pct=Number(x.max_score)?Number(x.score||0)/Number(x.max_score)*100:0;return `<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge green">${Number(x.score||0)} / ${Number(x.max_score||10)}</span><span class="badge purple">${Math.round(pct)}%</span></div><p>${esc(x.content||'')}</p><div class="row-actions"><button class="btn mini" onclick="editAssessment('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteAssessment('${x.id}')">Excluir</button></div></div>`}).join('')||'<div class="empty">Nenhuma avaliação.</div>';}
+function renderCalendar(){
+  const el=$('calendarContent');
+  if(!el)return;
+  const items=[
+    ...data.lessons.map(x=>({date:x.date||'',text:`${x.student_name} — ${x.course} — ${x.day} ${timeOf(x)}`})),
+    ...data.tasks.map(x=>({date:x.due_date||'',text:`Tarefa: ${x.title} — ${studentName(x.student_id)}`})),
+    ...data.assessments.map(x=>({date:x.date||'',text:`Avaliação: ${x.title} — ${studentName(x.student_id)}`}))
+  ];
+  el.innerHTML=items.filter(x=>x.date).sort((a,b)=>a.date.localeCompare(b.date)).map(x=>`<div style="padding:11px;border-top:1px solid var(--line)"><b>${esc(x.date)}</b> — ${esc(x.text)}</div>`).join('')||'<div class="empty">Adicione datas às aulas, tarefas e avaliações para vê-las aqui.</div>';
+}
+
+function renderReminders(){const el=$('remindersList');if(!el)return;const auto=[];const now=new Date();data.tasks.forEach(x=>{if(x.due_date&&x.status!=='Corrigida')auto.push({date:x.due_date,title:'Tarefa: '+x.title,text:studentName(x.student_id),type:'Tarefa'})});data.assessments.forEach(x=>{if(x.date)auto.push({date:x.date,title:'Avaliação: '+x.title,text:studentName(x.student_id),type:'Avaliação'})});data.reminders.forEach(x=>auto.push(x));el.innerHTML=auto.sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><span class="badge yellow" style="margin-left:7px">${esc(x.type||'Outro')}</span><p>${esc(x.date||'')} · ${esc(x.text||'')}</p></div>`).join('')||'<div class="empty">Nenhum lembrete.</div>';}
+function reportForStudent(sid){const s=data.students.find(x=>x.id===sid);if(!s)return '';const lessons=data.lessons.filter(x=>x.student_id===sid);const rec=data.records.filter(x=>x.student_id===sid);const tasks=data.tasks.filter(x=>x.student_id===sid);const ass=data.assessments.filter(x=>x.student_id===sid);const prog=data.progress.filter(x=>x.student_id===sid);const presence=lessons.length?Math.round(lessons.filter(x=>x.status==='Concluída').length/lessons.length*100):0;const avg=ass.length?ass.reduce((a,x)=>a+Number(x.score||0),0)/ass.length:0;return `<h2>Relatório — ${esc(s.name)}</h2><div class="small-grid"><div class="card"><b>Aulas</b><h2>${lessons.length}</h2></div><div class="card"><b>Presença</b><h2>${presence}%</h2></div><div class="card"><b>Média</b><h2>${avg?avg.toFixed(1):'—'}</h2></div></div><div class="view-block"><h4>Progresso</h4>${prog.map(x=>`${esc(x.topic)} — ${Number(x.percent||0)}%`).join('<br>')||'Sem registros.'}</div><div class="view-block"><h4>Tarefas</h4>${tasks.length?tasks.map(x=>`${esc(x.title)} — ${esc(x.status)}`).join('<br>'):'Nenhuma.'}</div><div class="view-block"><h4>Registros de aula</h4>${rec.length?rec.slice(-5).map(x=>esc(x.content||x.observation||'')).join('<br>'):'Nenhum.'}</div>`;}
+function renderReports(){const el=$('reportContent');if(!el)return;const sid=$('reportStudent')?.value||data.students[0]?.id;el.innerHTML=reportForStudent(sid)||'<div class="empty">Cadastre um aluno.</div>';}
+function renderMaterials(){const el=$('materialsList');if(!el)return;el.innerHTML=data.materials.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.name)}</b><p>${esc(x.course||'')} · ${esc(studentName(x.student_id)||'Todos')}</p>${x.url?`<a class="btn mini" href="${esc(x.url)}" target="_blank">Abrir material</a>`:''}<button class="btn danger mini" style="margin-left:6px" onclick="deleteMaterial('${x.id}')">Excluir</button></div>`).join('')||'<div class="empty">Nenhum material.</div>';}
+function renderActivities(){const el=$('activitiesList');if(!el)return;el.innerHTML=data.activities.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(x.course||'')}</span><span class="badge purple">${esc(x.level||'')}</span></div><p class="planning-text">${esc(x.text||'')}</p><div class="row-actions"><button class="btn mini" onclick="editActivity('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteActivity('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma atividade.</div>';}
+function renderTemplates(){const el=$('templatesList');if(!el)return;el.innerHTML=data.templates.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.name)}</b><p>${esc(x.course||'')}</p><div class="planning-text">${esc(x.content||'')}</div><div class="row-actions" style="margin-top:10px"><button class="btn danger mini" onclick="deleteTemplate('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum modelo.</div>';}
+function renderPublic(){const el=$('publicSitePreview');if(!el)return;const courses=[...new Set([...courseNames(),'Matemática','Português','Inglês','Ciências','História','Geografia','Programação','Inteligência Artificial','Minecraft / Comandos / Skript','Informática / PC','Canva / Apresentações'])];el.innerHTML=`<div class="public-hero"><h2>${esc(data.settings.title||'AULAS PARTICULARES')}</h2><p>${esc(data.settings.subtitle||'Aprenda no seu ritmo, com acompanhamento personalizado.')}</p><button class="btn primary" onclick="navigator.clipboard?.writeText(location.href);toast('Endereço do site copiado!')">Copiar endereço</button></div><div class="public-course-grid">${courses.map(c=>`<div class="public-course"><h3>${esc(c)}</h3><p>Aulas personalizadas, acompanhamento e planejamento de estudos.</p></div>`).join('')}</div><div style="text-align:center;margin-top:30px;color:#a9bdcc">${esc(data.settings.phone||'Entre em contato para saber mais.')}</div>`;}
+function renderReceipts(){const el=$('receiptsList');if(!el)return;const rows=data.lessons.filter(x=>x.paid);el.innerHTML=rows.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.student_name)}</b> — ${esc(x.course)} — ${money(priceFor(x.course))}<button class="btn mini primary" style="margin-left:10px" onclick="openReceipt('${x.id}')">Gerar recibo</button></div>`).join('')||'<div class="empty">Nenhum pagamento de aula encontrado.</div>';}
+function renderAttendance(){const el=$('attendanceList');if(!el)return;el.innerHTML=data.students.map(s=>{const ls=data.lessons.filter(x=>x.student_id===s.id);const done=ls.filter(x=>x.status==='Concluída').length;const pct=ls.length?Math.round(done/ls.length*100):0;return `<div class="progress-row"><div class="top"><b>${esc(s.name)}</b><span>${done}/${ls.length} — ${pct}%</span></div><div class="progress-bar"><span style="width:${pct}%"></span></div></div>`}).join('')||'<div class="empty">Nenhum aluno.</div>';}
+function renderAchievements(){const el=$('achievementsList');if(!el)return;const out=[];data.students.forEach(s=>{const ls=data.lessons.filter(x=>x.student_id===s.id&&x.status==='Concluída').length;const ts=data.tasks.filter(x=>x.student_id===s.id&&['Entregue','Corrigida'].includes(x.status)).length;if(ls>=1)out.push(['🏆','Primeira aula concluída',s.name]);if(ls>=5)out.push(['🏆','5 aulas concluídas',s.name]);if(ls>=10)out.push(['🏆','10 aulas concluídas',s.name]);if(ts>=10)out.push(['📚','10 tarefas concluídas',s.name]);});el.innerHTML=out.map(x=>`<div class="feature-card"><div style="font-size:30px">${x[0]}</div><h3>${esc(x[1])}</h3><p>${esc(x[2])}</p></div>`).join('')||'<div class="empty">As conquistas aparecerão conforme os alunos avançarem.</div>';}
+function renderParent(){const el=$('parentContent');if(!el)return;const sid=$('parentStudent')?.value||data.students[0]?.id;if($('parentStudent'))studentOptions('parentStudent',sid||'');el.innerHTML=reportForStudent(sid)||'<div class="empty">Cadastre um aluno.</div>';}
+
+async function saveSimple(table,id,row){return id?update(table,id,row):insert(table,row);}
+function setupNewModules(){
+  $('newRecord').onclick=()=>{ $('recordForm').reset();$('recordId').value='';renderNewModules();openModal('recordModal'); };
+  $('newTask').onclick=()=>{ $('taskForm').reset();$('taskId').value='';$('taskDue').value=todayISO();renderNewModules();openModal('taskModal'); };
+  $('newAssessment').onclick=()=>{ $('assessmentForm').reset();$('assessmentId').value='';$('assessmentDate').value=todayISO();renderNewModules();openModal('assessmentModal'); };
+  $('newReminder').onclick=()=>{ $('reminderForm').reset();$('reminderId').value='';$('reminderDate').value=todayISO();openModal('reminderModal'); };
+  $('newMaterial').onclick=()=>{ $('materialForm').reset();$('materialId').value='';renderNewModules();openModal('materialModal'); };
+  $('newActivity').onclick=()=>{ $('activityForm').reset();$('activityId').value='';renderNewModules();openModal('activityModal'); };
+  $('newTemplate').onclick=()=>{ $('templateForm').reset();$('templateId').value='';renderNewModules();openModal('templateModal'); };
+  $('newProgress').onclick=()=>{ $('progressForm').reset();$('progressId').value='';renderNewModules();openModal('progressModal'); };
+  $('progressStudent').onchange=renderProgress;$('parentStudent').onchange=renderParent;$('globalSearch').oninput=globalSearch;
+  $('generateReport').onclick=()=>{renderReports();toast('Relatório atualizado!')};
+  $('calendarToday').onclick=()=>{renderCalendar();toast('Calendário atualizado!')};
+  $('recordForm').onsubmit=async e=>{e.preventDefault();try{const l=data.lessons.find(x=>x.id===$('recordLesson').value);const s=l?.student_id;await saveSimple('lesson_records',$('recordId').value,{lesson_id:l?.id||null,student_id:s,student_name:l?.student_name||'',course:l?.course||'',status:$('recordStatus').value,content:$('recordContent').value.trim(),observation:$('recordObservation').value.trim(),homework:$('recordHomework').value.trim(),notes:$('recordNotes').value.trim(),date:todayISO()});closeModal('recordModal');await loadAll();toast('Registro salvo!')}catch(e){toast(e.message)}};
+  $('taskForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('tasks',$('taskId').value,{student_id:$('taskStudent').value,student_name:studentName($('taskStudent').value),course:$('taskCourse').value,title:$('taskTitle').value.trim(),description:$('taskDescription').value.trim(),due_date:$('taskDue').value||null,status:$('taskStatus').value,notes:$('taskNotes').value.trim()});closeModal('taskModal');await loadAll();toast('Tarefa salva!')}catch(e){toast(e.message)}};
+  $('assessmentForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('assessments',$('assessmentId').value,{student_id:$('assessmentStudent').value,student_name:studentName($('assessmentStudent').value),course:$('assessmentCourse').value,title:$('assessmentTitle').value.trim(),score:Number($('assessmentScore').value||0),max_score:Number($('assessmentMax').value||10),date:$('assessmentDate').value||null,content:$('assessmentContent').value.trim(),notes:$('assessmentNotes').value.trim()});closeModal('assessmentModal');await loadAll();toast('Avaliação salva!')}catch(e){toast(e.message)}};
+  $('reminderForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('reminders',$('reminderId').value,{title:$('reminderTitle').value.trim(),date:$('reminderDate').value,type:$('reminderType').value,text:$('reminderText').value.trim(),done:false});closeModal('reminderModal');await loadAll();toast('Lembrete salvo!')}catch(e){toast(e.message)}};
+  $('materialForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('materials',$('materialId').value,{name:$('materialName').value.trim(),course:$('materialCourse').value,student_id:$('materialStudent').value||null,url:$('materialUrl').value.trim(),description:$('materialDescription').value.trim()});closeModal('materialModal');await loadAll();toast('Material salvo!')}catch(e){toast(e.message)}};
+  $('activityForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('activities',$('activityId').value,{title:$('activityTitle').value.trim(),course:$('activityCourse').value,level:$('activityLevel').value,text:$('activityText').value.trim(),answer:$('activityAnswer').value.trim()});closeModal('activityModal');await loadAll();toast('Atividade salva!')}catch(e){toast(e.message)}};
+  $('templateForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('planning_templates',$('templateId').value,{name:$('templateName').value.trim(),course:$('templateCourse').value,content:$('templateContent').value.trim()});closeModal('templateModal');await loadAll();toast('Modelo salvo!')}catch(e){toast(e.message)}};
+  $('progressForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('student_progress',$('progressId').value,{student_id:$('progressFormStudent').value,student_name:studentName($('progressFormStudent').value),course:$('progressCourse').value,topic:$('progressTopic').value.trim(),percent:Number($('progressPercent').value||0),status:$('progressStatus').value,notes:$('progressNotes').value.trim()});closeModal('progressModal');await loadAll();toast('Progresso salvo!')}catch(e){toast(e.message)}};
+}
+window.deleteRecord=async id=>{if(!confirm('Excluir registro?'))return;try{await remove('lesson_records',id);await loadAll();toast('Registro excluído.')}catch(e){toast(e.message)}};
+window.deleteTask=async id=>{if(!confirm('Excluir tarefa?'))return;try{await remove('tasks',id);await loadAll();toast('Tarefa excluída.')}catch(e){toast(e.message)}};
+window.deleteAssessment=async id=>{if(!confirm('Excluir avaliação?'))return;try{await remove('assessments',id);await loadAll();toast('Avaliação excluída.')}catch(e){toast(e.message)}};
+window.deleteMaterial=async id=>{if(!confirm('Excluir material?'))return;try{await remove('materials',id);await loadAll();toast('Material excluído.')}catch(e){toast(e.message)}};
+window.deleteActivity=async id=>{if(!confirm('Excluir atividade?'))return;try{await remove('activities',id);await loadAll();toast('Atividade excluída.')}catch(e){toast(e.message)}};
+window.deleteTemplate=async id=>{if(!confirm('Excluir modelo?'))return;try{await remove('planning_templates',id);await loadAll();toast('Modelo excluído.')}catch(e){toast(e.message)}};
+window.editTask=id=>{const x=data.tasks.find(a=>a.id===id);if(!x)return;$('taskId').value=id;studentOptions('taskStudent',x.student_id);subjectOptions('taskCourse',x.course);$('taskTitle').value=x.title||'';$('taskDescription').value=x.description||'';$('taskDue').value=x.due_date||'';$('taskStatus').value=x.status||'Pendente';$('taskNotes').value=x.notes||'';openModal('taskModal')};
+window.editAssessment=id=>{const x=data.assessments.find(a=>a.id===id);if(!x)return;$('assessmentId').value=id;studentOptions('assessmentStudent',x.student_id);subjectOptions('assessmentCourse',x.course);$('assessmentTitle').value=x.title||'';$('assessmentScore').value=x.score||0;$('assessmentMax').value=x.max_score||10;$('assessmentDate').value=x.date||'';$('assessmentContent').value=x.content||'';$('assessmentNotes').value=x.notes||'';openModal('assessmentModal')};
+window.openReceipt=id=>{const x=data.lessons.find(a=>a.id===id);if(!x)return;$('receiptContent').innerHTML=`<h2>RECIBO DE PAGAMENTO</h2><p><b>Aulas Particulares</b></p><div class="view-block"><h4>Aluno</h4><div>${esc(x.student_name)}</div></div><div class="view-block"><h4>Curso / matéria</h4><div>${esc(x.course)}</div></div><div class="view-block"><h4>Valor</h4><div>${money(priceFor(x.course))}</div></div><div class="view-block"><h4>Status</h4><div>Pago</div></div><div class="view-block"><h4>Data</h4><div>${todayISO()}</div></div>`;openModal('receiptModal')};
+window.printReceipt=()=>{const html=$('receiptContent')?.innerHTML||'';const w=window.open('','_blank','width=800,height=900');if(!w)return;w.document.write(`<html><head><title>Recibo</title><style>body{font-family:Arial;padding:40px;color:#111}h2{margin-bottom:25px}.view-block{border-top:1px solid #ddd;padding:14px 0}</style></head><body>${html}</body></html>`);w.document.close();w.print()};
+function globalSearch(){const q=($('globalSearch')?.value||'').toLowerCase().trim();const el=$('globalResults');if(!el)return;if(!q){el.innerHTML='<div class="empty">Digite algo para pesquisar.</div>';return}const out=[];data.students.filter(x=>`${x.name} ${x.course}`.toLowerCase().includes(q)).forEach(x=>out.push(`<div class="search-result"><b>Aluno:</b> ${esc(x.name)}<br><small>${esc(x.course||'')}</small></div>`));data.lessons.filter(x=>`${x.student_name} ${x.course} ${x.day}`.toLowerCase().includes(q)).forEach(x=>out.push(`<div class="search-result"><b>Aula:</b> ${esc(x.student_name)} — ${esc(x.course)} — ${esc(x.day)} ${esc(timeOf(x))}</div>`));data.planning.filter(x=>`${x.title} ${x.course} ${x.theme}`.toLowerCase().includes(q)).forEach(x=>out.push(`<div class="search-result"><b>Planejamento:</b> ${esc(x.title)}</div>`));data.tasks.filter(x=>`${x.title} ${x.description}`.toLowerCase().includes(q)).forEach(x=>out.push(`<div class="search-result"><b>Tarefa:</b> ${esc(x.title)}</div>`));el.innerHTML=out.join('')||'<div class="empty">Nenhum resultado.</div>'}
+setupNewModules();
+
+
+/* =========================================================
+   PAGAMENTOS — AVISOS E ATRASOS
+   ========================================================= */
+function paymentStatusInfo(due,value){
+  if(!due)return {label:'Sem vencimento',days:null,extra:0};
+  const today=new Date(); today.setHours(0,0,0,0); const d=new Date(due+'T00:00:00'); const diff=Math.ceil((today-d)/86400000); const grace=Math.max(0,diff-3); const extra=diff>3?Number(value||0)*0.05*grace:0;
+  if(diff< -3)return {label:`Vence em ${Math.abs(diff)} dias`,days:diff,extra:0};
+  if(diff<=0)return {label:'Vence hoje ou está próximo',days:diff,extra:0};
+  if(diff<=3)return {label:`Em tolerância: ${diff} dia(s) de atraso`,days:diff,extra:0};
+  return {label:`Atrasado ${diff} dia(s)`,days:diff,extra};
+}
+
 /* =========================================================
    CONFIGURAÇÕES
    ========================================================= */
@@ -5248,8 +5401,10 @@ $('settingsForm').onsubmit=
         phone:
           $('setPhone').value,
 
-        banner:
-          $('setBanner').value
+        banner:$('setBanner').value,
+        payment_notice_days:Number($('setPaymentNotice').value||3),
+        payment_grace_days:Number($('setPaymentGrace').value||3),
+        payment_late_percent:Number($('setPaymentLate').value||0)
 
       };
 
@@ -5442,15 +5597,12 @@ async function seed(){
 
     const ps=[
 
-      [
-        'Matérias escolares — 4º ao 5º ano',
-        30
-      ],
-
-      [
-        'Matérias escolares — 6º ao 8º ano',
-        35
-      ],
+      ['Matemática',35],
+      ['Português',35],
+      ['Inglês',35],
+      ['Ciências',35],
+      ['História',35],
+      ['Geografia',35],
 
       [
         'Programação',
