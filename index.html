@@ -5728,9 +5728,28 @@ function renderResponsiblePortal(){
 
 function showPortal(role){
   hideAllViews();
-  if(role==='student'){ $('studentPortal').style.display='block'; renderStudentPortal(); }
-  else if(role==='responsible'){ $('responsiblePortal').style.display='block'; renderResponsiblePortal(); }
-  else { showAdminPortal(); }
+
+  const normalizedRole=String(role||'').trim().toLowerCase();
+
+  if(normalizedRole==='student' || normalizedRole==='aluno' || normalizedRole==='estudante'){
+    const el=$('studentPortal');
+    if(!el) throw new Error('Portal do aluno não foi encontrado no HTML.');
+    el.classList.remove('hidden');
+    el.style.setProperty('display','block','important');
+    renderStudentPortal();
+    return;
+  }
+
+  if(normalizedRole==='responsible' || normalizedRole==='responsavel' || normalizedRole==='responsável'){
+    const el=$('responsiblePortal');
+    if(!el) throw new Error('Portal do responsável não foi encontrado no HTML.');
+    el.classList.remove('hidden');
+    el.style.setProperty('display','block','important');
+    renderResponsiblePortal();
+    return;
+  }
+
+  showAdminPortal();
 }
 
 document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
