@@ -207,11 +207,11 @@ label{
   background:rgba(4,16,27,.96);
   border-right:1px solid var(--line);
   z-index:20;
-  overflow-y:auto;
-  overflow-x:hidden;
-  scrollbar-width:thin;
-  scrollbar-color:#164b65 transparent
+  overflow:hidden;
+  display:flex;
+  flex-direction:column
 }
+
 
 .sidebar::-webkit-scrollbar{width:6px}
 .sidebar::-webkit-scrollbar-track{background:transparent}
@@ -233,8 +233,20 @@ label{
 .nav{
   display:flex;
   flex-direction:column;
-  gap:6px
+  gap:6px;
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right:4px;
+  scrollbar-width:thin;
+  scrollbar-color:#164b65 transparent
 }
+
+.nav::-webkit-scrollbar{width:6px}
+.nav::-webkit-scrollbar-track{background:transparent}
+.nav::-webkit-scrollbar-thumb{background:#164b65;border-radius:10px}
+.nav::-webkit-scrollbar-thumb:hover{background:#28789b}
 
 .nav button{
   border:1px solid transparent;
