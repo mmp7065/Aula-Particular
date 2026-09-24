@@ -5714,7 +5714,7 @@ function showPortal(role){
   hideAllViews();
   if(role==='student'){ $('studentPortal').style.display='block'; renderStudentPortal(); }
   else if(role==='responsible'){ $('responsiblePortal').style.display='block'; renderResponsiblePortal(); }
-  else { $('appView').style.display='flex'; }
+  else { $('appView').classList.remove('hidden'); $('appView').style.display='flex'; }
 }
 
 document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
@@ -5748,6 +5748,7 @@ $('loginForm').onsubmit=
       currentRole=profile.role||'admin';
       if(currentRole==='admin'){
         hideAllViews();
+        $('appView').classList.remove('hidden');
         $('appView').style.display='flex';
         await loadAll();
         await seed();
@@ -6153,6 +6154,7 @@ async function boot(){
     currentRole=profile.role||'admin';
     if(currentRole==='admin'){
       hideAllViews();
+      $('appView').classList.remove('hidden');
       $('appView').style.display='flex';
       await loadAll();
       await seed();
