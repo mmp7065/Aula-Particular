@@ -150,6 +150,44 @@ label{
   margin-bottom:14px
 }
 
+/* =========================================================
+   PÁGINA PÚBLICA + PORTAIS
+   ========================================================= */
+.public-home{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 20% 10%,rgba(33,169,255,.14),transparent 30%),
+    radial-gradient(circle at 85% 20%,rgba(181,108,255,.11),transparent 28%),
+    var(--bg);
+}
+.public-header{
+  height:76px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 34px;border-bottom:1px solid rgba(18,56,74,.8);
+  background:rgba(3,11,21,.72);backdrop-filter:blur(14px);position:sticky;top:0;z-index:30
+}
+.public-header .enter-btn{padding:11px 22px;border-radius:11px;font-weight:800}
+.public-content{max-width:1180px;margin:auto;padding:70px 24px 50px}
+.public-hero-main{display:grid;grid-template-columns:1.2fr .8fr;gap:35px;align-items:center}
+.public-hero-main h1{font-size:clamp(38px,6vw,68px);line-height:1.02;margin:0 0 18px}
+.public-hero-main h1 span{color:var(--blue)}
+.public-hero-main p{font-size:17px;line-height:1.7;color:#abc1d0;max-width:720px}
+.public-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
+.public-feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:55px}
+.public-feature{padding:22px;border:1px solid var(--line);background:rgba(7,23,35,.82);border-radius:17px}
+.public-feature .icon{font-size:25px;margin-bottom:12px}
+.public-feature h3{margin:0 0 8px}.public-feature p{margin:0;color:#9fb4c3;line-height:1.55}
+.public-login-back{position:absolute;top:18px;left:18px}
+.role-pill{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(33,169,255,.11);color:var(--blue);font-size:11px;font-weight:800}
+.portal-shell{min-height:100vh;background:var(--bg);display:none}
+.portal-top{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:rgba(4,16,27,.96);position:sticky;top:0;z-index:20}
+.portal-top .brand{font-weight:900;font-size:18px}.portal-top .brand span{color:var(--blue)}
+.portal-main{max-width:1250px;margin:auto;padding:26px}
+.portal-welcome{padding:27px;border:1px solid #18506c;border-radius:19px;background:linear-gradient(110deg,rgba(33,169,255,.13),rgba(181,108,255,.08)),#071522;margin-bottom:18px}
+.portal-welcome h1{margin:0 0 7px;font-size:28px}.portal-welcome p{margin:0;color:#abc1d0}
+.portal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.portal-card{background:linear-gradient(145deg,rgba(8,28,43,.96),rgba(5,18,29,.96));border:1px solid var(--line);border-radius:16px;padding:17px}.portal-card h3{margin:0 0 8px}.portal-card .big{font-size:25px;font-weight:900}.portal-card p{color:#9fb4c3;line-height:1.5}.portal-wide{grid-column:span 2}.portal-table{width:100%;overflow:auto}.portal-list{display:grid;gap:9px}.portal-item{padding:13px;border:1px solid var(--line);border-radius:12px;background:#06131f}.portal-item strong{display:block;margin-bottom:4px}.portal-item small{color:#8da5b8}.portal-empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:13px}.portal-nav{display:flex;gap:7px;overflow:auto;padding:0 0 18px}.portal-nav button{white-space:nowrap}.portal-section{display:none}.portal-section.active{display:block}
+@media(max-width:850px){.public-hero-main{grid-template-columns:1fr}.public-feature-grid{grid-template-columns:1fr}.portal-grid{grid-template-columns:1fr 1fr}.portal-wide{grid-column:span 2}}
+@media(max-width:600px){.public-header{padding:0 16px}.public-content{padding:45px 16px}.portal-main{padding:16px}.portal-grid{grid-template-columns:1fr}.portal-wide{grid-column:auto}.portal-top{padding:0 16px}}
+
 .login-wrap{
   min-height:100vh;
   display:flex;
@@ -969,36 +1007,75 @@ th{
 
 <body>
 
-<div id="loginView" class="login-wrap">
+<div id="publicHome" class="public-home">
+  <header class="public-header">
+    <div class="logo">AULAS <span>PARTICULARES</span></div>
+    <button id="openLogin" class="btn primary enter-btn">Entrar</button>
+  </header>
+
+  <main class="public-content">
+    <section class="public-hero-main">
+      <div>
+        <span class="role-pill">Acompanhamento completo</span>
+        <h1>Aprender fica mais fácil quando tudo está <span>organizado.</span></h1>
+        <p>
+          Aulas particulares com acompanhamento individual, atividades, tarefas de casa,
+          planejamentos, progresso e comunicação clara entre aluno, responsável e professor.
+        </p>
+        <div class="public-actions">
+          <button id="openLoginHero" class="btn primary">Entrar na área do aluno</button>
+        </div>
+      </div>
+      <div class="public-site">
+        <div class="public-hero">
+          <div style="font-size:56px">📚</div>
+          <h2>Seu aprendizado em um só lugar</h2>
+          <p>Uma área própria para cada pessoa envolvida nas aulas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="public-feature-grid">
+      <article class="public-feature"><div class="icon">🎓</div><h3>Área do aluno</h3><p>Veja próximas aulas, atividades, temas de casa, materiais e avisos importantes.</p></article>
+      <article class="public-feature"><div class="icon">👨‍👩‍👧</div><h3>Área do responsável</h3><p>Acompanhe planos, pagamentos, progresso, registros de aulas, lembretes e comunicados.</p></article>
+      <article class="public-feature"><div class="icon">⚙️</div><h3>Área administrativa</h3><p>Gerencie alunos, agenda, planos, preços, planejamentos, financeiro e todo o sistema.</p></article>
+    </section>
+  </main>
+</div>
+
+<div id="loginView" class="login-wrap" style="display:none;position:relative">
+  <button id="backHome" class="btn public-login-back">← Voltar</button>
   <div class="login">
     <div class="logo">AULAS <span>PARTICULARES</span></div>
-    <h1>Área administrativa</h1>
-    <p>Entre para gerenciar alunos, agenda, planos, preços, banners e financeiro.</p>
-
+    <h1>Entrar</h1>
+    <p>Acesse a área correspondente à sua conta.</p>
     <form id="loginForm">
-      <div class="field">
-        <label for="email">E-mail</label>
-        <input id="email" type="email" autocomplete="email" required>
-      </div>
-
-      <div class="field">
-        <label for="password">Senha</label>
-        <input id="password" type="password" autocomplete="current-password" required>
-      </div>
-
-      <button class="btn primary" style="width:100%" type="submit">
-        Entrar
-      </button>
+      <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="password">Senha</label><input id="password" type="password" autocomplete="current-password" required></div>
+      <button class="btn primary" style="width:100%" type="submit">Entrar</button>
     </form>
-
-    <button id="signup" class="btn" style="width:100%;margin-top:9px">
-      Criar conta
-    </button>
-
+    <button id="signup" class="btn" style="width:100%;margin-top:9px">Criar conta administrativa</button>
     <div id="loginMsg"></div>
   </div>
 </div>
 
+<div id="studentPortal" class="portal-shell">
+  <header class="portal-top"><div class="brand">AULAS <span>PARTICULARES</span> · ALUNO</div><button class="btn mini portalLogout">Sair</button></header>
+  <main class="portal-main">
+    <div class="portal-welcome"><h1 id="studentWelcome">Olá!</h1><p>Aqui está tudo o que você precisa para acompanhar suas aulas.</p></div>
+    <nav class="portal-nav"><button class="btn mini active" data-portal="studentHome">Visão geral</button><button class="btn mini" data-portal="studentActivities">Atividades</button><button class="btn mini" data-portal="studentHomework">Temas de casa</button><button class="btn mini" data-portal="studentLessons">Próximas aulas</button><button class="btn mini" data-portal="studentProgress">Progresso</button></nav>
+    <section id="studentHome" class="portal-section active"></section><section id="studentActivities" class="portal-section"></section><section id="studentHomework" class="portal-section"></section><section id="studentLessons" class="portal-section"></section><section id="studentProgress" class="portal-section"></section>
+  </main>
+</div>
+
+<div id="responsiblePortal" class="portal-shell">
+  <header class="portal-top"><div class="brand">AULAS <span>PARTICULARES</span> · RESPONSÁVEL</div><button class="btn mini portalLogout">Sair</button></header>
+  <main class="portal-main">
+    <div class="portal-welcome"><h1 id="responsibleWelcome">Acompanhamento do aluno</h1><p>Informações acadêmicas, financeiras e comunicados em um só lugar.</p></div>
+    <nav class="portal-nav"><button class="btn mini active" data-portal="respHome">Resumo</button><button class="btn mini" data-portal="respStudent">Aluno</button><button class="btn mini" data-portal="respPayments">Pagamentos e planos</button><button class="btn mini" data-portal="respProgress">Progresso</button><button class="btn mini" data-portal="respLessons">Registro de aulas</button><button class="btn mini" data-portal="respReminders">Lembretes</button><button class="btn mini" data-portal="respBanners">Avisos</button></nav>
+    <section id="respHome" class="portal-section active"></section><section id="respStudent" class="portal-section"></section><section id="respPayments" class="portal-section"></section><section id="respProgress" class="portal-section"></section><section id="respLessons" class="portal-section"></section><section id="respReminders" class="portal-section"></section><section id="respBanners" class="portal-section"></section>
+  </main>
+</div>
 
 <div id="appView" class="app hidden">
 
@@ -2294,6 +2371,10 @@ let data={
   planning:[],
   records:[], tasks:[], assessments:[], reminders:[], materials:[], activities:[], templates:[], progress:[]
 };
+
+let currentRole='admin';
+let portalProfile=null;
+let portalData={student:null,lessons:[],plans:[],payments:[],tasks:[],assessments:[],reminders:[],records:[],planning:[],progress:[],banners:[],materials:[]};
 
 
 /* =========================================================
@@ -5507,6 +5588,140 @@ $('settingsForm').onsubmit=
 
 
 /* =========================================================
+   PORTAIS ALUNO / RESPONSÁVEL
+   ========================================================= */
+
+function hideAllViews(){
+  ['publicHome','loginView','appView','studentPortal','responsiblePortal'].forEach(id=>{
+    const el=$(id); if(el) el.style.display='none';
+  });
+}
+
+function showPublicHome(){
+  hideAllViews(); $('publicHome').style.display='block';
+}
+
+function showLogin(){
+  hideAllViews(); $('loginView').style.display='flex';
+}
+
+async function getProfile(){
+  const u=await user();
+  const {data:p,error}=await client.from('portal_profiles').select('*').eq('id',u.id).maybeSingle();
+  if(error){
+    // Compatibilidade: se a tabela ainda não foi criada, a conta atual continua como administrativa.
+    if(error.code==='42P01') return {id:u.id,role:'admin',owner_id:u.id};
+    throw error;
+  }
+  return p||{id:u.id,role:'admin',owner_id:u.id};
+}
+
+async function portalQuery(table, studentId, ownerId){
+  let q=client.from(table).select('*');
+  if(studentId) q=q.eq('student_id',studentId);
+  if(ownerId) q=q.eq('user_id',ownerId);
+  const {data:d,error}=await q;
+  if(error){
+    if(error.code==='42P01') return [];
+    throw error;
+  }
+  return d||[];
+}
+
+async function loadPortal(){
+  portalProfile=await getProfile();
+  currentRole=portalProfile.role||'admin';
+  if(currentRole==='admin') return;
+
+  const studentId=portalProfile.student_id;
+  const ownerId=portalProfile.owner_id;
+  if(!studentId){
+    throw new Error('Esta conta ainda não está vinculada a um aluno. Peça ao administrador para vincular o acesso.');
+  }
+
+  const {data:student,error:studentError}=await client.from('students').select('*').eq('id',studentId).maybeSingle();
+  if(studentError) throw studentError;
+  portalData.student=student;
+
+  const tables=['lessons','plans','payments','tasks','assessments','reminders','lesson_records','lesson_plans','student_progress','materials'];
+  const values=await Promise.all(tables.map(t=>portalQuery(t,studentId,ownerId).catch(()=>[])));
+  [portalData.lessons,portalData.plans,portalData.payments,portalData.tasks,portalData.assessments,portalData.reminders,portalData.records,portalData.planning,portalData.progress,portalData.materials]=values;
+
+  if(ownerId){
+    const {data:b}=await client.from('banners').select('*').eq('user_id',ownerId).catch(()=>({data:[]}));
+    portalData.banners=b||[];
+  }
+}
+
+function portalDate(v){
+  if(!v)return 'Sem data';
+  const d=new Date(v+'T00:00:00');
+  if(Number.isNaN(d.getTime()))return esc(v);
+  return d.toLocaleDateString('pt-BR');
+}
+
+function portalField(obj,...keys){
+  for(const k of keys){ if(obj?.[k]!==undefined && obj?.[k]!==null && obj[k]!=='') return obj[k]; }
+  return '';
+}
+
+function portalItems(arr,titleKeys,detailKeys,dateKeys=[]){
+  if(!arr.length)return '<div class="portal-empty">Nenhum item cadastrado ainda.</div>';
+  return '<div class="portal-list">'+arr.slice(0,20).map(x=>{
+    const title=portalField(x,...titleKeys)||'Item';
+    const detail=portalField(x,...detailKeys);
+    const date=portalField(x,...dateKeys);
+    return `<div class="portal-item"><strong>${esc(title)}</strong>${detail?`<div>${esc(detail)}</div>`:''}${date?`<small>${portalDate(date)}</small>`:''}</div>`;
+  }).join('')+'</div>';
+}
+
+function renderStudentPortal(){
+  const s=portalData.student||{};
+  $('studentWelcome').textContent=`Olá, ${portalField(s,'name','full_name')||'aluno'}!`;
+  const now=new Date();
+  const upcoming=portalData.lessons.filter(x=>{const d=new Date((x.date||x.day||'')+'T'+(x.time||'00:00'));return !Number.isNaN(d.getTime())&&d>=now;}).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const pending=portalData.tasks.filter(x=>String(portalField(x,'status','state')).toLowerCase()!=='concluída'&&String(portalField(x,'status','state')).toLowerCase()!=='concluida');
+  $('studentHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Próxima aula</h3><div class="big">${upcoming[0]?portalDate(portalField(upcoming[0],'date')):'—'}</div><p>${upcoming[0]?esc(portalField(upcoming[0],'course','subject','title')||'Aula'): 'Nenhuma aula agendada'}</p></div><div class="portal-card"><h3>Temas de casa</h3><div class="big">${pending.length}</div><p>atividade(s) pendente(s)</p></div><div class="portal-card"><h3>Avaliações</h3><div class="big">${portalData.assessments.length}</div><p>registradas</p></div><div class="portal-card"><h3>Planejamentos</h3><div class="big">${portalData.planning.length}</div><p>em acompanhamento</p></div><div class="portal-card portal-wide"><h3>Próximas aulas</h3>${portalItems(upcoming.slice(0,5),['course','subject','title'],['topic','description'],['date'])}</div><div class="portal-card portal-wide"><h3>Atividades recentes</h3>${portalItems(portalData.tasks.slice(0,5),['title','name','subject'],['description','content','status'],['due_date','date'])}</div></div>`;
+  $('studentActivities').innerHTML=`<div class="portal-card"><h3>Atividades</h3>${portalItems(portalData.tasks,['title','name','subject'],['description','content','status'],['due_date','date'])}</div>`;
+  $('studentHomework').innerHTML=`<div class="portal-card"><h3>Temas de casa</h3>${portalItems(pending,['title','name','subject'],['description','content','status'],['due_date','date'])}</div>`;
+  $('studentLessons').innerHTML=`<div class="portal-card"><h3>Próximas aulas</h3>${portalItems(upcoming,['course','subject','title'],['topic','description','teacher'],['date'])}</div>`;
+  $('studentProgress').innerHTML=`<div class="portal-card"><h3>Meu progresso</h3>${portalItems(portalData.progress,['subject','course','title'],['progress','percentage','description'],['updated_at','date'])}</div>`;
+}
+
+function renderResponsiblePortal(){
+  const s=portalData.student||{};
+  const name=portalField(s,'name','full_name')||'aluno';
+  $('responsibleWelcome').textContent=`Acompanhamento de ${name}`;
+  const pending=portalData.tasks.filter(x=>!['concluída','concluida','completed','done'].includes(String(portalField(x,'status','state')).toLowerCase()));
+  $('respHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Aluno</h3><div class="big">${esc(name)}</div><p>${esc(portalField(s,'course','courses')||'Cursos cadastrados')}</p></div><div class="portal-card"><h3>Atividades</h3><div class="big">${pending.length}</div><p>pendentes</p></div><div class="portal-card"><h3>Pagamentos</h3><div class="big">${portalData.payments.length}</div><p>registros</p></div><div class="portal-card"><h3>Lembretes</h3><div class="big">${portalData.reminders.length}</div><p>ativos</p></div><div class="portal-card portal-wide"><h3>Próximas aulas</h3>${portalItems(portalData.lessons.slice(0,5),['course','subject','title'],['topic','description'],['date'])}</div><div class="portal-card portal-wide"><h3>Últimos registros</h3>${portalItems(portalData.records.slice(0,5),['title','course','subject'],['content','description','notes'],['date'])}</div></div>`;
+  $('respStudent').innerHTML=`<div class="portal-card"><h3>Dados do aluno</h3><div class="portal-list"><div class="portal-item"><strong>Nome</strong><div>${esc(name)}</div></div><div class="portal-item"><strong>Curso(s)</strong><div>${esc(portalField(s,'course','courses')||'Não informado')}</div></div><div class="portal-item"><strong>E-mail</strong><div>${esc(portalField(s,'email')||'Não informado')}</div></div><div class="portal-item"><strong>Observações</strong><div>${esc(portalField(s,'notes','observations')||'Nenhuma')}</div></div></div></div>`;
+  $('respPayments').innerHTML=`<div class="portal-grid"><div class="portal-card portal-wide"><h3>Planos</h3>${portalItems(portalData.plans,['name','title','plan_type'],['description','price','value'],['due_date','date'])}</div><div class="portal-card portal-wide"><h3>Pagamentos</h3>${portalItems(portalData.payments,['description','title','status'],['amount','value','status'],['due_date','date','paid_at'])}</div></div>`;
+  $('respProgress').innerHTML=`<div class="portal-card"><h3>Progresso</h3>${portalItems(portalData.progress,['subject','course','title'],['progress','percentage','description'],['updated_at','date'])}</div>`;
+  $('respLessons').innerHTML=`<div class="portal-card"><h3>Registro de aulas</h3>${portalItems(portalData.records,['title','course','subject'],['content','description','notes'],['date'])}</div>`;
+  $('respReminders').innerHTML=`<div class="portal-card"><h3>Lembretes</h3>${portalItems(portalData.reminders,['title','name','subject'],['description','content','status'],['date','due_date'])}</div>`;
+  $('respBanners').innerHTML=`<div class="portal-card"><h3>Avisos e banners</h3>${portalItems(portalData.banners,['title','name'],['description','text','content'],['created_at','date'])}</div>`;
+}
+
+function showPortal(role){
+  hideAllViews();
+  if(role==='student'){ $('studentPortal').style.display='block'; renderStudentPortal(); }
+  else if(role==='responsible'){ $('responsiblePortal').style.display='block'; renderResponsiblePortal(); }
+  else { $('appView').style.display='flex'; }
+}
+
+document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
+  const target=btn.dataset.portal;
+  const shell=btn.closest('.portal-shell');
+  shell.querySelectorAll('.portal-section').forEach(x=>x.classList.remove('active'));
+  shell.querySelectorAll('[data-portal]').forEach(x=>x.classList.remove('active'));
+  const el=$(target); if(el)el.classList.add('active'); btn.classList.add('active');
+});
+
+['openLogin','openLoginHero'].forEach(id=>$(id).onclick=showLogin);
+$('backHome').onclick=showPublicHome;
+document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{await client.auth.signOut();showPublicHome();});
+
+/* =========================================================
    LOGIN
    ========================================================= */
 
@@ -5541,8 +5756,14 @@ $('loginForm').onsubmit=
       : '';
 
 
-    if(!error)
-      await boot();
+    if(!error){
+      try{
+        const profile=await getProfile();
+        currentRole=profile.role||'admin';
+        if(currentRole==='admin') await boot();
+        else { await loadPortal(); showPortal(currentRole); }
+      }catch(err){ $('loginMsg').textContent=err.message; }
+    }
 
   };
 
@@ -5929,52 +6150,34 @@ renderBannerSlide();
 async function boot(){
 
   try{
-
-    const {
-      data:d
-    }=await client.auth.getSession();
-
+    const {data:d}=await client.auth.getSession();
 
     if(!d?.session){
-
-      $('loginView').style.display='flex';
-
-      $('appView')
-        .classList
-        .add('hidden');
-
+      showPublicHome();
       return;
-
     }
 
+    const profile=await getProfile();
+    currentRole=profile.role||'admin';
 
-    $('loginView').style.display='none';
-
-    $('appView')
-      .classList
-      .remove('hidden');
-
-
-    await loadAll();
-
-    await seed();
-
-    await loadAll();
-
+    if(currentRole==='admin'){
+      hideAllViews();
+      $('appView').classList.remove('hidden');
+      $('appView').style.display='flex';
+      await loadAll();
+      await seed();
+      await loadAll();
+    }else{
+      await loadPortal();
+      showPortal(currentRole);
+    }
 
   }catch(e){
-
     console.error(e);
-
-    toast(
-      e.message||
-      'Erro ao carregar o sistema.'
-    );
-
+    showPublicHome();
+    console.error(e);
   }
-
 }
-
 
 boot();
 
