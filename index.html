@@ -1002,6 +1002,8 @@ th{
 .status-select{min-width:150px}.small-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.public-site{background:linear-gradient(135deg,#071522,#0a2030);border:1px solid #18506c;border-radius:20px;padding:30px}.public-site .public-hero{padding:35px 10px;text-align:center}.public-site .public-hero h2{font-size:36px;margin:0 0 10px}.public-site .public-hero p{color:#a9bdcc;font-size:16px}.public-course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:25px}.public-course{padding:20px;border:1px solid var(--line);border-radius:15px;background:#06131f}.public-course h3{margin-top:0}.search-results{display:grid;gap:8px}.search-result{padding:12px;border:1px solid var(--line);border-radius:11px;background:#06131f;cursor:pointer}.search-result:hover{border-color:var(--blue)}
 @media(max-width:700px){.small-grid{grid-template-columns:1fr}.public-site .public-hero h2{font-size:28px}}
 
+
+
 </style>
 </head>
 
@@ -1076,6 +1078,7 @@ th{
     <section id="respHome" class="portal-section active"></section><section id="respStudent" class="portal-section"></section><section id="respPayments" class="portal-section"></section><section id="respProgress" class="portal-section"></section><section id="respLessons" class="portal-section"></section><section id="respReminders" class="portal-section"></section><section id="respBanners" class="portal-section"></section>
   </main>
 </div>
+
 
 <div id="appView" class="app hidden">
 
@@ -5721,50 +5724,37 @@ document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
 $('backHome').onclick=showPublicHome;
 document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{await client.auth.signOut();showPublicHome();});
 
+
 /* =========================================================
    LOGIN
    ========================================================= */
 
 $('loginForm').onsubmit=
   async e=>{
-
     e.preventDefault();
-
-    $('loginMsg').textContent=
-      'Entrando...';
-
-
-    const {
-      error
-    }=await client.auth.signInWithPassword({
-
-      email:
-        $('email')
-          .value
-          .trim(),
-
-      password:
-        $('password')
-          .value
-
-    });
-
-
-    $('loginMsg').textContent=
-      error
-      ? error.message
-      : '';
-
-
-    if(!error){
-      try{
-        const profile=await getProfile();
-        currentRole=profile.role||'admin';
-        if(currentRole==='admin') await boot();
-        else { await loadPortal(); showPortal(currentRole); }
-      }catch(err){ $('loginMsg').textContent=err.message; }
+    $('loginMsg').textContent='Entrando...';
+    try{
+      const {error}=await client.auth.signInWithPassword({
+        email:$('email').value.trim(),
+        password:$('password').value
+      });
+      if(error)throw error;
+      const profile=await getProfile();
+      currentRole=profile.role||'admin';
+      if(currentRole==='admin'){
+        hideAllViews();
+        $('appView').style.display='flex';
+        await loadAll();
+        await seed();
+        await loadAll();
+      }else{
+        await loadPortal();
+        showPortal(currentRole);
+      }
+    }catch(err){
+      console.error(err);
+      $('loginMsg').textContent=err.message||'Não foi possível entrar.';
     }
-
   };
 
 
@@ -6148,21 +6138,16 @@ renderBannerSlide();
    ========================================================= */
 
 async function boot(){
-
   try{
     const {data:d}=await client.auth.getSession();
-
     if(!d?.session){
       showPublicHome();
       return;
     }
-
     const profile=await getProfile();
     currentRole=profile.role||'admin';
-
     if(currentRole==='admin'){
       hideAllViews();
-      $('appView').classList.remove('hidden');
       $('appView').style.display='flex';
       await loadAll();
       await seed();
@@ -6171,11 +6156,10 @@ async function boot(){
       await loadPortal();
       showPortal(currentRole);
     }
-
   }catch(e){
     console.error(e);
-    showPublicHome();
-    console.error(e);
+    showLogin();
+    if($('loginMsg'))$('loginMsg').textContent=e.message||'Erro ao carregar o sistema.';
   }
 }
 
