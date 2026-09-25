@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -1106,12 +1105,10 @@ th{
       <button data-page="materials">▤ Materiais</button>
       <button data-page="activities">✦ Banco de atividades</button>
       <button data-page="templates">▤ Modelos</button>
-      <button data-page="public">◈ Página pública</button>
       <button data-page="receipts">▤ Recibos</button>
       <button data-page="attendance">✓ Presença</button>
       <button data-page="achievements">★ Conquistas</button>
       <button data-page="search">⌕ Busca</button>
-      <button data-page="parent">♙ Portal do responsável</button>
       <button data-page="prices">◇ Preços</button>
       <button data-page="banners">▰ Banners</button>
       <button data-page="finance">◈ Financeiro</button>
@@ -1219,9 +1216,7 @@ th{
         <div class="section-head">
           <h2>Agenda semanal</h2>
 
-          <button id="agendaNew" class="btn primary">
-            + Nova aula
-          </button>
+          <span class="badge blue">Somente visualização</span>
         </div>
 
         <div id="schedule" class="schedule"></div>
@@ -1586,7 +1581,7 @@ th{
           <div class="small-grid">
             <div class="field"><label>Avise antes (dias)</label><input id="setPaymentNotice" type="number" min="0" value="3"></div>
             <div class="field"><label>Tolerância após vencimento</label><input id="setPaymentGrace" type="number" min="0" value="3"></div>
-            <div class="field"><label>Percentual por dia</label><input id="setPaymentLate" type="number" min="0" step="0.01" value="0"></div>
+            <div class="field"><label>Percentual por dia</label><input id="setPaymentLate" type="number" min="0" step="0.01" value="5"></div>
           </div>
 
           <button class="btn primary" type="submit">
@@ -2851,15 +2846,13 @@ function formatDateTime(d){
 function taskIsDone(x){return ['entregue','corrigida','concluída','concluida','completed','done'].includes(String(x.status||x.state||'').toLowerCase());}
 
 function priceFor(course){
-
-  const p=data.prices.find(
-    x=>
-      (x.name||x.course)===course &&
-      x.active!==false
-  );
-
+  const raw=String(course||'').trim();
+  if(!raw)return 0;
+  const exact=data.prices.find(x=>(x.name||x.course)===raw && x.active!==false);
+  if(exact)return Number(exact.price||0);
+  const normalized=raw.replace(/^(Básico|Intermediário|Avançado)\\s+/i,'').replace(/^(4º–5º ano|6º–8º ano)\\s*[—-]?\\s*/i,'').trim();
+  const p=data.prices.find(x=>String(x.name||x.course||'').trim()===normalized && x.active!==false);
   return Number(p?.price||0);
-
 }
 
 
@@ -3122,25 +3115,8 @@ function renderSchedule(){
   $('schedule').innerHTML=h;
 
 
-  document
-    .querySelectorAll('.free')
-    .forEach(
-      c=>
-        c.onclick=()=>
-          openLesson(
-            c.dataset.day,
-            c.dataset.time
-          )
-    );
-
-
-  document
-    .querySelectorAll('.busy')
-    .forEach(
-      c=>
-        c.onclick=()=>
-          editLesson(c.dataset.lesson)
-    );
+  // A agenda é apenas informativa.
+  // Alterações de aula/status são feitas em "Registro de aulas".
 
 }
 
@@ -4153,12 +4129,27 @@ function renderFinance(){const el=$('fin');if(!el)return;const paymentRows=data.
 
 
 function courseNames(){
-  return [...new Set(
+  const base=[...new Set(
     data.prices
       .filter(x=>x.active!==false)
       .map(x=>String(x.name||x.course||'').trim())
       .filter(Boolean)
   )];
+  const extras=[
+    'Básico 4º–5º ano',
+    'Intermediário 6º–8º ano',
+    'Básico Programação',
+    'Intermediário Programação',
+    'Básico Inteligência Artificial',
+    'Intermediário Inteligência Artificial',
+    'Básico Minecraft / Comandos / Skript',
+    'Intermediário Minecraft / Comandos / Skript',
+    'Básico Informática / PC',
+    'Intermediário Informática / PC',
+    'Básico Canva / Apresentações',
+    'Intermediário Canva / Apresentações'
+  ];
+  return [...new Set([...base,...extras])];
 }
 
 
@@ -4332,7 +4323,7 @@ function fillSettings(){
   $('setBanner').value=data.settings.banner||'';
   $('setPaymentNotice').value=data.settings.payment_notice_days??3;
   $('setPaymentGrace').value=data.settings.payment_grace_days??3;
-  $('setPaymentLate').value=data.settings.payment_late_percent??0;
+  $('setPaymentLate').value=data.settings.payment_late_percent??5;
 
 }
 
@@ -4699,9 +4690,6 @@ $('newLesson').onclick =
 $('newLesson2').onclick =
   () => openLesson();
 
-
-$('agendaNew').onclick =
-  () => openLesson();
 
 
 /* =========================================================
@@ -5435,14 +5423,36 @@ function renderCalendar(){
 function renderReminders(){const el=$('remindersList');if(!el)return;const manual=data.reminders.filter(x=>!x.done);const generated=data.payments.filter(x=>String(x.status||'').toLowerCase()!=='pago').map(p=>{const info=paymentStatusInfo(p.due_date,p.amount);if(info.days===null||info.days < -3)return null;return {id:'payment-'+p.id,title:'Pagamento — '+(p.student_name||studentName(p.student_id)),date:p.due_date,type:'Pagamento',text:info.label+' · '+money(Number(p.amount||0)+Number(info.extra||0)),generated:true};}).filter(Boolean);const rows=[...manual,...generated];el.innerHTML=rows.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge yellow">${esc(x.type||'Lembrete')}</span><span class="badge purple">${esc(x.date||'Sem data')}</span></div><p>${esc(x.text||x.description||'')}</p>${x.generated?'':'<button class="btn mini" onclick="markReminderDone(\''+x.id+'\')">Marcar como concluído</button>'}</div>`).join('')||'<div class="empty">Nenhum lembrete pendente.</div>';}
 window.markReminderDone=async id=>{try{await update('reminders',id,{done:true});await loadAll();toast('Lembrete concluído.')}catch(e){toast(e.message)}};
 
-function reportForStudent(sid){const s=data.students.find(x=>x.id===sid);if(!s)return '';const lessons=data.lessons.filter(x=>x.student_id===sid);const rec=data.records.filter(x=>x.student_id===sid);const tasks=data.tasks.filter(x=>x.student_id===sid);const ass=data.assessments.filter(x=>x.student_id===sid);const prog=data.progress.filter(x=>x.student_id===sid);const presence=lessons.length?Math.round(lessons.filter(x=>x.status==='Concluída').length/lessons.length*100):0;const avg=ass.length?ass.reduce((a,x)=>a+Number(x.score||0),0)/ass.length:0;return `<h2>Relatório — ${esc(s.name)}</h2><div class="small-grid"><div class="card"><b>Aulas</b><h2>${lessons.length}</h2></div><div class="card"><b>Presença</b><h2>${presence}%</h2></div><div class="card"><b>Média</b><h2>${avg?avg.toFixed(1):'—'}</h2></div></div><div class="view-block"><h4>Progresso</h4>${prog.map(x=>`${esc(x.topic)} — ${Number(x.percent||0)}%`).join('<br>')||'Sem registros.'}</div><div class="view-block"><h4>Tarefas</h4>${tasks.length?tasks.map(x=>`${esc(x.title)} — ${esc(x.status)}`).join('<br>'):'Nenhuma.'}</div><div class="view-block"><h4>Registros de aula</h4>${rec.length?rec.slice(-5).map(x=>esc(x.content||x.observation||'')).join('<br>'):'Nenhum.'}</div>`;}
+function reportForStudent(sid){const s=data.students.find(x=>x.id===sid);if(!s)return '';const lessons=data.lessons.filter(x=>x.student_id===sid);const rec=data.records.filter(x=>x.student_id===sid);const tasks=data.tasks.filter(x=>x.student_id===sid);const ass=data.assessments.filter(x=>x.student_id===sid);const prog=data.progress.filter(x=>x.student_id===sid);const expected=planExpectedLessons(s); const completed=lessons.filter(x=>x.status==='Concluída').length; const presence=expected?Math.min(100,Math.round(Math.min(completed,expected)/expected*100)):(lessons.length?Math.round(completed/lessons.length*100):0);const avg=ass.length?ass.reduce((a,x)=>a+Number(x.score||0),0)/ass.length:0;return `<h2>Relatório — ${esc(s.name)}</h2><div class="small-grid"><div class="card"><b>Aulas</b><h2>${lessons.length}</h2></div><div class="card"><b>Presença</b><h2>${presence}%</h2></div><div class="card"><b>Média</b><h2>${avg?avg.toFixed(1):'—'}</h2></div></div><div class="view-block"><h4>Progresso</h4>${prog.map(x=>`${esc(x.topic)} — ${Number(x.percent||0)}%`).join('<br>')||'Sem registros.'}</div><div class="view-block"><h4>Tarefas</h4>${tasks.length?tasks.map(x=>`${esc(x.title)} — ${esc(x.status)}`).join('<br>'):'Nenhuma.'}</div><div class="view-block"><h4>Registros de aula</h4>${rec.length?rec.slice(-5).map(x=>esc(x.content||x.observation||'')).join('<br>'):'Nenhum.'}</div>`;}
 function renderReports(){const el=$('reportContent');if(!el)return;const sid=$('reportStudent')?.value||data.students[0]?.id;if($('reportStudent'))studentOptions('reportStudent',sid||'');el.innerHTML=reportForStudent(sid)||'<div class="empty">Cadastre um aluno.</div>';}
 function renderMaterials(){const el=$('materialsList');if(!el)return;el.innerHTML=data.materials.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.name)}</b><p>${esc(x.course||'')} · ${esc(studentName(x.student_id)||'Todos')}</p>${x.url?`<a class="btn mini" href="${esc(x.url)}" target="_blank">Abrir material</a>`:''}<button class="btn danger mini" style="margin-left:6px" onclick="deleteMaterial('${x.id}')">Excluir</button></div>`).join('')||'<div class="empty">Nenhum material.</div>';}
 function renderActivities(){const el=$('activitiesList');if(!el)return;el.innerHTML=data.activities.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(x.course||'')}</span><span class="badge purple">${esc(x.level||'')}</span></div><p class="planning-text">${esc(x.text||'')}</p><div class="row-actions"><button class="btn mini" onclick="editActivity('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteActivity('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma atividade.</div>';}
 function renderTemplates(){const el=$('templatesList');if(!el)return;el.innerHTML=data.templates.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.name)}</b><p>${esc(x.course||'')}</p><div class="planning-text">${esc(x.content||'')}</div><div class="row-actions" style="margin-top:10px"><button class="btn danger mini" onclick="deleteTemplate('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum modelo.</div>';}
 function renderPublic(){const el=$('publicSitePreview');if(!el)return;const courses=[...new Set([...courseNames(),'Matemática','Português','Inglês','Ciências','História','Geografia','Programação','Inteligência Artificial','Minecraft / Comandos / Skript','Informática / PC','Canva / Apresentações'])];el.innerHTML=`<div class="public-hero"><h2>${esc(data.settings.title||'AULAS PARTICULARES')}</h2><p>${esc(data.settings.subtitle||'Aprenda no seu ritmo, com acompanhamento personalizado.')}</p><button class="btn primary" onclick="navigator.clipboard?.writeText(location.href);toast('Endereço do site copiado!')">Copiar endereço</button></div><div class="public-course-grid">${courses.map(c=>`<div class="public-course"><h3>${esc(c)}</h3><p>Aulas personalizadas, acompanhamento e planejamento de estudos.</p></div>`).join('')}</div><div style="text-align:center;margin-top:30px;color:#a9bdcc">${esc(data.settings.phone||'Entre em contato para saber mais.')}</div>`;}
 function renderReceipts(){const el=$('receiptsList');if(!el)return;const rows=data.lessons.filter(x=>x.paid);el.innerHTML=rows.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.student_name)}</b> — ${esc(x.course)} — ${money(priceFor(x.course))}<button class="btn mini primary" style="margin-left:10px" onclick="openReceipt('${x.id}')">Gerar recibo</button></div>`).join('')||'<div class="empty">Nenhum pagamento de aula encontrado.</div>';}
-function renderAttendance(){const el=$('attendanceList');if(!el)return;el.innerHTML=data.students.map(s=>{const expected=planExpectedLessons(s);const billing=billingLabel(s.billing_type||planForStudent(s)?.plan_type);const periodDone=data.records.filter(r=>r.student_id===s.id&&r.status==='Realizada').length;const done=Math.min(periodDone,expected||periodDone);const pct=expected?Math.min(100,Math.round(done/expected*100)):(periodDone?100:0);return `<div class="progress-row"><div class="top"><b>${esc(s.name)}</b><span>${done}/${expected||'—'} — ${pct}%</span></div><div class="progress-bar"><span style="width:${pct}%"></span></div><small class="muted">Plano: ${esc(s.plan||'Não definido')} · Cobrança: ${esc(billing)} · Meta do período: ${expected||'não definida'} aula(s)</small></div>`}).join('')||'<div class="empty">Nenhum aluno.</div>';}
+function renderAttendance(){
+  const el=$('attendanceList'); if(!el)return;
+  const now=new Date();
+  const startWeek=new Date(now); startWeek.setHours(0,0,0,0); startWeek.setDate(now.getDate()-((now.getDay()+6)%7));
+  const endWeek=new Date(startWeek); endWeek.setDate(startWeek.getDate()+6);
+  const monthKey=now.toISOString().slice(0,7);
+  el.innerHTML=data.students.map(s=>{
+    const plan=planForStudent(s);
+    const billing=String(s.billing_type||plan?.plan_type||'semanal').toLowerCase();
+    const expected=planExpectedLessons(s);
+    const scoped=data.records.filter(r=>{
+      if(r.student_id!==s.id||r.status!=='Realizada')return false;
+      if(!r.date)return true;
+      if(billing==='mensal')return String(r.date).slice(0,7)===monthKey;
+      if(billing==='avulsa'||billing==='avulso'||billing==='unica'||billing==='única')return true;
+      const d=new Date(r.date+'T00:00:00'); return d>=startWeek&&d<=endWeek;
+    }).length;
+    const done=(billing==='avulsa'||billing==='avulso'||billing==='unica'||billing==='única')?Math.min(scoped,1):Math.min(scoped,expected||scoped);
+    const pct=expected?Math.min(100,Math.round(done/expected*100)):(done?100:0);
+    const period=billing==='mensal'?'mês atual':(billing==='semanal'?'semana atual':'aula única');
+    return `<div class="progress-row"><div class="top"><b>${esc(s.name)}</b><span>${done}/${expected||'—'} — ${pct}%</span></div><div class="progress-bar"><span style="width:${pct}%"></span></div><small class="muted">Plano: ${esc(s.plan||'Não definido')} · Cobrança: ${esc(billingLabel(billing))} · ${period} · Meta: ${expected||'não definida'} aula(s)</small></div>`;
+  }).join('')||'<div class="empty">Nenhum aluno.</div>';
+}
 function renderAchievements(){const el=$('achievementsList');if(!el)return;const sid=$('achievementStudent')?.value||data.students[0]?.id;if($('achievementStudent'))studentOptions('achievementStudent',sid||'');const assigned=data.studentAchievements.filter(x=>!sid||x.student_id===sid);const cards=assigned.map(a=>{const def=data.achievements.find(d=>d.id===a.achievement_id);return def?`<div class="feature-card"><div style="font-size:30px">${esc(def.icon||'🏆')}</div><h3>${esc(def.name)}</h3><p>${esc(def.description||'')}</p><small class="muted">Aluno: ${esc(studentName(a.student_id))}</small><div class="row-actions" style="margin-top:9px"><button class="btn danger mini" onclick="removeAchievement('${a.id}')">Remover</button></div></div>`:''}).join('');const catalog=data.achievements.map(a=>`<div class="feature-card"><div style="font-size:30px">${esc(a.icon||'🏆')}</div><h3>${esc(a.name)}</h3><p>${esc(a.description||'')}</p><small class="muted">Catálogo</small><div class="row-actions" style="margin-top:9px"><button class="btn danger mini" onclick="deleteAchievement('${a.id}')">Excluir catálogo</button></div></div>`).join('');el.innerHTML=(cards||'<div class="empty">Nenhuma conquista atribuída a este aluno.</div>')+`<div style="grid-column:1/-1;margin-top:10px"><h3>Catálogo de conquistas</h3><div class="feature-grid">${catalog||'<div class="empty">Nenhuma conquista cadastrada.</div>'}</div></div>`;const sel=$('achievementSelect');if(sel)sel.innerHTML=data.achievements.map(a=>`<option value="${esc(a.id)}">${esc(a.icon||'🏆')} ${esc(a.name)}</option>`).join('')||'<option value="">Crie uma conquista primeiro</option>';}
 window.deleteAchievement=async id=>{if(!confirm('Excluir esta conquista do catálogo?'))return;try{await remove('achievements',id);await loadAll();toast('Conquista excluída.')}catch(e){toast(e.message)}};
 window.removeAchievement=async id=>{if(!confirm('Remover esta conquista do aluno?'))return;try{await remove('student_achievements',id);await loadAll();toast('Conquista removida.')}catch(e){toast(e.message)}};
@@ -5495,7 +5505,20 @@ setupNewModules();
 /* =========================================================
    PAGAMENTOS — AVISOS E ATRASOS
    ========================================================= */
-function paymentStatusInfo(due,value){if(!due)return {label:'Sem vencimento',days:null,extra:0};const today=new Date();today.setHours(0,0,0,0);const d=new Date(due+'T00:00:00');const diff=Math.ceil((today-d)/86400000);const graceDays=3;const extra=diff>graceDays?Number(value||0)*0.05*(diff-graceDays):0;if(diff<0)return {label:`Vence em ${Math.abs(diff)} dia(s)`,days:diff,extra:0};if(diff===0)return {label:'Vence hoje',days:diff,extra:0};if(diff<=3)return {label:`Vencido há ${diff} dia(s) — dentro da tolerância`,days:diff,extra:0};return {label:`Atrasado ${diff} dia(s) — acréscimo: ${money(extra)}`,days:diff,extra};}
+function paymentStatusInfo(due,value){
+  if(!due)return {label:'Sem vencimento',days:null,extra:0,notice:false};
+  const today=new Date(); today.setHours(0,0,0,0);
+  const d=new Date(due+'T00:00:00');
+  const diff=Math.ceil((today-d)/86400000);
+  const noticeDays=Math.max(0,Number(data.settings.payment_notice_days??3));
+  const graceDays=Math.max(0,Number(data.settings.payment_grace_days??3));
+  const latePercent=Math.max(0,Number(data.settings.payment_late_percent??5));
+  const extra=diff>graceDays?Number(value||0)*(latePercent/100)*(diff-graceDays):0;
+  if(diff<0)return {label:Math.abs(diff)<=noticeDays?`Vence em ${Math.abs(diff)} dia(s) — aviso antecipado`:`Vence em ${Math.abs(diff)} dia(s)`,days:diff,extra:0,notice:Math.abs(diff)<=noticeDays};
+  if(diff===0)return {label:'Vence hoje',days:diff,extra:0,notice:true};
+  if(diff<=graceDays)return {label:`Vencido há ${diff} dia(s) — dentro da tolerância`,days:diff,extra:0,notice:true};
+  return {label:`Atrasado ${diff} dia(s) — acréscimo: ${money(extra)}`,days:diff,extra,notice:true};
+}
 
 /* =========================================================
    CONFIGURAÇÕES
@@ -5522,7 +5545,7 @@ $('settingsForm').onsubmit=
         banner:$('setBanner').value,
         payment_notice_days:Number($('setPaymentNotice').value||3),
         payment_grace_days:Number($('setPaymentGrace').value||3),
-        payment_late_percent:Number($('setPaymentLate').value||0)
+        payment_late_percent:Number($('setPaymentLate').value||5)
 
       };
 
@@ -5721,14 +5744,14 @@ function renderStudentPortal(){
   const s=portalData.student||{};
   $('studentWelcome').textContent=`Olá, ${portalField(s,'name','full_name')||'aluno'}!`;
   const upcoming=portalData.lessons.map(x=>({...x,_next:x.date?new Date(x.date+'T'+(portalField(x,'start_time','time')||'00:00')):nextOccurrence(x.day,portalField(x,'start_time','time'))})).filter(x=>x._next&&!Number.isNaN(x._next.getTime())&&x.status!=='Cancelada'&&x._next>=new Date()).sort((a,b)=>a._next-b._next);
-  const activities=portalData.tasks.filter(x=>!x.is_homework);
+  const activities=portalData.tasks.filter(x=>!x.is_homework&&!taskIsDone(x));
   const homework=[...portalData.tasks.filter(x=>x.is_homework),...portalData.records.filter(x=>x.homework).map(x=>({title:'Tema de casa',description:x.homework,course:x.course,date:x.date,status:'Pendente'}))].filter(x=>!taskIsDone(x));
   const p=portalData.progress||[]; const avg=p.length?p.reduce((a,x)=>a+Number(x.percent||x.progress||0),0)/p.length:0;
-  $('studentHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Próxima aula</h3><div class="big">${upcoming[0]?formatDateTime(upcoming[0]._next):'—'}</div><p>${upcoming[0]?esc(portalField(upcoming[0],'course','subject','title')||'Aula'):'Nenhuma aula agendada'}</p></div><div class="portal-card"><h3>Temas de casa</h3><div class="big">${homework.length}</div><p>pendente(s)</p></div><div class="portal-card"><h3>Progresso</h3><div class="big">${Math.round(avg)}%</div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,avg))}%"></span></div></div><div class="portal-card"><h3>Avaliações</h3><div class="big">${portalData.assessments.length}</div><p>registradas</p></div><div class="portal-card portal-wide"><h3>Próximas aulas</h3>${upcoming.length?portalItems(upcoming.slice(0,5),['course','subject','title'],['topic','description'],[]):'<div class="portal-empty">Nenhuma aula próxima.</div>'}</div><div class="portal-card portal-wide"><h3>Atividades recentes</h3>${portalItems(activities.slice(0,5),['title','activity','name'],['theme','description','status'],['due_date','date'])}</div></div>`;
+  $('studentHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Próxima aula</h3><div class="big">${upcoming[0]?formatDateTime(upcoming[0]._next):'—'}</div><p>${upcoming[0]?esc(portalField(upcoming[0],'course','subject','title')||'Aula'):'Nenhuma aula agendada'}</p></div><div class="portal-card"><h3>Temas de casa</h3><div class="big">${homework.length}</div><p>pendente(s)</p></div><div class="portal-card"><h3>Progresso</h3><div class="big">${Math.round(avg)}%</div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,avg))}%"></span></div></div><div class="portal-card"><h3>Avaliações</h3><div class="big">${portalData.assessments.length}</div><p>registradas</p></div><div class="portal-card"><h3>Conquistas</h3><div class="big">${portalData.studentAchievements.length}</div><p>conquistadas</p></div><div class="portal-card portal-wide"><h3>Próximas aulas</h3>${upcoming.length?portalItems(upcoming.slice(0,5),['course','subject','title'],['topic','description'],[]):'<div class="portal-empty">Nenhuma aula próxima.</div>'}</div><div class="portal-card portal-wide"><h3>Atividades recentes</h3>${portalItems(activities.slice(0,5),['title','activity','name'],['theme','description','status'],['due_date','date'])}</div></div>`;
   $('studentActivities').innerHTML=`<div class="portal-card"><h3>Atividades</h3>${portalItems(activities,['title','activity','name'],['theme','description','status'],['due_date','date'])}</div>`;
   $('studentHomework').innerHTML=`<div class="portal-card"><h3>Temas de casa</h3>${portalItems(homework,['title','name'],['theme','description','activity'],['due_date','date'])}</div>`;
   $('studentLessons').innerHTML=`<div class="portal-card"><h3>Próximas aulas</h3>${upcoming.length?'<div class="portal-list">'+upcoming.map(x=>`<div class="portal-item"><strong>${esc(portalField(x,'course','subject','title')||'Aula')}</strong><div>${esc(formatDateTime(x._next))}</div>${portalField(x,'notes')?`<small>${esc(x.notes)}</small>`:''}</div>`).join('')+'</div>':'<div class="portal-empty">Nenhuma aula agendada.</div>'}</div>`;
-  $('studentProgress').innerHTML=`<div class="portal-card"><h3>Meu progresso</h3>${p.length?p.map(x=>{const pct=Number(x.percent||x.progress||0);return `<div class="progress-row"><div class="top"><b>${esc(portalField(x,'topic','subject','course','title')||'Progresso')}</b><span>${pct}%</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,pct))}%"></span></div><small>${esc(portalField(x,'course','description','status')||'')}</small></div>`}).join(''):'<div class="portal-empty">Nenhum progresso registrado.</div>'}</div>`;
+  $('studentProgress').innerHTML=`<div class="portal-card"><h3>Meu progresso</h3>${p.length?p.map(x=>{const pct=Number(x.percent||x.progress||0);return `<div class="progress-row"><div class="top"><b>${esc(portalField(x,'topic','subject','course','title')||'Progresso')}</b><span>${pct}%</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,pct))}%"></span></div><small>${esc(portalField(x,'course','description','status')||'')}</small></div>`}).join(''):'<div class="portal-empty">Nenhum progresso registrado.</div>'}</div><div class="portal-card" style="margin-top:14px"><h3>Conquistas</h3>${portalData.studentAchievements.length?'<div class="portal-list">'+portalData.studentAchievements.map(a=>{const def=portalData.achievements.find(d=>d.id===a.achievement_id);return def?`<div class="portal-item"><strong>${esc(def.icon||'🏆')} ${esc(def.name)}</strong><small>${esc(def.description||'')}</small></div>`:''}).join('')+'</div>':'<div class="portal-empty">Nenhuma conquista ainda.</div>'}</div>`;
 }
 function renderResponsiblePortal(){
   const s=portalData.student||{};
@@ -5737,10 +5760,10 @@ function renderResponsiblePortal(){
   const pending=portalData.tasks.filter(x=>!taskIsDone(x));
   $('respHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Aluno</h3><div class="big">${esc(name)}</div><p>${esc(portalField(s,'course','courses')||'Cursos cadastrados')}</p></div><div class="portal-card"><h3>Atividades</h3><div class="big">${pending.length}</div><p>pendentes</p></div><div class="portal-card"><h3>Pagamentos</h3><div class="big">${portalData.payments.length}</div><p>registros</p></div><div class="portal-card"><h3>Lembretes</h3><div class="big">${portalData.reminders.filter(x=>!x.done).length}</div><p>ativos</p></div><div class="portal-card"><h3>Conquistas</h3><div class="big">${portalData.studentAchievements.length}</div><p>conquistadas</p></div><div class="portal-card portal-wide"><h3>Próximas aulas</h3>${portalItems(portalData.lessons.slice(0,5),['course','subject','title'],['topic','description'],['date'])}</div><div class="portal-card portal-wide"><h3>Últimos registros</h3>${portalItems(portalData.records.slice(0,5),['title','course','subject'],['content','description','notes'],['date'])}</div></div>`;
   $('respStudent').innerHTML=`<div class="portal-card"><h3>Dados do aluno</h3><div class="portal-list"><div class="portal-item"><strong>Nome</strong><div>${esc(name)}</div></div><div class="portal-item"><strong>Curso(s)</strong><div>${esc(portalField(s,'course','courses')||'Não informado')}</div></div><div class="portal-item"><strong>E-mail</strong><div>${esc(portalField(s,'email')||'Não informado')}</div></div><div class="portal-item"><strong>Observações</strong><div>${esc(portalField(s,'notes','observations')||'Nenhuma')}</div></div></div></div>`;
-  const respPlan=portalData.plans[0]; const respBilling=billingLabel(s.billing_type||respPlan?.plan_type); const respExpected=respPlan?Number(respPlan.monthly_price||0):0; $('respPayments').innerHTML=`<div class="portal-grid"><div class="portal-card portal-wide"><h3>Plano atual</h3><p><b>${esc(respPlan?.name||s.plan||'Sem plano')}</b></p><p>Cobrança: ${esc(respBilling)}</p><p>Valor previsto: <b>${money(respExpected)}</b></p>${portalItems(portalData.plans,['name','title'],['description','courses','plan_type'],[])}</div><div class="portal-card portal-wide"><h3>Pagamentos</h3>${portalItems(portalData.payments,['description','title','status'],['amount','value','status','type'],['due_date','date','paid_at'])}</div></div>`;
+  const respPlan=portalData.plans[0]; const respBilling=billingLabel(s.billing_type||respPlan?.plan_type); const respExpected=planExpectedValue(s)||Number(respPlan?.monthly_price||0); const respPaymentRows=portalData.payments.map(x=>{const info=paymentStatusInfo(x.due_date,x.amount);return `<div class="portal-item"><strong>${esc(x.description||x.title||x.type||'Pagamento')}</strong><div>${money(Number(x.amount||x.value||0)+Number(info.extra||0))} · ${esc(x.status||'A receber')}</div>${x.due_date?`<small>${esc(portalDate(x.due_date))} — ${esc(info.label)}</small>`:''}</div>`}).join(''); $('respPayments').innerHTML=`<div class="portal-grid"><div class="portal-card portal-wide"><h3>Plano atual</h3><p><b>${esc(respPlan?.name||s.plan||'Sem plano')}</b></p><p>Cobrança: ${esc(respBilling)}</p><p>Valor previsto: <b>${money(respExpected)}</b></p>${portalItems(portalData.plans,['name','title'],['description','courses','plan_type'],[])}</div><div class="portal-card portal-wide"><h3>Pagamentos</h3>${respPaymentRows?'<div class="portal-list">'+respPaymentRows+'</div>':'<div class="portal-empty">Nenhum pagamento registrado.</div>'}</div></div>`;
   $('respProgress').innerHTML=`<div class="portal-card"><h3>Progresso</h3>${portalData.progress.length?portalData.progress.map(x=>{const pct=Number(x.percent||x.progress||x.percentage||0);return `<div class="progress-row"><div class="top"><b>${esc(portalField(x,'topic','subject','course','title')||'Progresso')}</b><span>${pct}%</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,pct))}%"></span></div><small>${esc(portalField(x,'course','description','status')||'')}</small></div>`}).join(''):'<div class="portal-empty">Nenhum progresso registrado.</div>'}</div>`;
   $('respLessons').innerHTML=`<div class="portal-card"><h3>Registro de aulas</h3>${portalItems(portalData.records,['title','course','subject'],['content','description','notes'],['date'])}</div>`;
-  $('respReminders').innerHTML=`<div class="portal-card"><h3>Lembretes</h3>${portalItems(portalData.reminders.filter(x=>!x.done),['title','name','subject'],['description','content','text','status'],['date','due_date'])}</div>`;
+  const respManualRem=portalData.reminders.filter(x=>!x.done); const respPaymentRem=portalData.payments.filter(x=>String(x.status||'').toLowerCase()!=='pago').map(p=>{const info=paymentStatusInfo(p.due_date,p.amount);return info.notice?{title:'Pagamento — '+(p.student_name||name),text:info.label,date:p.due_date}:null}).filter(Boolean); $('respReminders').innerHTML=`<div class="portal-card"><h3>Lembretes</h3>${portalItems([...respManualRem,...respPaymentRem],['title','name','subject'],['description','content','text','status'],['date','due_date'])}</div>`;
   $('respBanners').innerHTML=`<div class="portal-card"><h3>Avisos e banners</h3>${portalItems(portalData.banners,['title','name'],['description','text','content'],['created_at','date'])}</div>`;
 }
 
