@@ -5366,35 +5366,73 @@ function autoFillRecordFromPlanning(showToast=true){
   const studentId=$('recordStudent')?.value?.trim();
   const theme=$('recordPlanningTheme')?.value?.trim();
   const info=$('recordPlanningInfo');
-  if(!studentId||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false;}
+  if(!studentId||!theme){
+    if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';
+    return false;
+  }
   const found=findPlanningForStudentAndTheme(studentId,theme);
-  if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false;}
-  const p=found.plan,l=found.lesson||{};
-  const content=compactPlanningText(l.content||l.objectives||l.activities||l.examples||p.theme||p.title||'',360);
-  const objective=compactPlanningText(l.objectives||'',420);
-  const activities=compactPlanningText(l.activities||'',520);
-  const examples=compactPlanningText(l.examples||'',420);
+  if(!found){
+    if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';
+    return false;
+  }
+
+  const p=found.plan||{};
+  const l=found.lesson||{};
   const lessonTitle=String(l.title||`Aula ${found.ordinal}`).trim();
-  const goal=compactPlanningText(p.student_goal||'',360);
-  const obsParts=[];
-  if(objective) obsParts.push(`Objetivo da aula: ${objective}`);
-  if(activities) obsParts.push(`Atividades realizadas: ${activities}`);
-  if(examples) obsParts.push(`Exemplos/prática: ${examples}`);
-  if(goal) obsParts.push(`Meta do aluno relacionada: ${goal}`);
-  const obs=obsParts.join('\n\n');
-  const homework=compactPlanningText(l.homework||'',360);
-  const notes=compactPlanningText(l.notes||p.notes||'',360);
-  const completeObservation=obs
-    ? `A aula foi planejada para trabalhar o tema "${lessonTitle}".\n\n${obs}\n\nO registro acima foi preenchido automaticamente com base no planejamento e pode ser ajustado de acordo com o que realmente aconteceu durante a aula.`
-    : `A aula foi planejada para trabalhar o tema "${lessonTitle}". O planejamento foi usado como base para o registro; revise este campo para descrever como a aula realmente aconteceu.`;
-  if(showToast||!$('recordContent').value.trim()) $('recordContent').value=content;
+  const clean=v=>String(v??'').replace(/\r/g,'').trim();
+  const section=(label,value)=>value?`${label}:\n${clean(value)}`:'';
+
+  const objective=clean(l.objectives);
+  const content=clean(l.content);
+  const activities=clean(l.activities);
+  const examples=clean(l.examples);
+  const homework=clean(l.homework);
+  const lessonNotes=clean(l.notes);
+  const goal=clean(p.student_goal);
+  const expected=clean(p.expected_result);
+  const generalNotes=clean(p.notes);
+  const course=clean(p.course);
+  const level=clean(p.initial_level);
+  const duration=clean(p.duration);
+  const schedule=clean(p.schedule);
+
+  /*
+     "Como foi a aula?" agora usa praticamente todas as informações
+     disponíveis na aula do planejamento, sem reduzir para apenas duas
+     frases. O texto é montado em formato de relato para ficar útil no
+     Portal do Responsável.
+  */
+  const parts=[];
+  parts.push(`A aula ${found.ordinal}, "${lessonTitle}", foi planejada para trabalhar o tema "${theme}"${course?` na área de ${course}`:''}${level?`, considerando o nível ${level}`:''}.`);
+
+  if(objective) parts.push(`O objetivo principal da aula foi ${objective.replace(/[.!?]+$/,'')}.`);
+  if(content) parts.push(`Durante a aula, foi trabalhado o seguinte conteúdo: ${content}`);
+  if(activities) parts.push(`As atividades previstas envolveram: ${activities}`);
+  if(examples) parts.push(`A prática e os exemplos utilizados no planejamento foram: ${examples}`);
+  if(goal) parts.push(`Esse conteúdo está relacionado à meta do aluno de ${goal.replace(/[.!?]+$/,'')}.`);
+  if(expected) parts.push(`O resultado esperado do planejamento é: ${expected}`);
+  if(duration) parts.push(`A duração prevista para a aula é ${duration}.`);
+  if(schedule) parts.push(`O planejamento indica o horário/frequência: ${schedule}.`);
+  if(lessonNotes) parts.push(`Observações específicas da aula no planejamento: ${lessonNotes}`);
+  if(generalNotes) parts.push(`Observações gerais do planejamento: ${generalNotes}`);
+
+  const completeObservation=parts.join('\n\n')+
+    '\n\nRegistro gerado automaticamente a partir do planejamento. O texto pode ser ajustado para registrar o que realmente aconteceu durante a aula, incluindo participação do aluno, dificuldades, dúvidas, desempenho e adaptações feitas pelo professor.';
+
+  const contentText=content || objective || activities || examples || `Tema trabalhado: ${theme}.`;
+  const homeworkText=homework || '';
+  const notesText=lessonNotes || generalNotes || '';
+
+  if(showToast||!$('recordContent').value.trim()) $('recordContent').value=contentText;
   if(showToast||!$('recordObservation').value.trim()) $('recordObservation').value=completeObservation;
-  if(showToast||!$('recordHomework').value.trim()) $('recordHomework').value=homework;
-  if(showToast||!$('recordNotes').value.trim()) $('recordNotes').value=notes;
-  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(studentId))} · ${l.title?`Aula: ${esc(l.title)}`:`Aula ${found.ordinal}`}.`;
-  if(showToast)toast('Registro preenchido pelo aluno + tema do planejamento. Revise antes de salvar.');
+  if(showToast||!$('recordHomework').value.trim()) $('recordHomework').value=homeworkText;
+  if(showToast||!$('recordNotes').value.trim()) $('recordNotes').value=notesText;
+
+  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(studentId))} · ${l.title?`Aula: ${esc(l.title)}`:`Aula ${found.ordinal}`}. <br><span class="muted">O campo “Como foi a aula?” foi preenchido com todas as informações disponíveis desta aula do planejamento.</span>`;
+  if(showToast)toast('Registro preenchido com o conteúdo completo do planejamento. Revise antes de salvar.');
   return true;
 }
+
 function renderRecords(){const el=$('recordsList');if(!el)return;el.innerHTML=data.records.slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px"><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id)||x.student_name||'Aluno')}</span><span class="badge green">${esc(x.status||'')}</span>${x.date?`<span class="badge purple">${esc(x.date)}</span>`:''}</div><div class="view-block"><h4>Conteúdo trabalhado</h4><div class="planning-text">${esc(x.content||'Não informado.')}</div></div><div class="view-block"><h4>Como foi a aula?</h4><div class="planning-text">${esc(x.observation||'Não informado.')}</div></div><div class="view-block"><h4>Tarefa de casa</h4><div class="planning-text">${esc(x.homework||'Não informado.')}</div></div><div class="view-block"><h4>Observações</h4><div class="planning-text">${esc(x.notes||'Não informado.')}</div></div><div class="row-actions" style="margin-top:10px"><button class="btn mini" onclick="editRecord('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';}
 function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge purple">${x.is_homework?'TEMA DE CASA':'ATIVIDADE'}</span><span class="badge yellow">${esc(x.status)}</span><span class="badge purple">${esc(x.due_date||'Sem data')}</span></div>${x.activity?`<p><b>Atividade:</b> ${esc(x.activity)}</p>`:''}${x.theme?`<p><b>Tema:</b> ${esc(x.theme)}</p>`:''}<p>${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editTask('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteTask('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>';}
 function renderAssessments(){const el=$('assessmentsList');if(!el)return;el.innerHTML=data.assessments.slice().reverse().map(x=>{const pct=Number(x.max_score)?Number(x.score||0)/Number(x.max_score)*100:0;return `<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge green">${Number(x.score||0)} / ${Number(x.max_score||10)}</span><span class="badge purple">${Math.round(pct)}%</span></div><p>${esc(x.content||'')}</p><div class="row-actions"><button class="btn mini" onclick="editAssessment('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteAssessment('${x.id}')">Excluir</button></div></div>`}).join('')||'<div class="empty">Nenhuma avaliação.</div>';}
