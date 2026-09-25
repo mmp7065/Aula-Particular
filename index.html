@@ -5,13 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aulas Particulares</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-/* Configuração Supabase incorporada para o index funcionar sozinho. */
-window.SUPABASE_CONFIG = {
-  url: 'https://coyhdlrpqqtkouzzkjo.supabase.co',
-  key: 'sb_publishable_nla-790u_OjtNyGX1Osj8Q_L7nvVJ_H'
-};
-</script>
+<script src="config.js"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -1018,7 +1012,7 @@ th{
 <div id="publicHome" class="public-home">
   <header class="public-header">
     <div class="logo">AULAS <span>PARTICULARES</span></div>
-    <button id="openLogin" class="btn primary enter-btn" type="button">Entrar</button>
+    <button id="openLogin" class="btn primary enter-btn">Entrar</button>
   </header>
 
   <main class="public-content">
@@ -1031,7 +1025,7 @@ th{
           planejamentos, progresso e comunicação clara entre aluno, responsável e professor.
         </p>
         <div class="public-actions">
-          <button id="openLoginHero" class="btn primary" type="button">Entrar na área do aluno</button>
+          <button id="openLoginHero" class="btn primary">Entrar na área do aluno</button>
         </div>
       </div>
       <div class="public-site">
@@ -1072,7 +1066,7 @@ th{
   <main class="portal-main">
     <div class="portal-welcome"><h1 id="studentWelcome">Olá!</h1><p>Aqui está tudo o que você precisa para acompanhar suas aulas.</p></div>
     <nav class="portal-nav"><button class="btn mini active" data-portal="studentHome">Visão geral</button><button class="btn mini" data-portal="studentActivities">Atividades</button><button class="btn mini" data-portal="studentHomework">Temas de casa</button><button class="btn mini" data-portal="studentLessons">Próximas aulas</button><button class="btn mini" data-portal="studentProgress">Progresso</button></nav>
-    <section id="studentHome" class="portal-section active"></section><section id="studentActivities" class="portal-section"></section><section id="studentHomework" class="portal-section"></section><section id="studentLessons" class="portal-section"></section><section id="studentProgress" class="portal-section"></section><section id="studentAchievements" class="portal-section"></section>
+    <section id="studentHome" class="portal-section active"></section><section id="studentActivities" class="portal-section"></section><section id="studentHomework" class="portal-section"></section><section id="studentLessons" class="portal-section"></section><section id="studentProgress" class="portal-section"></section>
   </main>
 </div>
 
@@ -1080,8 +1074,8 @@ th{
   <header class="portal-top"><div class="brand">AULAS <span>PARTICULARES</span> · RESPONSÁVEL</div><button class="btn mini portalLogout">Sair</button></header>
   <main class="portal-main">
     <div class="portal-welcome"><h1 id="responsibleWelcome">Acompanhamento do aluno</h1><p>Informações acadêmicas, financeiras e comunicados em um só lugar.</p></div>
-    <nav class="portal-nav"><button class="btn mini active" data-portal="respHome">Resumo</button><button class="btn mini" data-portal="respStudent">Aluno</button><button class="btn mini" data-portal="respPayments">Pagamentos e planos</button><button class="btn mini" data-portal="respProgress">Progresso</button><button class="btn mini" data-portal="respLessons">Registro de aulas</button><button class="btn mini" data-portal="respReminders">Lembretes</button><button class="btn mini" data-portal="respBanners">Avisos</button></nav>
-    <section id="respHome" class="portal-section active"></section><section id="respStudent" class="portal-section"></section><section id="respPayments" class="portal-section"></section><section id="respProgress" class="portal-section"></section><section id="respLessons" class="portal-section"></section><section id="respReminders" class="portal-section"></section><section id="respBanners" class="portal-section"></section>
+    <nav class="portal-nav"><button class="btn mini active" data-portal="respHome">Resumo</button><button class="btn mini" data-portal="respStudent">Aluno</button><button class="btn mini" data-portal="respPayments">Pagamentos e planos</button><button class="btn mini" data-portal="respProgress">Progresso</button><button class="btn mini" data-portal="respLessons">Registro de aulas</button><button class="btn mini" data-portal="respReminders">Lembretes</button></nav>
+    <section id="respHome" class="portal-section active"></section><section id="respStudent" class="portal-section"></section><section id="respPayments" class="portal-section"></section><section id="respProgress" class="portal-section"></section><section id="respLessons" class="portal-section"></section><section id="respReminders" class="portal-section"></section>
   </main>
 </div>
 
@@ -1113,6 +1107,7 @@ th{
       <button data-page="templates">▤ Modelos</button>
             <button data-page="receipts">▤ Recibos</button>
       <button data-page="attendance">✓ Presença</button>
+      <button data-page="lessonControl">▤ Controle de aulas</button>
       <button data-page="achievements">★ Conquistas</button>
       <button data-page="search">⌕ Busca</button>
             <button data-page="prices">◇ Preços</button>
@@ -1230,7 +1225,7 @@ th{
         <div id="schedule" class="schedule"></div>
 
         <p class="muted" style="font-size:12px;margin-bottom:0">
-          Horários disponíveis: terça e quinta 09–10, 10–11 e 18–19; sexta 09–10 e 10–11. Segunda e quarta não têm aulas. A agenda mostra apenas a programação; o status fica em Registro de aulas.
+          Horários disponíveis: terça e quinta 09–10, 10–11 e 18–19; sexta 09–10 e 10–11. Segunda e quarta não têm aulas.
         </p>
 
       </div>
@@ -1276,7 +1271,6 @@ th{
                 <th>ALUNO</th>
                 <th>CURSO</th>
                 <th>PLANO</th>
-                <th>COBRANÇA</th>
                 <th>FORMATO</th>
                 <th>STATUS</th>
                 <th>AÇÕES</th>
@@ -1533,7 +1527,7 @@ th{
 
     <section id="reminders" class="section"><div class="section-head"><div><h2>Lembretes</h2><p class="muted">Alertas de aulas, tarefas, provas e pagamentos.</p></div><button id="newReminder" class="btn primary">+ Lembrete</button></div><div class="card"><div id="remindersList"></div></div></section>
 
-    <section id="reports" class="section"><div class="section-head"><div><h2>Relatórios</h2><p class="muted">Resumo do desempenho e da frequência.</p></div><button id="generateReport" class="btn primary">Gerar relatório</button></div><div class="card"><div id="reportContent" class="planning-view"></div></div></section>
+    <section id="reports" class="section"><div class="section-head"><div><h2>Relatórios</h2><p class="muted">Resumo do desempenho e da frequência.</p></div><div class="toolbar"><select id="reportStudent"></select><button id="generateReport" class="btn primary">Gerar relatório</button></div></div><div class="card"><div id="reportContent" class="planning-view"></div></div></section>
 
     <section id="materials" class="section"><div class="section-head"><div><h2>Materiais</h2><p class="muted">Organize materiais por matéria e aluno.</p></div><button id="newMaterial" class="btn primary">+ Material</button></div><div class="card"><div id="materialsList"></div></div></section>
 
@@ -1545,7 +1539,9 @@ th{
 
     <section id="attendance" class="section"><div class="section-head"><div><h2>Presença</h2><p class="muted">A presença é calculada a partir dos registros das aulas.</p></div></div><div class="card"><div id="attendanceList"></div></div></section>
 
-    <section id="achievements" class="section"><div class="section-head"><div><h2>Conquistas</h2><p class="muted">Cadastre conquistas e veja todas as conquistas de cada aluno.</p></div><button id="newAchievement" class="btn primary">+ Nova conquista</button></div><div class="card" style="margin-bottom:14px"><div class="toolbar"><label>Aluno <select id="achievementStudent"></select></label></div><div id="achievementStudentList"></div></div><div class="card"><h3>Todas as conquistas</h3><div id="achievementsList" class="feature-grid"></div></div></section>
+    <section id="lessonControl" class="section"><div class="section-head"><div><h2>Controle de aulas</h2><p class="muted">Aqui você registra o que aconteceu com cada aula. A Agenda mostra somente o horário cadastrado.</p></div></div><div class="card"><div id="lessonControlList"></div></div></section>
+
+    <section id="achievements" class="section"><div class="section-head"><div><h2>Conquistas</h2><p class="muted">Cadastre conquistas e acompanhe as conquistas de cada aluno.</p></div><button id="newAchievement" class="btn primary">+ Nova conquista</button></div><div class="card" style="margin-bottom:14px"><div class="toolbar"><select id="achievementStudent"></select></div><div id="studentAchievementsList" class="feature-grid"></div></div><div id="achievementsList" class="feature-grid"></div></section>
 
     <section id="search" class="section"><div class="section-head"><div><h2>Busca global</h2><p class="muted">Pesquise alunos, aulas, planejamentos, tarefas e pagamentos.</p></div></div><div class="card"><input id="globalSearch" placeholder="Digite o nome do aluno, matéria, tarefa..." style="max-width:520px"><div id="globalResults" class="search-results" style="margin-top:14px"></div></div></section>
 
@@ -1763,7 +1759,7 @@ th{
 
         <div class="field">
           <label>Tipo de cobrança</label>
-          <select id="studentBillingType"><option value="semanal">Semanal</option><option value="mensal">Mensal</option><option value="avulso">Avulso</option></select>
+          <select id="studentBillingType"><option value="semanal">Semanal</option><option value="mensal" selected>Mensal</option><option value="avulso">Avulso</option></select>
         </div>
 
         <div class="field">
@@ -1904,25 +1900,18 @@ th{
 
 
         <div class="field">
-          <label>Tipo de plano</label>
+          <label>Tipo de cobrança</label>
           <select id="planType"><option value="semanal">Semanal</option><option value="mensal">Mensal</option><option value="avulso">Avulso</option></select>
         </div>
         <div class="field">
-          <label>Revisão / avaliação incluída</label>
-          <select id="planExamReview"><option value="true">Sim</option><option value="false">Não</option></select>
+          <label>Curso(s) do plano</label>
+          <select id="planCourses" class="multi-select" multiple></select>
+          <div class="course-help">Selecione os cursos; o valor estimado será calculado pelos preços cadastrados.</div>
         </div>
-        <div class="field full">
-          <label>Cursos do plano e cálculo do valor</label>
-          <div id="planCoursesBuilder"></div>
-          <button type="button" class="btn mini" id="addPlanCourse">+ Adicionar curso</button>
-          <div class="muted" style="margin-top:8px">Adicione os cursos que fazem parte do plano. O valor final é calculado automaticamente pelas aulas e pelo preço de cada curso.</div>
-          <div id="planFinalValue" style="font-size:20px;font-weight:800;margin-top:10px">Valor final: R$ 0,00 / mês</div>
-        </div>
+        <div class="field full"><label>Valor calculado</label><input id="planCalculatedPrice" type="text" readonly value="R$ 0,00"></div>
         <div class="field full">
           <label>Descrição</label>
-
           <textarea id="planDesc"></textarea>
-
         </div>
 
       </div>
@@ -2319,15 +2308,14 @@ th{
 
 <!-- MODAIS DOS NOVOS MÓDULOS -->
 <div id="recordModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registro de aula</h2><button class="close" data-close="recordModal">×</button></div><form id="recordForm"><input id="recordId" type="hidden"><div class="form-grid"><div class="field"><label>Aula</label><select id="recordLesson" required></select></div><div class="field"><label>Status</label><select id="recordStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><label>Conteúdo trabalhado</label><textarea id="recordContent" style="min-height:120px"></textarea></div><div class="field full"><label>Como foi a aula?</label><textarea id="recordObservation" style="min-height:120px"></textarea></div><div class="field full"><label>Tarefa de casa</label><textarea id="recordHomework"></textarea></div><div class="field full"><label>Observações</label><textarea id="recordNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="recordModal">Cancelar</button><button class="btn primary">Salvar registro</button></div></form></div></div>
-<div id="taskModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Tarefa</h2><button class="close" data-close="taskModal">×</button></div><form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="taskStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="taskCourse" required></select></div><div class="field"><label>Tipo</label><select id="taskType"><option value="atividade">Atividade</option><option value="tema">Tema de casa</option></select></div><div class="field"><label>Tema</label><input id="taskTopic" placeholder="Ex.: Porcentagens"></div><div class="field full"><label>Atividade</label><input id="taskActivity" placeholder="Ex.: Resolver 10 exercícios"></div><div class="field full"><label>Título</label><input id="taskTitle" required></div><div class="field full"><label>Descrição</label><textarea id="taskDescription"></textarea></div><div class="field"><label>Entrega</label><input id="taskDue" type="date"></div><div class="field"><label>Status</label><select id="taskStatus"><option>Pendente</option><option>Entregue</option><option>Corrigida</option><option>Atrasada</option></select></div><div class="field full"><label>Observações / correção</label><textarea id="taskNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="taskModal">Cancelar</button><button class="btn primary">Salvar tarefa</button></div></form></div></div>
+<div id="taskModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Tarefa</h2><button class="close" data-close="taskModal">×</button></div><form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="taskStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="taskCourse" required></select></div><div class="field full"><label>Título</label><input id="taskTitle" required></div><div class="field"><label>Tipo</label><select id="taskType"><option value="Atividade">Atividade</option><option value="Tema de casa">Tema de casa</option></select></div><div class="field"><label>Atividade</label><input id="taskActivity" placeholder="Ex.: interpretação, exercícios..."></div><div class="field full"><label>Tema</label><input id="taskTheme" placeholder="Ex.: frações, substantivos..."></div><div class="field full"><label>Descrição</label><textarea id="taskDescription"></textarea></div><div class="field"><label>Entrega</label><input id="taskDue" type="date"></div><div class="field"><label>Status</label><select id="taskStatus"><option>Pendente</option><option>Entregue</option><option>Corrigida</option><option>Atrasada</option></select></div><div class="field full"><label>Observações / correção</label><textarea id="taskNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="taskModal">Cancelar</button><button class="btn primary">Salvar tarefa</button></div></form></div></div>
 <div id="assessmentModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Avaliação</h2><button class="close" data-close="assessmentModal">×</button></div><form id="assessmentForm"><input id="assessmentId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="assessmentStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="assessmentCourse" required></select></div><div class="field full"><label>Título</label><input id="assessmentTitle" required></div><div class="field"><label>Nota</label><input id="assessmentScore" type="number" min="0" step="0.01"></div><div class="field"><label>Nota máxima</label><input id="assessmentMax" type="number" min="1" step="0.01" value="10"></div><div class="field"><label>Data</label><input id="assessmentDate" type="date"></div><div class="field full"><label>Conteúdos</label><textarea id="assessmentContent"></textarea></div><div class="field full"><label>Observações</label><textarea id="assessmentNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="assessmentModal">Cancelar</button><button class="btn primary">Salvar avaliação</button></div></form></div></div>
 <div id="reminderModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Lembrete</h2><button class="close" data-close="reminderModal">×</button></div><form id="reminderForm"><input id="reminderId" type="hidden"><div class="form-grid"><div class="field full"><label>Título</label><input id="reminderTitle" required></div><div class="field"><label>Data</label><input id="reminderDate" type="date" required></div><div class="field"><label>Tipo</label><select id="reminderType"><option>Aula</option><option>Tarefa</option><option>Avaliação</option><option>Pagamento</option><option>Outro</option></select></div><div class="field full"><label>Descrição</label><textarea id="reminderText"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="reminderModal">Cancelar</button><button class="btn primary">Salvar lembrete</button></div></form></div></div>
 <div id="materialModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Material</h2><button class="close" data-close="materialModal">×</button></div><form id="materialForm"><input id="materialId" type="hidden"><div class="form-grid"><div class="field full"><label>Nome</label><input id="materialName" required></div><div class="field"><label>Matéria / curso</label><select id="materialCourse"></select></div><div class="field"><label>Aluno</label><select id="materialStudent"></select></div><div class="field full"><label>Link ou caminho do arquivo</label><input id="materialUrl" placeholder="https://... ou materiais/arquivo.pdf"></div><div class="field full"><label>Descrição</label><textarea id="materialDescription"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="materialModal">Cancelar</button><button class="btn primary">Salvar material</button></div></form></div></div>
 <div id="activityModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Atividade</h2><button class="close" data-close="activityModal">×</button></div><form id="activityForm"><input id="activityId" type="hidden"><div class="form-grid"><div class="field full"><label>Título</label><input id="activityTitle" required></div><div class="field"><label>Matéria / curso</label><select id="activityCourse"></select></div><div class="field"><label>Nível</label><select id="activityLevel"><option>Fácil</option><option>Médio</option><option>Difícil</option></select></div><div class="field full"><label>Enunciado</label><textarea id="activityText" style="min-height:150px"></textarea></div><div class="field full"><label>Resposta / gabarito</label><textarea id="activityAnswer"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="activityModal">Cancelar</button><button class="btn primary">Salvar atividade</button></div></form></div></div>
 <div id="templateModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Modelo de planejamento</h2><button class="close" data-close="templateModal">×</button></div><form id="templateForm"><input id="templateId" type="hidden"><div class="field"><label>Nome do modelo</label><input id="templateName" required></div><div class="field"><label>Matéria / curso</label><select id="templateCourse"></select></div><div class="field"><label>Conteúdo base</label><textarea id="templateContent" style="min-height:180px"></textarea></div><div class="modal-actions"><button type="button" class="btn" data-close="templateModal">Cancelar</button><button class="btn primary">Salvar modelo</button></div></form></div></div>
-<div id="progressModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registrar progresso</h2><button class="close" data-close="progressModal">×</button></div><form id="progressForm"><input id="progressId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="progressFormStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="progressCourse"></select></div><div class="field full"><label>Conteúdo / habilidade</label><input id="progressTopic" required></div><div class="field full"><label>Progresso (%)</label><input id="progressPercent" type="range" min="0" max="100" value="0" required oninput="document.getElementById('progressPercentValue').textContent=this.value+'%'"><div style="display:flex;justify-content:space-between"><span class="muted">0%</span><b id="progressPercentValue">0%</b><span class="muted">100%</span></div></div><div class="field"><label>Status</label><select id="progressStatus"><option>Em desenvolvimento</option><option>Dominado</option><option>Precisa revisar</option><option>Não iniciado</option></select></div><div class="field full"><label>Observações</label><textarea id="progressNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="progressModal">Cancelar</button><button class="btn primary">Salvar progresso</button></div></form></div></div>
+<div id="progressModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registrar progresso</h2><button class="close" data-close="progressModal">×</button></div><form id="progressForm"><input id="progressId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="progressFormStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="progressCourse"></select></div><div class="field full"><label>Conteúdo / habilidade</label><input id="progressTopic" required></div><div class="field"><label>Progresso (%)</label><input id="progressPercent" type="number" min="0" max="100" value="0" required></div><div class="field"><label>Status</label><select id="progressStatus"><option>Em desenvolvimento</option><option>Dominado</option><option>Precisa revisar</option><option>Não iniciado</option></select></div><div class="field full"><label>Observações</label><textarea id="progressNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="progressModal">Cancelar</button><button class="btn primary">Salvar progresso</button></div></form></div></div>
 <div id="receiptModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Recibo</h2><button class="close" data-close="receiptModal">×</button></div><div id="receiptContent" class="planning-view"></div><div class="modal-actions"><button class="btn" onclick="printReceipt()">Imprimir / salvar PDF</button><button class="btn" data-close="receiptModal">Fechar</button></div></div></div>
-<div id="achievementModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Conquista</h2><button class="close" data-close="achievementModal">×</button></div><form id="achievementForm"><input id="achievementId" type="hidden"><div class="form-grid"><div class="field"><label>Nome</label><input id="achievementName" required></div><div class="field"><label>Ícone</label><input id="achievementIcon" value="🏆"></div><div class="field full"><label>Descrição</label><textarea id="achievementDescription"></textarea></div><div class="field"><label>Meta de aulas</label><input id="achievementGoal" type="number" min="0" value="1"></div></div><div class="modal-actions"><button type="button" class="btn" data-close="achievementModal">Cancelar</button><button class="btn primary">Salvar conquista</button></div></form></div></div>
 <div id="toast" class="toast"></div>
 
 
@@ -2356,54 +2344,6 @@ const client = supabase.createClient(
 );
 
 const $ = id => document.getElementById(id);
-
-
-/* =========================================================
-   SISTEMA DE ENTRADA — INICIALIZAÇÃO SEGURA
-   Este bloco fica logo no início do JavaScript para que
-   os botões "Entrar" funcionem mesmo se algum módulo
-   posterior apresentar um erro.
-   ========================================================= */
-
-function openLoginSafe(){
-  const publicHome=document.getElementById('publicHome');
-  const loginView=document.getElementById('loginView');
-
-  if(publicHome){
-    publicHome.classList.add('hidden');
-    publicHome.style.setProperty('display','none','important');
-  }
-
-  if(loginView){
-    loginView.classList.remove('hidden');
-    loginView.style.setProperty('display','flex','important');
-  }
-
-  const email=document.getElementById('email');
-  if(email){
-    setTimeout(()=>email.focus(),50);
-  }
-}
-
-function openHomeSafe(){
-  const publicHome=document.getElementById('publicHome');
-  const loginView=document.getElementById('loginView');
-
-  if(loginView){
-    loginView.classList.add('hidden');
-    loginView.style.setProperty('display','none','important');
-  }
-
-  if(publicHome){
-    publicHome.classList.remove('hidden');
-    publicHome.style.setProperty('display','block','important');
-  }
-}
-
-document.getElementById('openLogin')?.addEventListener('click',openLoginSafe);
-document.getElementById('openLoginHero')?.addEventListener('click',openLoginSafe);
-document.getElementById('backHome')?.addEventListener('click',openHomeSafe);
-
 
 const money = n =>
   new Intl.NumberFormat('pt-BR',{
@@ -2441,7 +2381,7 @@ let data={
   banners:[],
   settings:{},
   planning:[],
-  records:[], tasks:[], assessments:[], reminders:[], materials:[], activities:[], templates:[], progress:[]
+  records:[], tasks:[], assessments:[], reminders:[], materials:[], activities:[], templates:[], progress:[], achievements:[], studentAchievements:[]
 };
 
 let currentRole='admin';
@@ -2665,7 +2605,7 @@ function nav(p){
     agenda:'Agenda',
     students:'Alunos',
     plans:'Planos',
-    planning:'Planejamentos de Aulas', progress:'Progresso', records:'Registro de aulas', tasks:'Tarefas', assessments:'Avaliações', calendar:'Calendário', reminders:'Lembretes', reports:'Relatórios', materials:'Materiais', activities:'Banco de atividades', templates:'Modelos', public:'Página pública', receipts:'Recibos', attendance:'Presença', achievements:'Conquistas', search:'Busca', parent:'Portal do responsável', prices:'Preços',
+    planning:'Planejamentos de Aulas', progress:'Progresso', records:'Registro de aulas', tasks:'Tarefas', assessments:'Avaliações', calendar:'Calendário', reminders:'Lembretes', reports:'Relatórios', materials:'Materiais', activities:'Banco de atividades', templates:'Modelos', public:'Página pública', receipts:'Recibos', attendance:'Presença', lessonControl:'Controle de aulas', achievements:'Conquistas', search:'Busca', parent:'Portal do responsável', prices:'Preços',
     banners:'Banners',
     finance:'Financeiro',
     settings:'Configurações'
@@ -2749,6 +2689,8 @@ async function loadAll(){
   try{ data.activities=await loadTable('activities'); }catch(_){ data.activities=[]; }
   try{ data.templates=await loadTable('planning_templates'); }catch(_){ data.templates=[]; }
   try{ data.progress=await loadTable('student_progress'); }catch(_){ data.progress=[]; }
+  try{ data.achievements=await loadTable('achievement_catalog'); }catch(_){ data.achievements=[]; }
+  try{ data.studentAchievements=await loadTable('student_achievements'); }catch(_){ data.studentAchievements=[]; }
 
 
   const s=await loadTable('settings');
@@ -3167,8 +3109,6 @@ function renderStudents(){
 
         <td>${esc(x.plan||'-')}</td>
 
-        <td><span class="badge blue">${esc(billingTypeLabel(studentBillingType(x)))}</span></td>
-
         <td>
           ${esc(x.format||x.modality||'-')}
         </td>
@@ -3213,7 +3153,7 @@ function renderStudents(){
 
     `).join('')
     ||
-    '<tr><td colspan="7" class="empty">Nenhum aluno.</td></tr>';
+    '<tr><td colspan="6" class="empty">Nenhum aluno.</td></tr>';
 
 }
 
@@ -5107,8 +5047,7 @@ $('planForm').onsubmit=
 
         monthly_price: Math.max(0,Number($('planPrice').value||0)),
         exam_review: $('planExamReview').value==='true',
-        plan_type: $('planType').value,
-        course_prices: planCourseBuilderData()
+        plan_type: $('planType').value
 
       };
 
@@ -5481,7 +5420,7 @@ function renderNewModules(){
   subjectOptions('taskCourse'); subjectOptions('assessmentCourse'); subjectOptions('materialCourse'); subjectOptions('activityCourse'); subjectOptions('templateCourse'); subjectOptions('progressCourse');
   ['recordLesson'].forEach(id=>{const el=$(id);if(el){el.innerHTML=data.lessons.map(l=>`<option value="${esc(l.id)}">${esc(l.day)} ${esc(timeOf(l))} — ${esc(l.student_name)} — ${esc(l.course)}</option>`).join('')||'<option value="">Nenhuma aula</option>';}});
   ['taskStudent','assessmentStudent','materialStudent','progressFormStudent','parentStudent'].forEach(id=>studentOptions(id,$(id)?.value||''));
-  renderProgress(); renderRecords(); renderTasks(); renderAssessments(); renderCalendar(); renderReminders(); renderReports(); renderMaterials(); renderActivities(); renderTemplates(); renderPublic(); renderReceipts(); renderAttendance(); renderAchievements(); renderParent();
+  renderProgress(); renderRecords(); renderTasks(); renderAssessments(); renderCalendar(); renderReminders(); renderReports(); renderMaterials(); renderActivities(); renderTemplates(); renderReceipts(); renderAttendance(); renderAchievements(); renderLessonControl();
 }
 function renderProgress(){const el=$('progressContent');if(!el)return;const sid=$('progressStudent')?.value||data.students[0]?.id; if($('progressStudent'))studentOptions('progressStudent',sid||''); const p=data.progress.filter(x=>!sid||x.student_id===sid); const lessons=data.lessons.filter(x=>x.student_id===sid&&x.status==='Concluída').length; const records=data.records.filter(x=>x.student_id===sid&&x.status==='Realizada').length; const tasks=data.tasks.filter(x=>x.student_id===sid); const done=tasks.filter(x=>['Entregue','Corrigida'].includes(x.status)).length; const avg=p.length?p.reduce((a,x)=>a+Number(x.percent||0),0)/p.length:0; el.innerHTML=`<div class="small-grid"><div class="card"><div class="muted">AULAS CONCLUÍDAS</div><h2>${lessons||records}</h2></div><div class="card"><div class="muted">TAREFAS CONCLUÍDAS</div><h2>${done}/${tasks.length}</h2></div><div class="card"><div class="muted">PROGRESSO MÉDIO</div><h2>${Math.round(avg)}%</h2></div></div>${p.length?p.map(x=>`<div class="progress-row"><div class="top"><b>${esc(x.topic)}</b><span>${Number(x.percent||0)}% · ${esc(x.status||'')}</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,Number(x.percent||0)))}%"></span></div><small class="muted">${esc(x.course||'')} ${x.notes?'— '+esc(x.notes):''}</small></div>`).join(''):'<div class="empty">Nenhum progresso manual registrado para este aluno.</div>'}`;}
 function renderRecords(){const el=$('recordsList');if(!el)return;el.innerHTML=data.records.slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(studentName(x.student_id)||x.student_name)}</b> · ${esc(x.status)}<p>${esc(x.content||'Sem conteúdo registrado.')}</p><small class="muted">${esc(x.observation||'')}</small><div class="row-actions" style="margin-top:10px"><button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';}
@@ -5734,9 +5673,9 @@ async function loadPortal(){
   if(studentError) throw studentError;
   portalData.student=student;
 
-  const tables=['lessons','plans','payments','tasks','assessments','reminders','lesson_records','lesson_plans','student_progress','materials'];
+  const tables=['lessons','plans','payments','tasks','assessments','reminders','lesson_records','lesson_plans','student_progress','materials','achievement_catalog','student_achievements'];
   const values=await Promise.all(tables.map(t=>portalQuery(t,studentId,ownerId).catch(()=>[])));
-  [portalData.lessons,portalData.plans,portalData.payments,portalData.tasks,portalData.assessments,portalData.reminders,portalData.records,portalData.planning,portalData.progress,portalData.materials]=values;
+  [portalData.lessons,portalData.plans,portalData.payments,portalData.tasks,portalData.assessments,portalData.reminders,portalData.records,portalData.planning,portalData.progress,portalData.materials,portalData.achievements,portalData.studentAchievements]=values;
 
   if(ownerId){
     const {data:b,error:bannersError}=await client.from('banners').select('*').eq('user_id',ownerId);
@@ -5813,7 +5752,8 @@ document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
   const el=$(target); if(el)el.classList.add('active'); btn.classList.add('active');
 });
 
-/* Os botões de entrada já foram inicializados no começo do script. */
+['openLogin','openLoginHero'].forEach(id=>$(id).onclick=showLogin);
+$('backHome').onclick=showPublicHome;
 document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{await client.auth.signOut();showPublicHome();});
 
 
@@ -6263,114 +6203,147 @@ async function boot(){
   }
 }
 
-boot();
-
-</script>
-<script>
-/* ATUALIZAÇÕES */
-function billingTypeLabel(v){const x=String(v||'').toLowerCase();return x==='mensal'?'Mensal':x==='avulso'?'Avulso':'Semanal'}
-function studentBillingType(s){return String(s?.billing_type||s?.payment_type||s?.tipo_cobranca||s?.plan_type||'semanal').toLowerCase()}
-function monthRange(){const n=new Date();return [new Date(n.getFullYear(),n.getMonth(),1),new Date(n.getFullYear(),n.getMonth()+1,0,23,59,59)]}
-function lessonsThisMonth(sid){const [a,b]=monthRange();return data.lessons.filter(x=>x.student_id===sid&&x.status!=='Cancelada'&&(!x.date||(new Date(x.date+'T12:00:00')>=a&&new Date(x.date+'T12:00:00')<=b)))}
-function planForStudent(s){return data.plans.find(p=>String(p.name||'').trim()===String(s?.plan||'').trim())||null}
-function expectedLessonsForStudent(sid){const s=data.students.find(x=>x.id===sid),p=planForStudent(s),t=studentBillingType(s);if(t==='mensal')return Number(p?.monthly_lessons||p?.lessons_per_month||0);if(t==='semanal')return Number(p?.weekly_lessons||p?.lessons_per_week||0)*4;return lessonsThisMonth(sid).length}
-function attendanceForStudent(sid){const scheduled=expectedLessonsForStudent(sid),done=lessonsThisMonth(sid).filter(x=>x.status==='Concluída').length;return{scheduled,done,pct:scheduled?Math.min(100,Math.round(done/scheduled*100)):0}}
-
-/* Relatórios com seletor de aluno */
-function ensureReportStudent(){const c=$('reportContent');if(!c)return;if(!$('reportStudent')){const bar=document.createElement('div');bar.className='toolbar';bar.style.marginBottom='14px';bar.innerHTML='<label style="display:flex;align-items:center;gap:8px">Aluno <select id="reportStudent"></select></label>';c.parentNode.insertBefore(bar,c)}studentOptions('reportStudent',$('reportStudent')?.value||data.students[0]?.id||'');$('reportStudent').onchange=renderReports}
-function renderReports(){const el=$('reportContent');if(!el)return;ensureReportStudent();const sid=$('reportStudent')?.value||data.students[0]?.id,s=data.students.find(x=>x.id===sid);if(!s){el.innerHTML='<div class="empty">Cadastre um aluno.</div>';return}const a=attendanceForStudent(sid),ass=data.assessments.filter(x=>x.student_id===sid),avg=ass.length?ass.reduce((n,x)=>n+Number(x.score||0),0)/ass.length:0,prog=data.progress.filter(x=>x.student_id===sid);el.innerHTML=`<h2>Relatório — ${esc(s.name)}</h2><div class="small-grid"><div class="card"><b>Aulas no mês</b><h2>${lessonsThisMonth(sid).length}</h2></div><div class="card"><b>Presença pelo plano</b><h2>${a.pct}%</h2><div class="progress-bar"><span style="width:${a.pct}%"></span></div><small class="muted">${a.done}/${a.scheduled||0} previstas</small></div><div class="card"><b>Média</b><h2>${avg?avg.toFixed(1):'—'}</h2></div></div><div class="view-block"><h4>Progresso</h4>${prog.map(x=>{const p=Math.max(0,Math.min(100,Number(x.percent||0)));return `<div class="progress-row"><div class="top"><b>${esc(x.topic||x.course||'Progresso')}</b><span>${p}%</span></div><div class="progress-bar"><span style="width:${p}%"></span></div></div>`}).join('')||'Sem registros.'}</div>`}
-
-/* Presença por plano */
-function renderAttendance(){const el=$('attendanceList');if(!el)return;el.innerHTML=data.students.map(s=>{const a=attendanceForStudent(s.id);return `<div class="progress-row"><div class="top"><b>${esc(s.name)}</b><span>${a.done}/${a.scheduled||0} — ${a.pct}%</span></div><div class="progress-bar"><span style="width:${a.pct}%"></span></div><small class="muted">Plano: ${esc(s.plan||'Não definido')} · ${billingTypeLabel(studentBillingType(s))}</small></div>`}).join('')||'<div class="empty">Nenhum aluno.</div>'}
-
-/* Agenda sem pagamento/status */
-function renderSchedule(){let h='<div class="cell head">HORÁRIO</div>'+days.map(d=>`<div class="cell head">${d.toUpperCase()}</div>`).join('');for(const time of slots){h+=`<div class="cell head">${time.slice(0,5)}–${String(Number(time.slice(0,2))+1).padStart(2,'0')}</div>`;for(const day of days){if(!allowedSlots[day].includes(time)){h+='<div class="cell blocked">INDISPONÍVEL</div>';continue}const x=data.lessons.find(l=>l.day===day&&timeOf(l)===time&&l.status!=='Cancelada');h+=x?`<div class="cell busy" data-lesson="${x.id}"><b>${esc(x.student_name)}</b><br><small>${esc(x.course)}</small></div>`:`<div class="cell free" data-day="${day}" data-time="${time}">DISPONÍVEL</div>`}}$('schedule').innerHTML=h;document.querySelectorAll('.free').forEach(c=>c.onclick=()=>openLesson(c.dataset.day,c.dataset.time));document.querySelectorAll('.busy').forEach(c=>c.onclick=()=>editLesson(c.dataset.lesson))}
-
-/* Próxima aula do aluno */
-function nextOccurrence(l){const names=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],target=names.indexOf(String(l.day||''));if(target<0)return null;const now=new Date(),d=new Date(now);let diff=(target-d.getDay()+7)%7;const [hh,mm]=String(timeOf(l)||'00:00').split(':').map(Number);d.setHours(hh||0,mm||0,0,0);if(diff===0&&d<=now)diff=7;d.setDate(d.getDate()+diff);return d}
-function portalLessonDate(l){if(l?.date){const d=new Date(l.date+'T'+(timeOf(l)||'00:00'));if(!Number.isNaN(d.getTime()))return d}return nextOccurrence(l)}
-function fmtLessonDate(d){return d?d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'})+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'Sem data'}
-
-/* Conquistas no aluno */
-function renderStudentAchievements(){const el=$('studentAchievements');if(!el)return;const l=portalData.lessons.filter(x=>x.status==='Concluída').length,t=portalData.tasks.filter(x=>['entregue','corrigida','concluída','concluida'].includes(String(portalField(x,'status','state')).toLowerCase())).length,p=portalData.progress.length?Math.round(portalData.progress.reduce((n,x)=>n+Number(x.percent||x.percentage||0),0)/portalData.progress.length):0;const a=[['🏁','Primeira aula','Conclua sua primeira aula.',l>=1],['🔥','5 aulas','Conclua 5 aulas.',l>=5],['🚀','10 aulas','Conclua 10 aulas.',l>=10],['📚','10 atividades','Entregue 10 atividades.',t>=10],['⭐','50% de progresso','Alcance 50% de progresso.',p>=50],['🏆','100% de progresso','Alcance 100% de progresso.',p>=100]];el.innerHTML='<div class="portal-grid">'+a.map(x=>`<div class="portal-card" style="opacity:${x[3]?1:.45}"><div style="font-size:34px">${x[0]}</div><h3>${esc(x[1])} ${x[3]?'✓':'🔒'}</h3><p>${esc(x[2])}</p></div>`).join('')+'</div>'}
-
-function renderStudentPortal(){const s=portalData.student||{};$('studentWelcome').textContent=`Olá, ${portalField(s,'name','full_name')||'aluno'}!`;const up=portalData.lessons.filter(x=>x.status!=='Cancelada').map(x=>({x,d:portalLessonDate(x)})).filter(z=>z.d&&z.d>=new Date()).sort((a,b)=>a.d-b.d),next=up[0],activities=portalData.tasks.filter(x=>String(x.task_type||x.type||'tema').toLowerCase()==='atividade'),homework=portalData.tasks.filter(x=>String(x.task_type||x.type||'tema').toLowerCase()!=='atividade'&&!['entregue','corrigida','concluída','concluida','completed','done'].includes(String(portalField(x,'status','state')).toLowerCase()));$('studentHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Próxima aula</h3><div class="big">${next?fmtLessonDate(next.d):'—'}</div><p>${next?esc(portalField(next.x,'course','subject','title')||'Aula'):'Nenhuma aula agendada'}</p></div><div class="portal-card"><h3>Temas de casa</h3><div class="big">${homework.length}</div><p>pendentes</p></div><div class="portal-card"><h3>Atividades</h3><div class="big">${activities.length}</div><p>registradas</p></div></div>`;$('studentActivities').innerHTML=`<div class="portal-card"><h3>Atividades</h3>${portalItems(activities,['title','activity','name'],['activity','topic','description','status'],['due_date','date'])}</div>`;$('studentHomework').innerHTML=`<div class="portal-card"><h3>Temas de casa</h3>${portalItems(homework,['title','topic','name'],['topic','activity','description','status'],['due_date','date'])}</div>`;$('studentLessons').innerHTML=`<div class="portal-card"><h3>Próximas aulas</h3>${up.map(z=>`<div class="portal-item"><strong>${esc(fmtLessonDate(z.d))}</strong><div>${esc(portalField(z.x,'course','subject','title')||'Aula')}</div></div>`).join('')||'<div class="portal-empty">Nenhuma aula agendada.</div>'}</div>`;const avg=portalData.progress.length?Math.round(portalData.progress.reduce((n,x)=>n+Number(x.percent||x.percentage||0),0)/portalData.progress.length):0;$('studentProgress').innerHTML=`<div class="portal-card"><h3>Meu progresso</h3><div class="progress-row"><div class="top"><b>Progresso geral</b><span>${avg}%</span></div><div class="progress-bar"><span style="width:${avg}%"></span></div></div>${portalData.progress.map(x=>{const p=Math.max(0,Math.min(100,Number(x.percent||x.percentage||0)));return `<div class="progress-row"><div class="top"><b>${esc(x.topic||x.title||x.course||'Progresso')}</b><span>${p}%</span></div><div class="progress-bar"><span style="width:${p}%"></span></div><small class="muted">${esc(x.course||x.notes||'')}</small></div>`}).join('')||'<div class="portal-empty">Nenhum progresso registrado.</div>'}</div>`;renderStudentAchievements()}
-
-/* Financeiro */
-function projectedMonthlyRevenue(){return data.students.filter(s=>s.status!=='Inativo').reduce((sum,s)=>{const t=studentBillingType(s),p=planForStudent(s);if(t==='mensal')return sum+Number(p?.monthly_price||0);if(t==='semanal')return sum+(Number(p?.weekly_lessons||p?.lessons_per_week||0)*4*priceFor(studentCourses(s)[0]||s.course));return sum+lessonsThisMonth(s.id).reduce((n,l)=>n+priceFor(l.course),0)},0)}
-function renderFinance(){const m=projectedMonthlyRevenue();$('fin').innerHTML=`<div class="card" style="margin-bottom:12px"><div class="muted">PREVISÃO DE GANHO NO MÊS</div><div class="value green" style="font-size:32px">${money(m)}</div><small class="muted">Mensal + semanal + aulas avulsas previstas.</small></div>`+(data.lessons.map(x=>`<div style="padding:10px;border-top:1px solid #12384a"><b>${esc(x.student_name)}</b> — ${esc(x.course)} — ${money(priceFor(x.course))} <span class="badge ${x.paid?'green':'yellow'}">${x.paid?'RECEBIDO':'A RECEBER'}</span></div>`).join('')||'<div class="empty">Nenhum lançamento.</div>')}
-
-/* Tarefas */
-function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge purple">${String(x.task_type||'tema').toLowerCase()==='atividade'?'ATIVIDADE':'TEMA DE CASA'}</span><span class="badge yellow">${esc(x.status)}</span></div><p>${x.topic?'<b>Tema:</b> '+esc(x.topic)+'<br>':''}${x.activity?'<b>Atividade:</b> '+esc(x.activity)+'<br>':''}${esc(x.description||'')}</p><small class="muted">${esc(x.due_date||'Sem data')}</small></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>'}
-function renderReminders(){const el=$('remindersList');if(!el)return;const a=[];data.tasks.forEach(x=>{if(x.due_date&&!['entregue','corrigida','concluída','concluida'].includes(String(x.status||'').toLowerCase()))a.push({date:x.due_date,title:(String(x.task_type||'tema').toLowerCase()==='atividade'?'Atividade: ':'Tema: ')+x.title,text:studentName(x.student_id),type:String(x.task_type||'tema').toLowerCase()==='atividade'?'Atividade':'Tema de casa'})});data.assessments.forEach(x=>{if(x.date)a.push({date:x.date,title:'Avaliação: '+x.title,text:studentName(x.student_id),type:'Avaliação'})});data.reminders.forEach(x=>a.push(x));el.innerHTML=a.sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><span class="badge yellow" style="margin-left:7px">${esc(x.type||'Outro')}</span><p>${esc(x.date||'')} · ${esc(x.text||'')}</p></div>`).join('')||'<div class="empty">Nenhum lembrete.</div>'}
-
-/* Responsável */
-function responsiblePaymentInfo(){const s=portalData.student||{},p=portalData.plans.find(x=>String(x.name||'').trim()===String(s.plan||'').trim()),t=studentBillingType(s),out=[];if(p)out.push({title:'Plano '+p.name,amount:t==='mensal'?Number(p.monthly_price||0):t==='semanal'?Number(p.weekly_lessons||p.lessons_per_week||0)*4*0:0,status:billingTypeLabel(t)});(portalData.payments||[]).forEach(x=>out.push({title:x.description||x.title||'Pagamento',amount:x.amount??x.value,date:x.due_date||x.date,status:x.status||''}));if(t==='avulso')portalData.lessons.filter(x=>!x.paid).forEach(x=>out.push({title:'Aula avulsa — '+x.course,amount:priceFor(x.course),date:x.date||'',status:'A receber'}));return{p,t,out}}
-function paymentDueDate(s){const t=studentBillingType(s),n=new Date();if(t==='mensal'){const d=new Date(n.getFullYear(),n.getMonth(),1);if(d<=n)d.setMonth(d.getMonth()+1);return d}if(t==='semanal'){const d=new Date(n);d.setDate(d.getDate()+7);return d}return null}
-function renderResponsiblePortal(){const s=portalData.student||{},name=portalField(s,'name','full_name')||'aluno',pay=responsiblePaymentInfo(),pending=portalData.tasks.filter(x=>!['entregue','corrigida','concluída','concluida','completed','done'].includes(String(portalField(x,'status','state')).toLowerCase()));$('responsibleWelcome').textContent=`Acompanhamento de ${name}`;$('respHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Aluno</h3><div class="big">${esc(name)}</div></div><div class="portal-card"><h3>Atividades</h3><div class="big">${pending.length}</div><p>pendentes</p></div><div class="portal-card"><h3>Plano</h3><div class="big">${esc(billingTypeLabel(pay.t))}</div><p>${esc(s.plan||pay.p?.name||'Não definido')}</p></div></div>`;$('respStudent').innerHTML=`<div class="portal-card"><h3>Dados do aluno</h3><div class="portal-list"><div class="portal-item"><strong>Nome</strong><div>${esc(name)}</div></div><div class="portal-item"><strong>Curso(s)</strong><div>${esc(portalField(s,'course','courses')||'Não informado')}</div></div><div class="portal-item"><strong>Plano</strong><div>${esc(s.plan||'Não informado')} · ${esc(billingTypeLabel(pay.t))}</div></div></div></div>`;$('respPayments').innerHTML=`<div class="portal-grid"><div class="portal-card portal-wide"><h3>Plano</h3><p><b>${esc(pay.p?.name||s.plan||'Não definido')}</b> · ${esc(billingTypeLabel(pay.t))}</p><p>${pay.t==='mensal'?money(pay.p?.monthly_price||0)+' por mês':pay.t==='semanal'?Number(pay.p?.weekly_lessons||pay.p?.lessons_per_week||0)+' aula(s) por semana':'Pagamento por aula'}</p></div><div class="portal-card portal-wide"><h3>Pagamentos</h3>${pay.out.map(x=>`<div class="portal-item"><strong>${esc(x.title)}</strong><div>${x.amount!==undefined?money(x.amount):''} ${x.status?'· '+esc(x.status):''} ${x.date?'· '+esc(x.date):''}</div></div>`).join('')||'<div class="portal-empty">Nenhum pagamento registrado.</div>'}</div></div>`;const avg=portalData.progress.length?Math.round(portalData.progress.reduce((n,x)=>n+Number(x.percent||0),0)/portalData.progress.length):0;$('respProgress').innerHTML=`<div class="portal-card"><h3>Progresso</h3><div class="progress-row"><div class="top"><b>Progresso geral</b><span>${avg}%</span></div><div class="progress-bar"><span style="width:${avg}%"></span></div></div>${portalData.progress.map(x=>{const p=Math.max(0,Math.min(100,Number(x.percent||0)));return `<div class="progress-row"><div class="top"><b>${esc(x.topic||x.title||x.course||'Progresso')}</b><span>${p}%</span></div><div class="progress-bar"><span style="width:${p}%"></span></div></div>`}).join('')||'<div class="portal-empty">Nenhum progresso registrado.</div>'}</div>`;$('respLessons').innerHTML=`<div class="portal-card"><h3>Registro de aulas</h3>${portalItems(portalData.records,['title','course','subject'],['content','description','notes'],['date'])}</div>`;const due=paymentDueDate(s),days=due?Math.ceil((due-new Date())/86400000):null,notice=due&&days<=3?`<div class="portal-card" style="margin-bottom:12px"><h3>Pagamento</h3><p>Vencimento: <b>${due.toLocaleDateString('pt-BR')}</b></p><p>${days>0?'Faltam '+days+' dia(s).':days===0?'Vence hoje.':'Está vencido.'}</p></div>`:'';$('respReminders').innerHTML=notice+`<div class="portal-card"><h3>Lembretes</h3>${portalData.reminders.filter(x=>String(x.type||'').toLowerCase()!=='pagamento').map(x=>`<div class="portal-item"><strong>${esc(x.title)}</strong><div>${esc(x.text||x.description||'')} · ${esc(x.date||'')}</div></div>`).join('')||'<div class="portal-empty">Nenhum lembrete.</div>'}</div>`;$('respBanners').innerHTML='<div class="portal-card"><h3>Avisos</h3><div class="portal-empty">Avisos removidos.</div></div>'}
-
-/* Planos são globais; pagamentos/aulas/tarefas são do aluno */
-async function loadPortal(){portalProfile=await getProfile();currentRole=String(portalProfile.role||'admin').toLowerCase();if(currentRole==='admin')return;const sid=portalProfile.student_id,owner=portalProfile.owner_id;if(!sid)throw new Error('Esta conta ainda não está vinculada a um aluno.');const r=await client.from('students').select('*').eq('id',sid).maybeSingle();if(r.error)throw r.error;portalData.student=r.data;async function q(table,filter){let z=client.from(table).select('*');if(owner)z=z.eq('user_id',owner);if(filter)z=filter(z);const out=await z;return out.error?[]:(out.data||[])}const v=await Promise.all([q('lessons',z=>z.eq('student_id',sid)),q('plans'),q('payments',z=>z.eq('student_id',sid)),q('tasks',z=>z.eq('student_id',sid)),q('assessments',z=>z.eq('student_id',sid)),q('reminders'),q('lesson_records',z=>z.eq('student_id',sid)),q('lesson_plans',z=>z.eq('student_id',sid)),q('student_progress',z=>z.eq('student_id',sid)),q('materials',z=>z.eq('student_id',sid))]);[portalData.lessons,portalData.plans,portalData.payments,portalData.tasks,portalData.assessments,portalData.reminders,portalData.records,portalData.planning,portalData.progress,portalData.materials]=v}
-
-/* Aluno: tipo de cobrança */
-$('studentForm').onsubmit=async e=>{e.preventDefault();try{const row={name:$('studentName').value.trim(),phone:$('studentPhone').value.trim(),course:selectedValues('studentCourse').join(', '),plan:$('studentPlan').value.trim(),billing_type:$('studentBillingType')?.value||'semanal',format:$('studentFormat').value,modality:$('studentFormat').value,status:$('studentStatus').value,notes:$('studentNotes').value.trim()};const id=$('studentId').value;if(id)await update('students',id,row);else await insert('students',row);closeModal('studentModal');await loadAll();toast('Aluno salvo!')}catch(err){toast(err.message||'Erro ao salvar aluno.')}};
-$('newStudent').onclick=()=>{$('studentForm').reset();$('studentId').value='';$('studentFormat').value='Online';$('studentStatus').value='Ativo';if($('studentBillingType'))$('studentBillingType').value='semanal';fillStudentCourseSelect([]);fillPlanSelect('');openModal('studentModal')};
-const editStudentBase=window.editStudent;window.editStudent=id=>{editStudentBase(id);const x=data.students.find(a=>a.id===id);if(x&&$('studentBillingType'))$('studentBillingType').value=studentBillingType(x)};
-
-/* Tarefa */
-$('taskForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('tasks',$('taskId').value,{student_id:$('taskStudent').value,student_name:studentName($('taskStudent').value),course:$('taskCourse').value,task_type:$('taskType').value,topic:$('taskTopic').value.trim(),activity:$('taskActivity').value.trim(),title:$('taskTitle').value.trim(),description:$('taskDescription').value.trim(),due_date:$('taskDue').value||null,status:$('taskStatus').value,notes:$('taskNotes').value.trim()});closeModal('taskModal');await loadAll();toast('Tarefa salva!')}catch(e){toast(e.message)}};
-
-/* Remove somente as seções administrativas de página pública/portal responsável */
-['public','parent'].forEach(id=>{const sec=$(id);if(sec)sec.remove();const b=document.querySelector(`.nav button[data-page="${id}"]`);if(b)b.remove()});
-
-/* Portal */
-showPortal=function(role){hideAllViews();const r=String(role||'').toLowerCase();if(['student','aluno','estudante'].includes(r)){const e=$('studentPortal');e.classList.remove('hidden');e.style.setProperty('display','block','important');renderStudentPortal()}else if(['responsible','responsavel','responsável'].includes(r)){const e=$('responsiblePortal');e.classList.remove('hidden');e.style.setProperty('display','block','important');renderResponsiblePortal()}else showAdminPortal()};
-
-/* Render */
-const renderBase=render;render=function(){renderBase();renderAttendance();renderTasks();renderReminders();renderFinance();ensureReportStudent()};
-if($('generateReport'))$('generateReport').onclick=()=>{ensureReportStudent();renderReports()};
 
 /* =========================================================
-   NOVAS ALTERAÇÕES SOLICITADAS
+   MELHORIAS SOLICITADAS — VERSÃO 2026-09
    ========================================================= */
-function moneyBR(n){return money(Number(n||0))}
-function planCourseBuilderData(){return [...document.querySelectorAll('#planCoursesBuilder .plan-course-row')].map(r=>({course:r.querySelector('.pc-course')?.value||'',lessons:Number(r.querySelector('.pc-lessons')?.value||0),price:Number(r.querySelector('.pc-price')?.value||0)})).filter(x=>x.course)}
-function recalcPlanCourses(){const total=planCourseBuilderData().reduce((n,x)=>n+(x.lessons*x.price),0);if($('planFinalValue'))$('planFinalValue').textContent='Valor final: '+moneyBR(total)+' / mês';return total}
-function addPlanCourseRow(v={}){const box=$('planCoursesBuilder');if(!box)return;const row=document.createElement('div');row.className='plan-course-row form-grid';row.style.marginBottom='8px';const courses=courseNames();row.innerHTML=`<div class="field"><label>Curso</label><select class="pc-course">${courses.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select></div><div class="field"><label>Aulas/mês</label><input class="pc-lessons" type="number" min="0" value="${Number(v.lessons||0)}"></div><div class="field"><label>Valor/aula</label><input class="pc-price" type="number" min="0" step="0.01" value="${Number(v.price||0)}"></div><div class="field" style="align-self:end"><button type="button" class="btn danger mini pc-remove">Remover</button></div>`;box.appendChild(row);if(v.course)row.querySelector('.pc-course').value=v.course;row.querySelector('.pc-price').value=Number(v.price||priceFor(v.course||courses[0]||''));row.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',recalcPlanCourses));row.querySelector('.pc-remove').onclick=()=>{row.remove();recalcPlanCourses()};recalcPlanCourses()}
-function setupPlanBuilder(){const box=$('planCoursesBuilder');if(!box)return;box.innerHTML='';const x=data.plans.find(p=>p.id===$('planId')?.value),arr=Array.isArray(x?.course_prices)?x.course_prices:[];if(arr.length)arr.forEach(addPlanCourseRow);else addPlanCourseRow()}
-$('addPlanCourse')?.addEventListener('click',()=>addPlanCourseRow());
-const origNewPlan=window.__origNewPlan;
-$('newPlan')?.addEventListener('click',()=>setTimeout(setupPlanBuilder,0));
-const origEditPlan=window.editPlan;
-if(origEditPlan)window.editPlan=id=>{origEditPlan(id);setTimeout(setupPlanBuilder,0)};
+function billingLabel(v){const x=String(v||'mensal').toLowerCase();return x==='semanal'?'Semanal':x==='avulso'?'Avulso':'Mensal';}
+function studentBilling(s){return s?.billing_type||s?.billingType||'mensal';}
+function planForStudent(s){return data.plans.find(p=>p.id===s?.plan_id)||data.plans.find(p=>String(p.name||'')===String(s?.plan||''));}
+function coursePriceSum(courses){return (courses||[]).reduce((sum,c)=>sum+Number(priceFor(c)||0),0);}
+function planCoursesFrom(p){
+  if(!p)return [];
+  if(Array.isArray(p.course_names))return p.course_names;
+  if(Array.isArray(p.courses))return p.courses;
+  if(typeof p.course_names==='string'){try{const a=JSON.parse(p.course_names);if(Array.isArray(a))return a;}catch(_){} return p.course_names.split(',').map(x=>x.trim()).filter(Boolean);}
+  return p.course?[String(p.course)]:[];
+}
+function nextLessonInfo(x){
+  const map={Domingo:0,Segunda:1,'Terça':2,'Quarta':3,'Quinta':4,'Sexta':5,'Sábado':6};
+  const target=map[x?.day]; if(target===undefined)return null;
+  const now=new Date(); const d=new Date(now); const delta=(target-d.getDay()+7)%7; d.setDate(d.getDate()+delta);
+  const t=timeOf(x)||'09:00'; const [hh,mm]=String(t).split(':').map(Number); d.setHours(hh||0,mm||0,0,0);
+  if(d<now)d.setDate(d.getDate()+7);
+  return {date:d,dateLabel:d.toLocaleDateString('pt-BR'),time:t};
+}
+function taskType(x){return x.task_type||x.type||'Atividade';}
+function isHomework(x){return String(taskType(x)).toLowerCase().includes('casa')||String(x.homework||'').trim()!=='';}
+function isDelivered(x){return ['entregue','corrigida','completed','done'].includes(String(x.status||'').toLowerCase());}
+function paymentPlanForStudent(s){const p=planForStudent(s); return {plan:p,billing:studentBilling(s),amount:Number(s?.billing_amount??p?.monthly_price??0)};}
 
-function fillPlanSelectAllPossibilities(selected=''){const select=$('studentPlan');if(!select)return;const courses=courseNames();let html='<option value="">Selecione um plano</option>';data.plans.forEach(p=>{if(courses.length)courses.forEach(c=>html+=`<option value="${esc(p.name||'')}">${esc(p.name||'')} — ${esc(c)}</option>`);else html+=`<option value="${esc(p.name||'')}">${esc(p.name||'')}</option>`});select.innerHTML=html;if(selected)select.value=selected}
-fillPlanSelect=fillPlanSelectAllPossibilities;
+function renderStudents(){
+  const q=($('studentSearch')?.value||'').toLowerCase();
+  const rows=data.students.filter(x=>`${x.name} ${studentCourses(x).join(' ')} ${x.plan||''}`.toLowerCase().includes(q));
+  $('studentsTableBody').innerHTML=rows.map(x=>`<tr><td><b>${esc(x.name)}</b><br><small>${esc(x.phone||'')}</small></td><td>${esc(studentCourses(x).join(', '))}</td><td>${esc(x.plan||'-')}</td><td>${esc(billingLabel(studentBilling(x)))}</td><td><span class="badge ${x.status==='Ativo'?'green':'red'}">${esc(x.status)}</span></td><td><button class="btn mini" onclick="editStudent('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteStudent('${x.id}')">Excluir</button></td></tr>`).join('')||'<tr><td colspan="6"><div class="empty">Nenhum aluno.</div></td></tr>';
+}
 
-function renderProgress(){const el=$('progressContent');if(!el)return;const sid=$('progressStudent')?.value||data.students[0]?.id;if($('progressStudent'))studentOptions('progressStudent',sid||'');const p=data.progress.filter(x=>!sid||x.student_id===sid),tasks=data.tasks.filter(x=>x.student_id===sid),done=tasks.filter(x=>['Entregue','Corrigida'].includes(x.status)).length,lessons=data.lessons.filter(x=>x.student_id===sid&&x.status==='Concluída').length,records=data.records.filter(x=>x.student_id===sid&&x.status==='Realizada').length,avg=p.length?p.reduce((a,x)=>a+Number(x.percent||0),0)/p.length:0;el.innerHTML=`<div class="small-grid"><div class="card"><div class="muted">AULAS CONCLUÍDAS</div><h2>${lessons||records}</h2></div><div class="card"><div class="muted">TAREFAS CONCLUÍDAS</div><h2>${done}/${tasks.length}</h2></div><div class="card"><div class="muted">PROGRESSO MÉDIO</div><h2>${Math.round(avg)}%</h2></div></div>${p.map(x=>{const pc=Math.max(0,Math.min(100,Number(x.percent||0)));return `<div class="progress-row"><div class="top"><b>${esc(x.topic||x.course||'Progresso')}</b><span>${pc}%</span></div><div class="progress-bar"><span style="width:${pc}%"></span></div><small class="muted">${esc(x.course||'')} ${x.notes?'— '+esc(x.notes):''}</small><div class="row-actions"><button class="btn mini" onclick="editProgress('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteProgress('${x.id}')">Excluir</button></div></div>`}).join('')||'<div class="empty">Nenhum progresso manual registrado para este aluno.</div>'}`}
-window.editProgress=id=>{const x=data.progress.find(a=>a.id===id);if(!x)return;$('progressId').value=id;studentOptions('progressFormStudent',x.student_id);$('progressCourse').value=x.course||'';$('progressTopic').value=x.topic||x.title||'';$('progressPercent').value=Number(x.percent||0);$('progressPercentValue').textContent=Number(x.percent||0)+'%';$('progressStatus').value=x.status||'Em desenvolvimento';$('progressNotes').value=x.notes||'';openModal('progressModal')};
-window.deleteProgress=async id=>{if(!confirm('Excluir progresso?'))return;try{await remove('student_progress',id);await loadAll();toast('Progresso excluído.')}catch(e){toast(e.message)}};
+function fillPlanCourses(selected=[]){const el=$('planCourses');if(!el)return;const vals=courseNames();el.innerHTML=vals.map(v=>`<option value="${esc(v)}">${esc(v)} — ${money(priceFor(v))}</option>`).join('');selected.forEach(v=>{const o=[...el.options].find(x=>x.value===v);if(o)o.selected=true;});updatePlanCalculatedPrice();}
+function updatePlanCalculatedPrice(){const el=$('planCalculatedPrice');if(!el)return;const courses=selectedValues('planCourses');const base=coursePriceSum(courses);const type=$('planType')?.value||'mensal';const weekly=Math.max(1,Number($('planWeekly')?.value||1));let value=base;if(type==='semanal')value=base*weekly;else if(type==='mensal')value=base*Number($('planMonthly')?.value||4)/4;else value=base;el.value=money(value);}
 
-function expectedLessonsForStudent(sid){const s=data.students.find(x=>x.id===sid),p=planForStudent(s),t=studentBillingType(s);if(!p)return 0;if(t==='mensal')return Number(p.monthly_lessons||p.lessons_per_month||0);if(t==='semanal')return Number(p.weekly_lessons||p.lessons_per_week||0)*4;return lessonsThisMonth(sid).length}
-function attendanceForStudent(sid){const scheduled=expectedLessonsForStudent(sid),done=lessonsThisMonth(sid).filter(x=>x.status==='Concluída').length;return{scheduled,done,pct:scheduled?Math.min(100,Math.round(done/scheduled*100)):0}}
+function renderPlans(){
+  $('plansGrid').innerHTML=data.plans.map(x=>{const weekly=Number(x.weekly_lessons??x.lessons_per_week??0);const monthly=Number(x.monthly_lessons||0);const courses=planCoursesFrom(x);return `<div class="plan"><h3 class="${esc(x.color||'blue')}">${esc(x.name)}</h3><p>${esc(billingLabel(x.plan_type))} · ${weekly?weekly+' aula(s)/semana':'Conforme necessidade'}</p><div class="price">${monthly?monthly+' aulas/mês':'Flexível'}</div><p><b>${money(x.monthly_price||0)}</b></p><p class="muted">${courses.length?'Cursos: '+esc(courses.join(', ')):''}</p><p class="muted">${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editPlan('${x.id}')">Editar</button><button class="btn danger mini" onclick="deletePlan('${x.id}')">Excluir</button></div></div>`}).join('')||'<div class="empty">Nenhum plano.</div>';
+}
 
-const DEFAULT_ACHIEVEMENTS=[{id:'local-1',name:'Primeira aula concluída',icon:'🏆',description:'Concluiu a primeira aula.',goal:1},{id:'local-5',name:'5 aulas concluídas',icon:'🎓',description:'Concluiu 5 aulas.',goal:5},{id:'local-10',name:'10 aulas concluídas',icon:'🏅',description:'Concluiu 10 aulas.',goal:10},{id:'local-t10',name:'10 tarefas concluídas',icon:'📚',description:'Concluiu 10 tarefas.',goal:10}];
-function customAchievements(){try{return JSON.parse(localStorage.getItem('aulas_custom_achievements')||'[]')}catch(_){return[]}}
-function saveCustomAchievements(a){localStorage.setItem('aulas_custom_achievements',JSON.stringify(a))}
-function allAchievements(){return [...DEFAULT_ACHIEVEMENTS,...customAchievements()]}
-function achievementUnlocked(a,s){const n=data.lessons.filter(x=>x.student_id===s.id&&x.status==='Concluída').length;const t=data.tasks.filter(x=>x.student_id===s.id&&['Entregue','Corrigida'].includes(x.status)).length;return a.id==='local-t10'?t>=Number(a.goal||0):n>=Number(a.goal||0)}
-function renderAchievements(){const all=allAchievements(),sel=$('achievementStudent');if(sel){studentOptions('achievementStudent',sel.value||data.students[0]?.id||'');sel.onchange=renderAchievements}const sid=sel?.value||data.students[0]?.id,st=data.students.find(x=>x.id===sid),el=$('achievementsList');if(el)el.innerHTML=all.map(a=>`<div class="feature-card"><div style="font-size:30px">${esc(a.icon||'🏆')}</div><h3>${esc(a.name)}</h3><p>${esc(a.description||'')}</p><small class="muted">Meta: ${Number(a.goal||0)}</small></div>`).join('');const list=$('achievementStudentList');if(list)list.innerHTML=st?all.map(a=>{const ok=achievementUnlocked(a,st);return `<div class="progress-row"><div class="top"><b>${esc(a.icon||'🏆')} ${esc(a.name)}</b><span>${ok?'CONQUISTADA':'PENDENTE'}</span></div><div class="progress-bar"><span style="width:${ok?100:0}%"></span></div><small class="muted">${esc(a.description||'')}</small></div>`}).join(''):'<div class="empty">Cadastre um aluno.</div>'}
-$('newAchievement')?.addEventListener('click',()=>{$('achievementForm').reset();$('achievementGoal').value=1;$('achievementIcon').value='🏆';openModal('achievementModal')});
-$('achievementForm')?.addEventListener('submit',e=>{e.preventDefault();const a={id:'custom-'+Date.now(),name:$('achievementName').value.trim(),icon:$('achievementIcon').value.trim()||'🏆',description:$('achievementDescription').value.trim(),goal:Number($('achievementGoal').value||1)};const arr=customAchievements();arr.push(a);saveCustomAchievements(arr);closeModal('achievementModal');renderAchievements();toast('Conquista adicionada!')});
+function renderFinance(){
+  const expected=data.students.reduce((sum,s)=>{const q=paymentPlanForStudent(s); if(q.billing==='avulso')return sum; if(q.amount)return sum+q.amount; const courses=studentCourses(s); const base=coursePriceSum(courses); return sum+(q.billing==='semanal'?base*4:base);},0);
+  const paid=data.payments.reduce((a,x)=>a+Number(x.amount||x.value||0),0)+data.lessons.filter(x=>x.paid).reduce((a,x)=>a+Number(priceFor(x.course)||0),0);
+  $('f1').textContent=money(expected); $('f2').textContent=money(paid); $('f3').textContent=money(Math.max(0,expected-paid)); $('f4').textContent=String(data.payments.length);
+  $('fin').innerHTML=`<div class="feature-card" style="margin-bottom:12px"><h3>Previsão do mês</h3><div class="big">${money(expected)}</div><p class="muted">Estimativa com base no tipo de cobrança e nos planos dos alunos.</p></div>`+(data.students.map(s=>{const q=paymentPlanForStudent(s);return `<div style="padding:10px;border-top:1px solid #12384a"><b>${esc(s.name)}</b> — ${esc(billingLabel(q.billing))} — ${esc(q.plan?.name||s.plan||'Sem plano')} — <b>${money(q.amount)}</b></div>`}).join('')||'<div class="empty">Nenhum aluno.</div>');
+}
 
-function renderStudentPortal(){const s=portalData.student||{};$('studentWelcome').textContent=`Olá, ${portalField(s,'name','full_name')||'aluno'}!`;const up=portalData.lessons.filter(x=>x.status!=='Cancelada').map(x=>({x,d:portalLessonDate(x)})).filter(z=>z.d&&z.d>=new Date()).sort((a,b)=>a.d-b.d),next=up[0],activities=portalData.tasks.filter(x=>String(x.task_type||x.type||'tema').toLowerCase()==='atividade'),homework=portalData.tasks.filter(x=>String(x.task_type||x.type||'tema').toLowerCase()!=='atividade'&&!['entregue','corrigida','concluída','concluida','completed','done'].includes(String(portalField(x,'status','state')).toLowerCase()));$('studentHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Próxima aula</h3><div class="big">${next?fmtLessonDate(next.d):'—'}</div><p>${next?esc(portalField(next.x,'course','subject','title')||'Aula'):'Nenhuma aula agendada'}</p></div><div class="portal-card"><h3>Temas de casa</h3><div class="big">${homework.length}</div><p>pendentes</p></div><div class="portal-card"><h3>Atividades</h3><div class="big">${activities.length}</div><p>registradas</p></div></div>`;$('studentActivities').innerHTML=`<div class="portal-card"><h3>Atividades</h3>${activities.map(x=>`<div class="portal-item"><strong>${esc(x.title||'Atividade')}</strong><div><b>Tema:</b> ${esc(x.topic||'Não informado')}</div><div><b>Atividade:</b> ${esc(x.activity||x.description||'Não informado')}</div><div><b>Status:</b> ${esc(x.status||'')}</div>${x.due_date?`<div><b>Entrega:</b> ${esc(x.due_date)}`:''}</div>`).join('')||'<div class="portal-empty">Nenhuma atividade.</div>'}</div>`;$('studentHomework').innerHTML=`<div class="portal-card"><h3>Temas de casa</h3>${homework.map(x=>`<div class="portal-item"><strong>${esc(x.title||'Tema de casa')}</strong><div><b>Tema:</b> ${esc(x.topic||'Não informado')}</div><div><b>Atividade:</b> ${esc(x.activity||x.description||'Não informado')}</div><div><b>Status:</b> ${esc(x.status||'')}</div>${x.due_date?`<div><b>Entrega:</b> ${esc(x.due_date)}`:''}</div>`).join('')||'<div class="portal-empty">Nenhum tema de casa pendente.</div>'}</div>`;$('studentLessons').innerHTML=`<div class="portal-card"><h3>Próximas aulas</h3>${up.map(z=>`<div class="portal-item"><strong>${esc(fmtLessonDate(z.d))}</strong><div>${esc(portalField(z.x,'course','subject','title')||'Aula')}</div></div>`).join('')||'<div class="portal-empty">Nenhuma aula agendada.</div>'}</div>`;const avg=portalData.progress.length?Math.round(portalData.progress.reduce((n,x)=>n+Number(x.percent||x.percentage||0),0)/portalData.progress.length):0;$('studentProgress').innerHTML=`<div class="portal-card"><h3>Meu progresso</h3><div class="progress-row"><div class="top"><b>Progresso geral</b><span>${avg}%</span></div><div class="progress-bar"><span style="width:${avg}%"></span></div></div>${portalData.progress.map(x=>{const p=Math.max(0,Math.min(100,Number(x.percent||x.percentage||0)));return `<div class="progress-row"><div class="top"><b>${esc(x.topic||x.title||x.course||'Progresso')}</b><span>${p}%</span></div><div class="progress-bar"><span style="width:${p}%"></span></div><small class="muted">${esc(x.course||x.notes||'')}</small></div>`}).join('')||'<div class="portal-empty">Nenhum progresso registrado.</div>'}</div>`;if(typeof renderStudentAchievements==='function')renderStudentAchievements()}
+function expectedLessonsForStudent(s){const p=planForStudent(s);const type=studentBilling(s);if(type==='semanal')return Math.max(1,Number(p?.weekly_lessons??p?.lessons_per_week??2))*4;if(type==='avulso')return Math.max(1,data.lessons.filter(x=>x.student_id===s.id).length);return Math.max(1,Number(p?.monthly_lessons||8));}
+function renderAttendance(){const el=$('attendanceList');if(!el)return;el.innerHTML=data.students.map(s=>{const expected=expectedLessonsForStudent(s);const actual=data.records.filter(x=>x.student_id===s.id&&['Realizada','Concluída'].includes(x.status)).length;const pct=Math.min(100,Math.round(actual/expected*100));return `<div class="progress-row"><div class="top"><b>${esc(s.name)}</b><span>${actual}/${expected} aulas — ${pct}% · ${esc(billingLabel(studentBilling(s)))}</span></div><div class="progress-bar"><span style="width:${pct}%"></span></div></div>`}).join('')||'<div class="empty">Nenhum aluno.</div>';}
 
-function responsiblePaymentInfo(){const s=portalData.student||{},p=portalData.plans.find(x=>String(x.name||'').trim()===String(s.plan||'').trim()),t=studentBillingType(s),out=[];if(p){const weeklyLessons=Number(p.weekly_lessons||p.lessons_per_week||0),course=studentCourses(s)[0]||s.course||'',weeklyValue=weeklyLessons*priceFor(course);out.push({title:'Plano '+p.name,amount:t==='mensal'?Number(p.monthly_price||0):t==='semanal'?weeklyValue*4:0,status:billingTypeLabel(t)})}(portalData.payments||[]).forEach(x=>out.push({title:x.description||x.title||'Pagamento',amount:x.amount??x.value,date:x.due_date||x.date,status:x.status||''}));if(t==='avulso')portalData.lessons.filter(x=>!x.paid).forEach(x=>out.push({title:'Aula avulsa — '+x.course,amount:priceFor(x.course),date:x.date||'',status:'A receber'}));return{p,t,out}}
-function renderResponsiblePortal(){const s=portalData.student||{},name=portalField(s,'name','full_name')||'aluno',pay=responsiblePaymentInfo(),pending=portalData.tasks.filter(x=>!['entregue','corrigida','concluída','concluida','completed','done'].includes(String(portalField(x,'status','state')).toLowerCase()));$('responsibleWelcome').textContent=`Acompanhamento de ${name}`;$('respHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Aluno</h3><div class="big">${esc(name)}</div></div><div class="portal-card"><h3>Atividades</h3><div class="big">${pending.length}</div><p>pendentes</p></div><div class="portal-card"><h3>Plano</h3><div class="big">${esc(pay.p?.name||s.plan||'Não definido')}</div><p>${esc(billingTypeLabel(pay.t))}</p></div></div>`;$('respStudent').innerHTML=`<div class="portal-card"><h3>Dados do aluno</h3><div class="portal-list"><div class="portal-item"><strong>Nome</strong><div>${esc(name)}</div></div><div class="portal-item"><strong>Curso(s)</strong><div>${esc(portalField(s,'course','courses')||'Não informado')}</div></div><div class="portal-item"><strong>Plano</strong><div>${esc(s.plan||pay.p?.name||'Não informado')} · ${esc(billingTypeLabel(pay.t))}</div></div></div></div>`;$('respPayments').innerHTML=`<div class="portal-grid"><div class="portal-card portal-wide"><h3>Plano</h3><p><b>${esc(pay.p?.name||s.plan||'Não definido')}</b> · ${esc(billingTypeLabel(pay.t))}</p><p>${pay.t==='mensal'?money(pay.p?.monthly_price||0)+' por mês':pay.t==='semanal'?money((Number(pay.p?.weekly_lessons||pay.p?.lessons_per_week||0))*priceFor(studentCourses(s)[0]||s.course))+' por semana':'Pagamento por aula'}</p></div><div class="portal-card portal-wide"><h3>Pagamentos</h3>${pay.out.map(x=>`<div class="portal-item"><strong>${esc(x.title)}</strong><div>${x.amount!==undefined?money(x.amount):''} ${x.status?'· '+esc(x.status):''} ${x.date?'· '+esc(x.date):''}</div></div>`).join('')||'<div class="portal-empty">Nenhum pagamento registrado.</div>'}</div></div>`;const avg=portalData.progress.length?Math.round(portalData.progress.reduce((n,x)=>n+Number(x.percent||0),0)/portalData.progress.length):0;$('respProgress').innerHTML=`<div class="portal-card"><h3>Progresso</h3><div class="progress-row"><div class="top"><b>Progresso geral</b><span>${avg}%</span></div><div class="progress-bar"><span style="width:${avg}%"></span></div></div>${portalData.progress.map(x=>{const p=Math.max(0,Math.min(100,Number(x.percent||0)));return `<div class="progress-row"><div class="top"><b>${esc(x.topic||x.title||x.course||'Progresso')}</b><span>${p}%</span></div><div class="progress-bar"><span style="width:${p}%"></span></div></div>`}).join('')||'<div class="portal-empty">Nenhum progresso registrado.</div>'}</div>`;$('respLessons').innerHTML=`<div class="portal-card"><h3>Registro de aulas</h3>${portalData.records.map(r=>`<div class="portal-item"><strong>${esc(r.title||r.course||'Aula')}</strong><div><b>Curso:</b> ${esc(r.course||'')}</div><div><b>Status:</b> ${esc(r.status||'')}</div><div><b>Conteúdo:</b> ${esc(r.content||r.description||'Não informado')}</div><div><b>Observação:</b> ${esc(r.observation||'Não informado')}</div><div><b>Tema:</b> ${esc(r.homework||'Não informado')}</div><div><b>Notas:</b> ${esc(r.notes||'Não informado')}</div><div><b>Data:</b> ${esc(r.date||'')}</div></div>`).join('')||'<div class="portal-empty">Nenhum registro de aula.</div>'}</div>`;const due=paymentDueDate(s),days=due?Math.ceil((due-new Date())/86400000):null,paymentNotice=due?`<div class="portal-item"><strong>Pagamento</strong><div>Vencimento: ${due.toLocaleDateString('pt-BR')} · ${days>0?'Faltam '+days+' dia(s).':days===0?'Vence hoje.':'Vencido.'}</div></div>`:'';$('respReminders').innerHTML=`<div class="portal-card"><h3>Lembretes</h3>${paymentNotice}${portalData.reminders.map(x=>`<div class="portal-item"><strong>${esc(x.title)}</strong><div>${esc(x.text||x.description||'')} · ${esc(x.date||'')}</div></div>`).join('')||(!paymentNotice?'<div class="portal-empty">Nenhum pagamento pendente ou lembrete.</div>':'')}</div>`;$('respBanners').innerHTML='' }
+function renderProgress(){const el=$('progressContent');if(!el)return;const sid=$('progressStudent')?.value||data.students[0]?.id;if($('progressStudent'))studentOptions('progressStudent',sid||'');const p=data.progress.filter(x=>!sid||x.student_id===sid);el.innerHTML=p.length?p.map(x=>`<div class="progress-row"><div class="top"><b>${esc(x.topic||x.title||'Progresso')}</b><span>${Number(x.percent||0)}%</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,Number(x.percent||0)))}%"></span></div><small class="muted">${esc(x.course||'')} · ${esc(x.status||'')}${x.notes?' — '+esc(x.notes):''}</small><div class="row-actions"><button class="btn mini" onclick="editProgress('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteProgress('${x.id}')">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum progresso manual registrado para este aluno.</div>';}
+window.editProgress=id=>{const x=data.progress.find(a=>a.id===id);if(!x)return;$('progressId').value=id;studentOptions('progressFormStudent',x.student_id);subjectOptions('progressCourse',x.course);$('progressTopic').value=x.topic||'';$('progressPercent').value=Number(x.percent||0);$('progressStatus').value=x.status||'Em desenvolvimento';$('progressNotes').value=x.notes||'';openModal('progressModal');};
+window.deleteProgress=async id=>{if(!confirm('Excluir este progresso?'))return;try{await remove('student_progress',id);await loadAll();toast('Progresso excluído.')}catch(e){toast(e.message)}};
 
-/* Registro de aulas completo já é salvo com conteúdo, observação, tema e notas. */
-renderStudents=(()=>{const base=renderStudents;return function(){base();const rows=[...document.querySelectorAll('#studentsTableBody tr')];rows.forEach(()=>{});}})();
-renderAchievements();
+function renderReports(){const el=$('reportContent');if(!el)return;const sid=$('reportStudent')?.value||data.students[0]?.id;if($('reportStudent'))studentOptions('reportStudent',sid||'');el.innerHTML=reportForStudent(sid)||'<div class="empty">Cadastre um aluno.</div>';}
+
+function renderReminders(){const el=$('remindersList');if(!el)return;const auto=[];data.tasks.forEach(x=>{if(x.due_date&&!isDelivered(x))auto.push({date:x.due_date,title:'Tarefa: '+x.title,text:studentName(x.student_id),type:'Tarefa'})});data.assessments.forEach(x=>{if(x.date)auto.push({date:x.date,title:'Avaliação: '+x.title,text:studentName(x.student_id),type:'Avaliação'})});data.students.forEach(s=>{const q=paymentPlanForStudent(s);const due=s.next_payment_date||s.payment_due_date;if(due&&q.billing!=='avulso')auto.push({date:due,title:'Pagamento: '+(q.plan?.name||s.plan||billingLabel(q.billing)),text:s.name+' · '+billingLabel(q.billing),type:'Pagamento'})});data.reminders.forEach(x=>auto.push(x));el.innerHTML=auto.sort((a,b)=>String(a.date).localeCompare(String(b.date))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><span class="badge yellow" style="margin-left:7px">${esc(x.type||'Outro')}</span><p>${esc(x.date||'')} · ${esc(x.text||'')}</p></div>`).join('')||'<div class="empty">Nenhum lembrete.</div>';}
+
+function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge purple">${esc(taskType(x))}</span><span class="badge yellow">${esc(x.status)}</span><span class="badge purple">${esc(x.due_date||'Sem data')}</span></div><p>${x.theme?'<b>Tema:</b> '+esc(x.theme):''}</p><p>${x.activity?'<b>Atividade:</b> '+esc(x.activity):''}</p><p>${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editTask('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteTask('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>';}
+
+function renderLessonControl(){const el=$('lessonControlList');if(!el)return;const all=[...data.lessons].sort((a,b)=>`${a.day}${timeOf(a)}`.localeCompare(`${b.day}${timeOf(b)}`));el.innerHTML=all.map(x=>`<div class="feature-card" style="margin-bottom:10px"><div class="planning-meta"><span class="badge blue">${esc(x.day)} ${esc(timeOf(x))}</span><span class="badge purple">${esc(x.student_name)}</span><span class="badge blue">${esc(x.course)}</span><span class="badge yellow">${esc(x.status||'Agendada')}</span></div><p>${esc(x.notes||'Sem observações.')}</p><div class="row-actions"><button class="btn mini" onclick="editLesson('${x.id}')">Editar aula</button><button class="btn primary mini" onclick="openLessonRecord('${x.id}')">Registrar aula</button></div></div>`).join('')||'<div class="empty">Nenhuma aula cadastrada.</div>';}
+window.openLessonRecord=id=>{const x=data.lessons.find(l=>l.id===id);if(!x)return;renderNewModules();$('recordId').value='';$('recordLesson').value=id;openModal('recordModal');};
+
+function renderAchievements(){const el=$('achievementsList');if(!el)return;const catalog=data.achievements.length?data.achievements:[{id:'auto1',name:'Primeira aula concluída',icon:'🏆',description:'Conclua sua primeira aula.'},{id:'auto5',name:'5 aulas concluídas',icon:'🏆',description:'Conclua cinco aulas.'},{id:'auto10',name:'10 aulas concluídas',icon:'🏆',description:'Conclua dez aulas.'},{id:'autotask10',name:'10 tarefas concluídas',icon:'📚',description:'Conclua dez tarefas.'}];el.innerHTML='<h3>Todas as conquistas</h3>'+catalog.map(a=>`<div class="feature-card"><div style="font-size:30px">${esc(a.icon||'🏆')}</div><h3>${esc(a.name)}</h3><p>${esc(a.description||'')}</p></div>`).join('');const sid=$('achievementStudent')?.value||data.students[0]?.id;if($('achievementStudent'))studentOptions('achievementStudent',sid||'');const awarded=data.studentAchievements.filter(a=>a.student_id===sid);const names=awarded.map(a=>data.achievements.find(c=>c.id===a.achievement_id)?.name).filter(Boolean);const auto=[];const s=data.students.find(a=>a.id===sid);if(s){const ls=data.lessons.filter(x=>x.student_id===sid&&['Concluída','Realizada'].includes(x.status)).length;const ts=data.tasks.filter(x=>x.student_id===sid&&isDelivered(x)).length;if(ls>=1)auto.push('Primeira aula concluída');if(ls>=5)auto.push('5 aulas concluídas');if(ls>=10)auto.push('10 aulas concluídas');if(ts>=10)auto.push('10 tarefas concluídas');}$('studentAchievementsList').innerHTML=`<h3>Conquistas de ${esc(s?.name||'aluno')}</h3>${[...new Set([...names,...auto])].map(n=>`<div class="feature-card"><b>🏆 ${esc(n)}</b></div>`).join('')||'<div class="empty">Nenhuma conquista ainda.</div>'}`;}
+
+function renderStudentProgressPortal(){const arr=portalData.progress||[];return arr.length?arr.map(x=>`<div class="progress-row"><div class="top"><b>${esc(x.topic||x.title||x.course||'Progresso')}</b><span>${Number(x.percent||0)}%</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,Number(x.percent||0)))}%"></span></div><small class="muted">${esc(x.course||'')} · ${esc(x.status||'')}</small></div>`).join(''):'<div class="portal-empty">Nenhum progresso registrado ainda.</div>';}
+
+function renderStudentPortal(){
+  const s=portalData.student||{};$('studentWelcome').textContent=`Olá, ${portalField(s,'name','full_name')||'aluno'}!`;
+  const upcoming=portalData.lessons.map(x=>({x,info:nextLessonInfo(x)})).filter(o=>o.info).sort((a,b)=>a.info.date-b.info.date);const pending=portalData.tasks.filter(x=>!isDelivered(x));const activities=portalData.tasks.filter(x=>!isHomework(x));const homework=portalData.tasks.filter(x=>isHomework(x));
+  $('studentHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Próxima aula</h3><div class="big">${upcoming[0]?upcoming[0].info.dateLabel:'—'}</div><p>${upcoming[0]?esc(upcoming[0].info.time+' · '+(portalField(upcoming[0].x,'course','subject')||'Aula')):'Nenhuma aula agendada'}</p></div><div class="portal-card"><h3>Temas de casa</h3><div class="big">${homework.length}</div><p>pendentes</p></div><div class="portal-card"><h3>Atividades</h3><div class="big">${activities.length}</div><p>registradas</p></div><div class="portal-card portal-wide"><h3>Próximas aulas</h3>${portalItems(upcoming.slice(0,5).map(o=>({...o.x,date:o.info.dateLabel,time:o.info.time})),['course','subject','title'],['topic','description'],['date'])}</div></div>`;
+  $('studentActivities').innerHTML=`<div class="portal-card"><h3>Atividades</h3>${portalItems(activities,['title','name','subject'],['activity','description','content','status'],['due_date','date'])}</div>`;
+  $('studentHomework').innerHTML=`<div class="portal-card"><h3>Temas de casa</h3>${portalItems(homework,['title','name','subject'],['theme','description','content','status'],['due_date','date'])}</div>`;
+  $('studentLessons').innerHTML=`<div class="portal-card"><h3>Próximas aulas</h3>${portalItems(upcoming.map(o=>({...o.x,date:o.info.dateLabel,time:o.info.time})),['course','subject','title'],['topic','description','time'],['date'])}</div>`;
+  $('studentProgress').innerHTML=`<div class="portal-card"><h3>Meu progresso</h3>${renderStudentProgressPortal()}</div>`;
+}
+
+function renderResponsiblePortal(){
+  const s=portalData.student||{},name=portalField(s,'name','full_name')||'aluno';$('responsibleWelcome').textContent=`Acompanhamento de ${name}`;
+  const q=paymentPlanForStudent(s);const pending=portalData.tasks.filter(x=>!isDelivered(x));const due=s.next_payment_date||s.payment_due_date;const reminders=[];if(due&&q.billing!=='avulso'){const d=new Date(due+'T00:00:00'),today=new Date();today.setHours(0,0,0,0);const diff=Math.round((d-today)/86400000);if(diff<=3)reminders.push(`Pagamento de ${q.plan?.name||s.plan||'plano'} vence em ${Math.max(0,diff)} dia(s).`);if(diff<0)reminders.push(`Pagamento de ${q.plan?.name||s.plan||'plano'} está pendente.`);}
+  $('respHome').innerHTML=`<div class="portal-grid"><div class="portal-card"><h3>Aluno</h3><div class="big">${esc(name)}</div><p>${esc(portalField(s,'course','courses')||'Cursos cadastrados')}</p></div><div class="portal-card"><h3>Pagamentos</h3><div class="big">${money(q.amount)}</div><p>${esc(billingLabel(q.billing))} · ${esc(q.plan?.name||s.plan||'Sem plano')}</p></div><div class="portal-card"><h3>Tarefas</h3><div class="big">${pending.length}</div><p>pendentes</p></div><div class="portal-card portal-wide"><h3>Próximas aulas</h3>${portalItems(portalData.lessons.slice(0,5),['course','subject','title'],['topic','description'],['date'])}</div></div>`;
+  $('respStudent').innerHTML=`<div class="portal-card"><h3>Dados do aluno</h3><div class="portal-list"><div class="portal-item"><strong>Nome</strong><div>${esc(name)}</div></div><div class="portal-item"><strong>Curso(s)</strong><div>${esc(portalField(s,'course','courses')||'Não informado')}</div></div><div class="portal-item"><strong>Tipo de cobrança</strong><div>${esc(billingLabel(q.billing))}</div></div></div></div>`;
+  $('respPayments').innerHTML=`<div class="portal-grid"><div class="portal-card portal-wide"><h3>Plano atual</h3><p><b>${esc(q.plan?.name||s.plan||'Sem plano')}</b></p><p>${esc(billingLabel(q.billing))} · ${money(q.amount)}</p><p>${q.plan?.monthly_lessons||'—'} aulas/mês · ${q.plan?.weekly_lessons||q.plan?.lessons_per_week||'—'} aulas/semana</p></div><div class="portal-card portal-wide"><h3>Pagamentos</h3>${portalItems(portalData.payments,['plan_name','description','title','status'],['billing_type','amount','value','status'],['due_date','date','paid_at'])}</div></div>`;
+  $('respProgress').innerHTML=`<div class="portal-card"><h3>Progresso</h3>${renderStudentProgressPortal()}</div>`;
+  $('respLessons').innerHTML=`<div class="portal-card"><h3>Registro de aulas</h3>${portalItems(portalData.records,['title','course','subject','status'],['content','observation','homework','notes','description'],['date'])}</div>`;
+  $('respReminders').innerHTML=`<div class="portal-card"><h3>Pagamentos e vencimentos</h3>${reminders.map(x=>`<div class="portal-item"><strong>⚠ ${esc(x)}</strong></div>`).join('')||'<div class="portal-empty">Nenhum pagamento pendente ou próximo do vencimento.</div>'}</div>`;
+}
+
+function renderLessonControlAndReports(){renderLessonControl();renderReports();}
+
+// Reforça campos novos no cadastro de aluno
+const _editStudentOld=window.editStudent;
+window.editStudent=function(id){_editStudentOld(id);const x=data.students.find(a=>a.id===id);if(x&&$('studentBillingType'))$('studentBillingType').value=studentBilling(x);};
+const _studentSubmitOld=$('studentForm').onsubmit;
+$('studentForm').onsubmit=async e=>{e.preventDefault();try{const row={name:$('studentName').value.trim(),phone:$('studentPhone').value.trim(),course:selectedValues('studentCourse').join(', '),plan:$('studentPlan').value.trim(),billing_type:$('studentBillingType').value,format:$('studentFormat').value,modality:$('studentFormat').value,status:$('studentStatus').value,notes:$('studentNotes').value.trim()};const id=$('studentId').value;if(id)await update('students',id,row);else await insert('students',row);closeModal('studentModal');await loadAll();toast('Aluno salvo!')}catch(err){toast(err.message)}};
+$('newStudent').onclick=()=>{$('studentForm').reset();$('studentId').value='';$('studentFormat').value='Online';$('studentStatus').value='Ativo';$('studentBillingType').value='mensal';fillStudentCourseSelect([]);fillPlanSelect('');openModal('studentModal');};
+
+// Plano com cursos e cálculo
+$('newPlan').onclick=()=>{$('planForm').reset();$('planId').value='';$('planWeekly').value='2';$('planMonthly').value='8';$('planPrice').value='0';$('planType').value='mensal';fillPlanCourses([]);openModal('planModal');};
+window.editPlan=function(id){const x=data.plans.find(a=>a.id===id);if(!x)return;$('planId').value=id;$('planName').value=x.name||'';$('planWeekly').value=x.weekly_lessons??x.lessons_per_week??2;$('planMonthly').value=x.monthly_lessons??8;$('planPrice').value=x.monthly_price||0;$('planDesc').value=x.description||'';$('planType').value=x.plan_type||'mensal';fillPlanCourses(planCoursesFrom(x));openModal('planModal');};
+$('planCourses')?.addEventListener('change',updatePlanCalculatedPrice);$('planType')?.addEventListener('change',updatePlanCalculatedPrice);$('planWeekly')?.addEventListener('input',updatePlanCalculatedPrice);$('planMonthly')?.addEventListener('input',updatePlanCalculatedPrice);
+$('planForm').onsubmit=async e=>{e.preventDefault();try{const weekly=Math.max(0,Number($('planWeekly').value||0)),monthly=Math.max(0,Number($('planMonthly').value||0)),courses=selectedValues('planCourses'),calc=coursePriceSum(courses)*(($('planType').value==='mensal'?monthly/4:1));const row={name:$('planName').value.trim(),lessons_per_week:String(weekly),monthly_lessons:String(monthly),duration:'1h por aula',description:$('planDesc').value.trim(),weekly_lessons:weekly,monthly_price:Math.max(0,Number($('planPrice').value||calc)),plan_type:$('planType').value,course_names:courses};const id=$('planId').value;if(id)await update('plans',id,row);else await insert('plans',row);closeModal('planModal');await loadAll();toast('Plano salvo!')}catch(e){toast(e.message)}};
+
+// Tarefas com atividade/tema e separação aluno
+$('taskForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('tasks',$('taskId').value,{student_id:$('taskStudent').value,student_name:studentName($('taskStudent').value),course:$('taskCourse').value,title:$('taskTitle').value.trim(),task_type:$('taskType').value,activity:$('taskActivity').value.trim(),theme:$('taskTheme').value.trim(),description:$('taskDescription').value.trim(),due_date:$('taskDue').value||null,status:$('taskStatus').value,notes:$('taskNotes').value.trim()});closeModal('taskModal');await loadAll();toast('Tarefa salva!')}catch(e){toast(e.message)}};
+window.editTask=id=>{const x=data.tasks.find(a=>a.id===id);if(!x)return;$('taskId').value=id;studentOptions('taskStudent',x.student_id);subjectOptions('taskCourse',x.course);$('taskTitle').value=x.title||'';$('taskType').value=taskType(x);$('taskActivity').value=x.activity||'';$('taskTheme').value=x.theme||'';$('taskDescription').value=x.description||'';$('taskDue').value=x.due_date||'';$('taskStatus').value=x.status||'Pendente';$('taskNotes').value=x.notes||'';openModal('taskModal');};
+
+// Relatório por aluno
+$('reportStudent')?.addEventListener('change',renderReports);
+
+// Conquistas
+$('achievementStudent')?.addEventListener('change',renderAchievements);
+$('newAchievement')?.addEventListener('click',async()=>{const name=prompt('Nome da conquista:');if(!name)return;const icon=prompt('Ícone da conquista:','🏆')||'🏆';const description=prompt('Descrição:','Conquista personalizada')||'';try{await insert('achievement_catalog',{name,icon,description,active:true});await loadAll();toast('Conquista adicionada!')}catch(e){toast(e.message)}});
+
+function renderLessonControl(){const el=$('lessonControlList');if(!el)return;const all=data.lessons.slice().sort((a,b)=>`${a.day}${timeOf(a)}`.localeCompare(`${b.day}${timeOf(b)}`));el.innerHTML=all.map(x=>`<div class="feature-card" style="margin-bottom:10px"><div class="planning-meta"><span class="badge blue">${esc(x.day)} ${esc(timeOf(x))}</span><span class="badge purple">${esc(x.student_name)}</span><span class="badge blue">${esc(x.course)}</span><span class="badge yellow">${esc(x.status||'Agendada')}</span></div><p>${esc(x.notes||'')}</p><div class="row-actions"><button class="btn mini" onclick="editLesson('${x.id}')">Editar aula</button><button class="btn primary mini" onclick="openLessonRecord('${x.id}')">Registrar aula</button></div></div>`).join('')||'<div class="empty">Nenhuma aula cadastrada.</div>';}
+$('newRecord')?.addEventListener('click',()=>{});
+
+// Re-render pós-load
+const _renderOld=window.render;
+window.render=function(){_renderOld();renderLessonControl();renderAchievements();renderReports();};
+
+
+
+function generatedPlanOptions(){
+  const out=[];
+  const school=['Básico 4-5','Intermediário 4-5','Básico 6-8','Intermediário 6-8','Avançado 6-8'];
+  const otherCourses=['Programação','Inteligência Artificial','Minecraft / Comandos / Skript','Informática / PC','Canva / Apresentações'];
+  school.forEach(x=>out.push(x));
+  otherCourses.forEach(c=>['Básico','Intermediário','Avançado'].forEach(l=>out.push(`${l} ${c}`)));
+  return out;
+}
+function fillPlanSelect(selected=''){
+  const select=$('studentPlan');if(!select)return;
+  const existing=data.plans.map(x=>String(x.name||'')).filter(Boolean);
+  const all=[...new Set([...existing,...generatedPlanOptions()])];
+  select.innerHTML='<option value="">Selecione um plano</option>'+all.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  if(selected)select.value=selected;
+}
+
+boot();
 
 </script>
 
