@@ -3049,19 +3049,23 @@ function renderNext(a){
 
 function renderSchedule(){
   const activeSchedules=(data.schedules||[]).filter(x=>String(x.status||'Ativo').toLowerCase()!=='inativo');
-  const agendaDays=['Terça','Quinta','Sexta'];
-  const agendaSlots=['09:00','10:00','18:00'];
-  let h='<div class="cell head">HORÁRIO</div>'+agendaDays.map(d=>`<div class="cell head">${d.toUpperCase()}</div>`).join('');
-  for(const time of agendaSlots){
-    h+=`<div class="cell head">${time}–${String(Number(time.slice(0,2))+1).padStart(2,'0')}</div>`;
-    for(const day of agendaDays){
-      if(!allowedSlots[day].includes(time)){h+='<div class="cell blocked">INDISPONÍVEL</div>';continue;}
+  const fallbackDays=['Terça','Quinta','Sexta'];
+  const fallbackSlots=['09:00','10:00','18:00'];
+  const agendaDays=[...new Set(activeSchedules.map(x=>x.day).filter(Boolean))].sort((a,b)=>{const order={Domingo:0,Segunda:1,Terça:2,Quarta:3,Quinta:4,Sexta:5,Sábado:6};return (order[a]??99)-(order[b]??99)});
+  const days=agendaDays.length?agendaDays:fallbackDays;
+  const scheduleTimes=activeSchedules.map(x=>String(x.start_time||'').slice(0,5)).filter(Boolean);
+  const slots=[...new Set(scheduleTimes.length?scheduleTimes:fallbackSlots)].sort();
+  let h='<div class="cell head">HORÁRIO</div>'+days.map(d=>`<div class="cell head">${d.toUpperCase()}</div>`).join('');
+  for(const time of slots){
+    const hh=Number(time.slice(0,2)); const mm=time.slice(3,5); const end=`${String((hh+1)%24).padStart(2,'0')}:${mm}`;
+    h+=`<div class="cell head">${time}–${end}</div>`;
+    for(const day of days){
       const rows=activeSchedules.filter(x=>x.day===day && String(x.start_time||'').slice(0,5)===time);
       if(rows.length){
         h+=`<div class="cell busy">${rows.map(x=>`<div style="margin-bottom:6px"><b>${esc(x.student_name||studentName(x.student_id))}</b><br><small>${esc(x.course||'')}</small></div>`).join('')}</div>`;
       }else{
         const lesson=data.lessons.find(l=>l.day===day&&timeOf(l)===time&&l.status!=='Cancelada');
-        h+=lesson?`<div class="cell busy"><b>${esc(lesson.student_name||studentName(lesson.student_id))}</b><br><small>${esc(lesson.course||'')}</small></div>`:'<div class="cell free">DISPONÍVEL</div>';
+        h+=lesson?`<div class="cell busy"><b>${esc(lesson.student_name||studentName(lesson.student_id))}</b><br><small>${esc(lesson.course||'')}</small>${lesson.notes?`<br><small class="muted">${esc(String(lesson.notes).split('\n').find(v=>v.startsWith('Aula:'))?.replace(/^Aula:\s*/,'')||'')}</small>`:''}</div>`:'<div class="cell free">DISPONÍVEL</div>';
       }
     }
   }
@@ -5466,29 +5470,14 @@ async function syncPlanningToBanks(planId,plan,lessons){
   const studentId=plan.student_id;
   const studentNameValue=plan.student_name||studentName(studentId);
   const course=plan.course||'';
-  const theme=plan.theme||plan.title||'Planejamento';
+  const mainTheme=plan.theme||plan.title||'Planejamento';
   const level=plan.initial_level||'Médio';
   const marker=`[PLANEJAMENTO_AUTO:${planId}]`;
 
-  // Remove somente os registros automáticos deste planejamento.
-  // Também remove os registros antigos criados pelas versões anteriores,
-  // que podiam não ter planning_id por causa de tabelas antigas.
-  const autoTaskRows=(data.tasks||[]).filter(x=>
-    String(x.planning_id||'')===String(planId)||
-    String(x.notes||'').includes(marker)||
-    (String(x.student_id||'')===String(studentId) &&
-     String(x.theme||'')===String(theme) &&
-     /^((Atividades|Tema) — )/.test(String(x.title||'')))
-  );
+  // Remove registros automáticos antigos deste planejamento.
+  const autoTaskRows=(data.tasks||[]).filter(x=>String(x.planning_id||'')===String(planId)||String(x.notes||'').includes(marker));
   for(const x of autoTaskRows){try{await remove('tasks',x.id)}catch(_) {}}
-
-  const autoActivityRows=(data.activities||[]).filter(x=>
-    String(x.planning_id||'')===String(planId)||
-    String(x.answer||'').includes(marker)||
-    (String(x.student_id||'')===String(studentId) &&
-     String(x.theme||'')===String(theme) &&
-     /^((Atividades|Tema) — )/.test(String(x.title||'')))
-  );
+  const autoActivityRows=(data.activities||[]).filter(x=>String(x.planning_id||'')===String(planId)||String(x.answer||'').includes(marker));
   for(const x of autoActivityRows){try{await remove('activities',x.id)}catch(_) {}}
 
   for(let i=0;i<lessons.length;i++){
@@ -5497,82 +5486,96 @@ async function syncPlanningToBanks(planId,plan,lessons){
     const lessonTitle=String(l.title||`Aula ${ordinal}`).trim();
     const activityText=String(l.activities||'').trim();
     const contentText=String(l.content||'').trim();
+    const homeworkText=String(l.homework||'').trim();
     const objectiveText=String(l.objectives||'').trim();
     const examplesText=String(l.examples||'').trim();
-    const homeworkText=String(l.homework||'').trim();
     const due=planningAutoDate(plan.start_date,i,parsePlanningSchedule(plan.schedule).day);
-    const notes=`${marker}\nGerado automaticamente a partir do planejamento "${theme}" — Aula ${ordinal}.`;
+    const notes=`${marker}\nAula: ${lessonTitle}\nTema: ${mainTheme}`;
 
-    // UMA tarefa de atividades por aula: todas as atividades ficam juntas.
-    // Se a aula não tiver atividades cadastradas, NÃO cria tarefa de atividades.
+    // Atividades: UMA entrada por aula, contendo todas as atividades juntas.
+    // Se não houver atividades, não cria nada.
     if(activityText){
-      const activityTask={
-        student_id:studentId, student_name:studentNameValue, course,
-        title:`Atividades — Aula ${ordinal} — ${lessonTitle}`,
-        activity:activityText, theme, is_homework:false,
-        description:[
-          objectiveText?`Objetivo:\n${objectiveText}`:'',
-          contentText?`Conteúdo:\n${contentText}`:'',
-          examplesText?`Exemplos / prática:\n${examplesText}`:''
-        ].filter(Boolean).join('\n\n'),
-        due_date:due, status:'Pendente', notes,
-        planning_id:planId, planning_lesson_index:ordinal,
-        planning_theme:theme, planning_source:true
-      };
-      await insertGeneratedRobust('tasks',[
-        activityTask,
-        {...activityTask,planning_id:undefined,planning_lesson_index:undefined,planning_theme:undefined,planning_source:undefined},
-        {student_id:studentId,student_name:studentNameValue,course,title:activityTask.title,activity:activityTask.activity,is_homework:false,description:activityTask.description,due_date:due,status:'Pendente',notes}
-      ]);
+      const taskBase={student_id:studentId,student_name:studentNameValue,course,title:`Atividades — Aula ${ordinal} — ${lessonTitle}`,activity:activityText,is_homework:false,theme:lessonTitle,description:[objectiveText?`Objetivo:\n${objectiveText}`:'',examplesText?`Exemplos / prática:\n${examplesText}`:''].filter(Boolean).join('\n\n'),due_date:due,status:'Pendente',notes};
+      try{await insert('tasks',{...taskBase,planning_id:planId,planning_lesson_index:ordinal,planning_theme:mainTheme,planning_source:true})}catch(_){try{await insert('tasks',taskBase)}catch(e){console.error('Tarefa automática não criada:',e)}}
+
+      // Banco de atividades: usa somente colunas compatíveis com a tabela antiga.
+      const bankBase={student_id:studentId,title:`Atividades — Aula ${ordinal} — ${lessonTitle}`,course,level,theme:lessonTitle,status:'Disponível',text:activityText,answer:marker};
+      try{await insert('activities',{...bankBase,planning_id:planId,planning_lesson_index:ordinal,planning_theme:mainTheme,planning_source:true})}
+      catch(_){try{await insert('activities',bankBase)}catch(e){try{await insert('activities',{title:bankBase.title,course,level,text:activityText,answer:marker})}catch(e2){console.error('Atividade automática não criada:',e2)}}}
     }
 
-    // UMA tarefa separada somente para o tema/conteúdo principal daquela aula.
-    const themeTask={
-      student_id:studentId, student_name:studentNameValue, course,
-      title:`Tema — Aula ${ordinal} — ${lessonTitle}`,
-      activity:'Tema da aula', theme, is_homework:false,
-      description:contentText||lessonTitle,
-      due_date:due, status:'Pendente', notes,
-      planning_id:planId, planning_lesson_index:ordinal,
-      planning_theme:theme, planning_source:true
-    };
-    await insertGeneratedRobust('tasks',[
-      themeTask,
-      {...themeTask,planning_id:undefined,planning_lesson_index:undefined,planning_theme:undefined,planning_source:undefined},
-      {student_id:studentId,student_name:studentNameValue,course,title:themeTask.title,activity:'Tema da aula',description:themeTask.description,due_date:due,status:'Pendente',notes}
-    ]);
+    // Tema da aula no Banco de atividades: uma entrada por aula, estruturada como no planejamento.
+    const themeBank={student_id:studentId,title:`Tema — Aula ${ordinal} — ${lessonTitle}`,course,level,theme:lessonTitle,status:'Disponível',text:contentText,answer:marker};
+    try{await insert('activities',{...themeBank,planning_id:planId,planning_lesson_index:ordinal,planning_theme:mainTheme,planning_source:true})}
+    catch(_){try{await insert('activities',themeBank)}catch(e){try{await insert('activities',{title:themeBank.title,course,level,text:contentText,answer:marker})}catch(e2){console.error('Tema automático não criado:',e2)}}}
 
-    // No Banco de atividades, só cria a entrada de ATIVIDADES quando
-    // realmente existem atividades cadastradas nessa aula.
-    if(activityText){
-      const activityBank={
-        student_id:studentId,student_name:studentNameValue,
-        title:`Atividades — Aula ${ordinal} — ${lessonTitle}`,
-        course,level,theme,status:'Disponível',
-        text:activityText,
-        answer:'',
-        planning_id:planId,planning_lesson_index:ordinal,
-        planning_theme:theme,planning_source:true
-      };
-      await insertGeneratedRobust('activities',[activityBank]);
+    // Tema de casa: só cria se o campo Tema de casa daquela aula tiver conteúdo.
+    if(homeworkText){
+      const homeworkTask={student_id:studentId,student_name:studentNameValue,course,title:`Tema de casa — Aula ${ordinal} — ${lessonTitle}`,activity:homeworkText,is_homework:true,theme:lessonTitle,description:homeworkText,due_date:due,status:'Pendente',notes};
+      try{await insert('tasks',{...homeworkTask,planning_id:planId,planning_lesson_index:ordinal,planning_theme:mainTheme,planning_source:true})}catch(_){try{await insert('tasks',homeworkTask)}catch(e){console.error('Tema de casa automático não criado:',e)}}
     }
-
-    // O TEMA continua sendo criado para todas as aulas, independentemente
-    // de existir ou não um campo de atividades.
-    const themeBank={
-      student_id:studentId,student_name:studentNameValue,
-      title:`Tema — Aula ${ordinal} — ${lessonTitle}`,
-      course,level,theme,status:'Disponível',
-      text:contentText||lessonTitle,
-      answer:'',
-      planning_id:planId,planning_lesson_index:ordinal,
-      planning_theme:theme,planning_source:true
-    };
-    await insertGeneratedRobust('activities',[themeBank]);
   }
+
+  // Cria as aulas reais da agenda a partir dos horários do aluno.
+  try{await syncPlanningToAgenda(planId,plan,lessons)}catch(e){console.error('Erro ao sincronizar planejamento com a agenda:',e)}
 }
 
-function parsePlanningLessons(plan){if(!plan)return [];try{return Array.isArray(plan.lessons_data)?plan.lessons_data:JSON.parse(plan.lessons_data||'[]')}catch(_){return []}}
+function weekdayIndex(day){const map={Domingo:0,Segunda:1,Terça:2,Quarta:3,Quinta:4,Sexta:5,Sábado:6};return map[String(day||'').trim()];}
+function dateForWeeklySlot(startDate,slotIndex,slots){
+  if(!slots.length)return null;
+  const base=new Date(String(startDate||todayISO())+'T00:00:00');
+  if(Number.isNaN(base.getTime()))return null;
+  const sorted=slots.slice().sort((a,b)=>weekdayIndex(a.day)-weekdayIndex(b.day)||String(a.start_time).localeCompare(String(b.start_time)));
+  const slot=sorted[slotIndex%sorted.length];
+  const target=weekdayIndex(slot.day);
+  const mondayOffset=(base.getDay()+6)%7;
+  const weekStart=new Date(base);
+  weekStart.setDate(base.getDate()-mondayOffset);
+  weekStart.setHours(0,0,0,0);
+  let d=new Date(weekStart);
+  d.setDate(weekStart.getDate()+(target===0?6:target-1)+Math.floor(slotIndex/sorted.length)*7);
+  if(d<base){d.setDate(d.getDate()+7);}
+  return d.toISOString().slice(0,10);
+}
+async function syncPlanningToAgenda(planId,plan,lessons){
+  const sid=plan.student_id;
+  if(!sid)return;
+  let scheduleRows=(data.schedules||[]).filter(x=>String(x.student_id||'')===String(sid)&&String(x.status||'Ativo').toLowerCase()!=='inativo');
+  const sameCourse=scheduleRows.filter(x=>String(x.course||'').trim()===String(plan.course||'').trim());
+  if(sameCourse.length)scheduleRows=sameCourse;
+  const slots=scheduleRows.map(x=>({day:x.day,start_time:String(x.start_time||'').slice(0,5),end_time:String(x.end_time||'').slice(0,5),course:x.course||plan.course||''})).filter(x=>weekdayIndex(x.day)!==undefined&&x.start_time);
+  if(!slots.length)return;
+  const marker=`[PLANEJAMENTO_AUTO:${planId}]`;
+  const old=(data.lessons||[]).filter(x=>String(x.notes||'').includes(marker));
+  for(const x of old){try{await remove('lessons',x.id)}catch(_) {}}
+  const start=plan.start_date||todayISO();
+  for(let i=0;i<lessons.length;i++){
+    const l=lessons[i]||{};
+    const slot=slots.slice().sort((a,b)=>weekdayIndex(a.day)-weekdayIndex(b.day)||a.start_time.localeCompare(b.start_time))[i%slots.length];
+    const date=dateForWeeklySlot(start,i,slots);
+    if(!date)continue;
+    const row={student_id:sid,student_name:plan.student_name||studentName(sid),course:slot.course||plan.course||'',day:slot.day,start_time:slot.start_time+':00',duration_minutes:60,paid:false,status:'Agendada',date,notes:`${marker}\nAula: ${String(l.title||`Aula ${i+1}`)}\nTema: ${String(plan.theme||plan.title||'')}\nConteúdo: ${String(l.title||'')}`};
+    try{await insert('lessons',row)}catch(e){console.error('Aula automática não criada:',e)}
+  }
+  try{data.lessons=await loadTable('lessons')}catch(_){}
+}
+
+function parsePlanningLessons(plan){
+  if(!plan)return [];
+  const raw=plan.lessons_data;
+  if(Array.isArray(raw))return raw;
+  if(raw&&typeof raw==='object'){
+    if(Array.isArray(raw.lessons))return raw.lessons;
+    if(Array.isArray(raw.aulas))return raw.aulas;
+  }
+  try{
+    const parsed=JSON.parse(raw||'[]');
+    if(Array.isArray(parsed))return parsed;
+    if(parsed&&Array.isArray(parsed.lessons))return parsed.lessons;
+    if(parsed&&Array.isArray(parsed.aulas))return parsed.aulas;
+  }catch(_){}
+  return [];
+}
 function compactPlanningText(text,max=1800){
   const raw=String(text||'').replace(/\r/g,'').replace(/\n{3,}/g,'\n\n').trim();
   if(!raw)return '';
@@ -5599,21 +5602,18 @@ function summarizePlanningPart(text,max=650){
 function lessonDevelopmentText(plan,lesson,ordinal){
   const l=lesson||{},p=plan||{};
   const clean=v=>String(v??'').replace(/\r/g,'').trim();
-  const title=clean(l.title)||`Aula ${ordinal}`;
-  const objective=summarizePlanningPart(l.objectives,420);
-  const content=summarizePlanningPart(l.content,620);
-  const activities=summarizePlanningPart(l.activities,760);
-  const examples=summarizePlanningPart(l.examples,620);
-  const goal=summarizePlanningPart(p.student_goal,380);
+  const objective=summarizePlanningPart(l.objectives,520);
+  const content=summarizePlanningPart(l.content,760);
+  const activities=summarizePlanningPart(l.activities,720);
+  const examples=summarizePlanningPart(l.examples,520);
+  const goal=summarizePlanningPart(p.student_goal,360);
   const parts=[];
-
   if(objective)parts.push(`Nesta aula, o objetivo é ${objective.replace(/[.!?]+$/,'')}.`);
   if(content)parts.push(`O conteúdo trabalhado será ${content.replace(/^[.:\s]+/,'').replace(/[.!?]+$/,'')}.`);
-  if(activities)parts.push(`O desenvolvimento começará e avançará por meio das atividades planejadas: ${activities.replace(/[.!?]+$/,'')}.`);
-  if(examples)parts.push(`Também serão utilizados exemplos, situações práticas e explicações para consolidar o conteúdo: ${examples.replace(/[.!?]+$/,'')}.`);
-  if(goal)parts.push(`Dessa forma, a aula contribui para o objetivo do aluno de ${goal.replace(/[.!?]+$/,'')}.`);
-
-  return compactPlanningText(parts.join('\n\n'),1800)||`Nesta aula, será desenvolvido o tema "${title}" de acordo com o planejamento.`;
+  if(activities)parts.push(`O desenvolvimento da aula será feito por meio de atividades e práticas planejadas, trabalhando os principais pontos do conteúdo: ${activities.replace(/[.!?]+$/,'')}.`);
+  if(examples)parts.push(`Também serão utilizados exemplos e demonstrações para ajudar o aluno a relacionar o conteúdo com situações práticas: ${examples.replace(/[.!?]+$/,'')}.`);
+  if(goal)parts.push(`Ao final, esse trabalho contribui para o objetivo do aluno de ${goal.replace(/[.!?]+$/,'')}.`);
+  return parts.join('\n\n')||`Nesta aula, será desenvolvido o tema de acordo com o planejamento.`;
 }
 
 function populatePlanningLessonSelect(selectId,studentId,theme,current=''){
@@ -5667,7 +5667,21 @@ function findPlanningForStudentAndTheme(studentId,theme){
 function findPlanningLesson(studentId,theme,ordinal){const found=findPlanningForStudentAndTheme(studentId,theme);if(!found)return null;const n=Math.max(1,Number(ordinal||1)),lessons=parsePlanningLessons(found.plan);return {plan:found.plan,lesson:lessons[n-1]||null,ordinal:n}}
 function autoFillTaskFromPlanning(showToast=true){const sid=$('taskStudent')?.value||'',theme=$('taskTheme')?.value||'',ord=$('taskPlanningLesson')?.value||'1',info=$('taskPlanningInfo');if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningLesson(sid,theme,ord);if(!found||!found.lesson){if(info)info.textContent='Nenhuma aula encontrada neste planejamento.';return false}const l=found.lesson,p=found.plan;$('taskCourse').value=$('taskCourse').value||p.course||'';$('taskTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;$('taskActivity').value=l.activities||'';$('taskDescription').value=[l.objectives?`Objetivo:\n${l.objectives}`:'',l.content?`Conteúdo:\n${l.content}`:'',l.examples?`Exemplos / prática:\n${l.examples}`:''].filter(Boolean).join('\n\n');$('taskDue').value=planningAutoDate(p.start_date,found.ordinal-1,parsePlanningSchedule(p.schedule).day)||todayISO();if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(l.title||'')}.`;if(showToast)toast(`Tarefa preenchida com a Aula ${found.ordinal} do planejamento.`);return true}
 function autoFillActivityFromPlanning(showToast=true){const sid=$('activityStudent')?.value||'',theme=$('activityTheme')?.value||'',ord=$('activityPlanningLesson')?.value||'1',info=$('activityPlanningInfo');if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningLesson(sid,theme,ord);if(!found||!found.lesson){if(info)info.textContent='Nenhuma aula encontrada neste planejamento.';return false}const l=found.lesson,p=found.plan;$('activityCourse').value=$('activityCourse').value||p.course||'';$('activityTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;$('activityText').value=String(l.activities||'').trim();if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(l.title||'')}.`;if(showToast)toast(`Atividade preenchida com a Aula ${found.ordinal} do planejamento.`);return true}
-function autoFillRecordFromPlanning(showToast=true){const studentId=$('recordStudent')?.value?.trim(),theme=$('recordPlanningTheme')?.value?.trim(),info=$('recordPlanningInfo');if(!studentId||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningForStudentAndTheme(studentId,theme);if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false}const p=found.plan||{},l=found.lesson||{},content=String(l.content||'').trim(),development=lessonDevelopmentText(p,l,found.ordinal),homework=String(l.homework||'').trim(),notes=String(l.notes||p.notes||'').trim(),lessonTitle=String(l.title||`Aula ${found.ordinal}`).trim();$('recordContent').value=content||`Tema trabalhado: ${theme}.`;$('recordObservation').value=development;$('recordHomework').value=homework;$('recordNotes').value=notes;if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(studentId))} · <b>Aula ${found.ordinal}</b> — ${esc(lessonTitle)}.<br><span class="muted">O desenvolvimento foi organizado e resumido sem retirar as etapas, explicações, exemplos e atividades essenciais da aula.</span>`;if(showToast)toast(`Registro preenchido com a Aula ${found.ordinal} do planejamento.`);return true}
+function autoFillRecordFromPlanning(showToast=true){
+  const studentId=$('recordStudent')?.value?.trim(),theme=$('recordPlanningTheme')?.value?.trim(),info=$('recordPlanningInfo');
+  if(!studentId||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false;}
+  const found=findPlanningForStudentAndTheme(studentId,theme);
+  if(!found||!found.lesson){if(info)info.textContent=found?'Planejamento encontrado, mas não há uma aula disponível para registrar.':'Nenhum planejamento encontrado para este aluno e tema.';return false;}
+  const p=found.plan||{},l=found.lesson||{};
+  const lessonTitle=String(l.title||`Aula ${found.ordinal}`).trim();
+  $('recordContent').value=lessonTitle;
+  $('recordObservation').value=lessonDevelopmentText(p,l,found.ordinal);
+  $('recordHomework').value=String(l.homework||'').trim();
+  $('recordNotes').value=String(l.notes||'').trim();
+  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(studentId))} · <b>Aula ${found.ordinal}</b> — ${esc(lessonTitle)}.<br><span class="muted">Conteúdo = título da aula. O desenvolvimento é resumido mantendo os pontos necessários para entender o que foi trabalhado.</span>`;
+  if(showToast)toast(`Registro preenchido com a Aula ${found.ordinal} do planejamento.`);
+  return true;
+}
 
 function renderRecords(){const el=$('recordsList');if(!el)return;el.innerHTML=data.records.slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px"><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id)||x.student_name||'Aluno')}</span><span class="badge green">${esc(x.status||'')}</span>${x.date?`<span class="badge purple">${esc(x.date)}</span>`:''}</div><div class="view-block"><h4>Conteúdo trabalhado</h4><div class="planning-text">${esc(x.content||'Não informado.')}</div></div><div class="view-block"><h4>Como foi a aula?</h4><div class="planning-text">${esc(x.observation||'Não informado.')}</div></div><div class="view-block"><h4>Tarefa de casa</h4><div class="planning-text">${esc(x.homework||'Não informado.')}</div></div><div class="view-block"><h4>Observações</h4><div class="planning-text">${esc(x.notes||'Não informado.')}</div></div><div class="row-actions" style="margin-top:10px"><button class="btn mini" onclick="editRecord('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';}
 function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge purple">${x.is_homework?'TEMA DE CASA':'ATIVIDADE'}</span><span class="badge yellow">${esc(x.status)}</span><span class="badge purple">${esc(x.due_date||'Sem data')}</span></div>${x.activity?`<p><b>Atividade:</b> ${esc(x.activity)}</p>`:''}${x.theme?`<p><b>Tema:</b> ${esc(x.theme)}</p>`:''}<p>${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editTask('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteTask('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>';}
@@ -5770,7 +5784,7 @@ function setupNewModules(){
   $('planCourses')?.addEventListener('change',updatePlanCalculatedPrice);$('planWeekly')?.addEventListener('input',updatePlanCalculatedPrice);$('planMonthly')?.addEventListener('input',updatePlanCalculatedPrice);$('planType')?.addEventListener('change',updatePlanCalculatedPrice);
   $('newAchievement')?.addEventListener('click',()=>{$('achievementForm').reset();$('achievementId').value='';$('achievementIcon').value='🏆';openModal('achievementModal');});
   $('achievementForm')?.addEventListener('submit',async e=>{e.preventDefault();try{await saveSimple('achievements',$('achievementId').value,{name:$('achievementName').value.trim(),icon:$('achievementIcon').value.trim()||'🏆',description:$('achievementDescription').value.trim()});closeModal('achievementModal');await loadAll();toast('Conquista salva!')}catch(err){toast(err.message)}});
-  $('assignAchievement')?.addEventListener('click',async()=>{const sid=$('achievementStudent')?.value;const aid=$('achievementSelect')?.value;if(!sid||!aid)return toast('Selecione o aluno e a conquista.');try{const exists=data.studentAchievements.find(x=>x.student_id===sid&&x.achievement_id===aid);if(exists)return toast('Essa conquista já foi atribuída.');await insert('student_achievements',{student_id:sid,student_name:studentName(sid),achievement_id:aid});await loadAll();toast('Conquista atribuída!')}catch(err){toast(err.message)}});
+  $('assignAchievement')?.addEventListener('click',async()=>{const sid=$('achievementStudent')?.value;const aid=$('achievementSelect')?.value;if(!sid||!aid)return toast('Selecione o aluno e a conquista.');try{const exists=data.studentAchievements.find(x=>x.student_id===sid&&x.achievement_id===aid);if(exists)return toast('Essa conquista já foi atribuída.');await insert('student_achievements',{student_id:sid,achievement_id:aid});await loadAll();toast('Conquista atribuída!')}catch(err){toast(err.message)}});
   $('generateReport').onclick=()=>{renderReports();toast('Relatório atualizado!')};
   $('calendarToday').onclick=()=>{renderCalendar();toast('Calendário atualizado!')};
   $('newSchedule')?.addEventListener('click',()=>{
@@ -5786,7 +5800,7 @@ function setupNewModules(){
     if(conflict && !confirm('Já existe outro horário cadastrado nesse mesmo dia e horário. Deseja salvar mesmo assim?'))return;
     const row={student_id:student.id,student_name:student.name,course:$('scheduleCourse').value,day:$('scheduleDay').value,start_time:start,end_time:end,status:$('scheduleStatus').value,notes:$('scheduleNotes').value.trim()};
     if(id)await update('student_schedules',id,row);else await insert('student_schedules',row);
-    closeModal('scheduleModal');await loadAll();toast(id?'Horário atualizado!':'Horário salvo!');
+    closeModal('scheduleModal');await loadAll();const affectedPlans=(data.planning||[]).filter(p=>String(p.student_id||'')===String(student.id));for(const plan of affectedPlans){try{await syncPlanningToAgenda(plan.id,plan,parsePlanningLessons(plan))}catch(_){}}await loadAll();toast(id?'Horário atualizado!':'Horário salvo!');
   }catch(err){toast(err.message||'Erro ao salvar horário.')}});
 
   $('recordForm').onsubmit=async e=>{e.preventDefault();try{
@@ -5813,7 +5827,7 @@ function setupNewModules(){
   $('assessmentForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('assessments',$('assessmentId').value,{student_id:$('assessmentStudent').value,student_name:studentName($('assessmentStudent').value),course:$('assessmentCourse').value,title:$('assessmentTitle').value.trim(),score:Number($('assessmentScore').value||0),max_score:Number($('assessmentMax').value||10),date:$('assessmentDate').value||null,content:$('assessmentContent').value.trim(),notes:$('assessmentNotes').value.trim()});closeModal('assessmentModal');await loadAll();toast('Avaliação salva!')}catch(e){toast(e.message)}};
   $('reminderForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('reminders',$('reminderId').value,{title:$('reminderTitle').value.trim(),date:$('reminderDate').value,type:$('reminderType').value,text:$('reminderText').value.trim(),done:false});closeModal('reminderModal');await loadAll();toast('Lembrete salvo!')}catch(e){toast(e.message)}};
   $('materialForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('materials',$('materialId').value,{name:$('materialName').value.trim(),course:$('materialCourse').value,student_id:$('materialStudent').value||null,url:$('materialUrl').value.trim(),description:$('materialDescription').value.trim()});closeModal('materialModal');await loadAll();toast('Material salvo!')}catch(e){toast(e.message)}};
-  $('activityForm').onsubmit=async e=>{e.preventDefault();try{const studentId=$('activityStudent').value,theme=$('activityTheme').value.trim(),ordinal=Number($('activityPlanningLesson').value||1);if(!studentId||!theme)return toast('Selecione o aluno e o tema do planejamento.');const found=findPlanningLesson(studentId,theme,ordinal);if(!found)return toast('Não encontrei a aula desse planejamento.');const row={student_id:studentId,student_name:studentName(studentId),title:$('activityTitle').value.trim(),course:$('activityCourse').value||found.plan.course||'',level:$('activityLevel').value,theme,status:$('activityStatus').value,text:$('activityText').value.trim(),answer:$('activityAnswer').value.trim(),planning_id:found.plan.id,planning_lesson_index:ordinal,planning_theme:theme,planning_source:true};const id=$('activityId').value;try{await saveSimple('activities',id,row)}catch(err){const fallback={...row};delete fallback.student_id;delete fallback.student_name;delete fallback.theme;delete fallback.status;delete fallback.planning_id;delete fallback.planning_lesson_index;delete fallback.planning_theme;delete fallback.planning_source;await saveSimple('activities',id,fallback)}closeModal('activityModal');await loadAll();toast(`Atividade da Aula ${ordinal} salva usando aluno + tema + aula do planejamento!`)}catch(e){toast(e.message)}};
+  $('activityForm').onsubmit=async e=>{e.preventDefault();try{const studentId=$('activityStudent').value,theme=$('activityTheme').value.trim(),ordinal=Number($('activityPlanningLesson').value||1);if(!studentId||!theme)return toast('Selecione o aluno e o tema do planejamento.');const found=findPlanningLesson(studentId,theme,ordinal);if(!found)return toast('Não encontrei a aula desse planejamento.');const base={student_id:studentId,title:$('activityTitle').value.trim(),course:$('activityCourse').value||found.plan.course||'',level:$('activityLevel').value,text:$('activityText').value.trim(),answer:$('activityAnswer').value.trim()};const row={...base,theme, status:$('activityStatus').value,planning_id:found.plan.id,planning_lesson_index:ordinal,planning_theme:theme,planning_source:true};const id=$('activityId').value;try{await saveSimple('activities',id,row)}catch(err){try{await saveSimple('activities',id,base)}catch(err2){await saveSimple('activities',id,{title:base.title,course:base.course,level:base.level,text:base.text,answer:base.answer})}}closeModal('activityModal');await loadAll();toast(`Atividade da Aula ${ordinal} salva usando aluno + tema + aula do planejamento!`)}catch(e){toast(e.message)}};
   $('templateForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('planning_templates',$('templateId').value,{name:$('templateName').value.trim(),course:$('templateCourse').value,content:$('templateContent').value.trim()});closeModal('templateModal');await loadAll();toast('Modelo salvo!')}catch(e){toast(e.message)}};
   $('progressForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('student_progress',$('progressId').value,{student_id:$('progressFormStudent').value,student_name:studentName($('progressFormStudent').value),course:$('progressCourse').value,topic:$('progressTopic').value.trim(),percent:Number($('progressPercent').value||0),status:$('progressStatus').value,notes:$('progressNotes').value.trim()});closeModal('progressModal');await loadAll();toast('Progresso salvo!')}catch(e){toast(e.message)}};
 }
