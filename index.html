@@ -5370,12 +5370,25 @@ function autoFillRecordFromPlanning(showToast=true){
   const found=findPlanningForStudentAndTheme(studentId,theme);
   if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false;}
   const p=found.plan,l=found.lesson||{};
-  const content=compactPlanningText(l.content||l.objectives||l.activities||l.examples||p.theme||p.title||'');
-  const obs=compactPlanningText(l.objectives||l.activities||l.examples||p.student_goal||'');
-  const homework=compactPlanningText(l.homework||'');
-  const notes=compactPlanningText(l.notes||p.notes||'');
+  const content=compactPlanningText(l.content||l.objectives||l.activities||l.examples||p.theme||p.title||'',360);
+  const objective=compactPlanningText(l.objectives||'',420);
+  const activities=compactPlanningText(l.activities||'',520);
+  const examples=compactPlanningText(l.examples||'',420);
+  const lessonTitle=String(l.title||`Aula ${found.ordinal}`).trim();
+  const goal=compactPlanningText(p.student_goal||'',360);
+  const obsParts=[];
+  if(objective) obsParts.push(`Objetivo da aula: ${objective}`);
+  if(activities) obsParts.push(`Atividades realizadas: ${activities}`);
+  if(examples) obsParts.push(`Exemplos/prática: ${examples}`);
+  if(goal) obsParts.push(`Meta do aluno relacionada: ${goal}`);
+  const obs=obsParts.join('\n\n');
+  const homework=compactPlanningText(l.homework||'',360);
+  const notes=compactPlanningText(l.notes||p.notes||'',360);
+  const completeObservation=obs
+    ? `A aula foi planejada para trabalhar o tema "${lessonTitle}".\n\n${obs}\n\nO registro acima foi preenchido automaticamente com base no planejamento e pode ser ajustado de acordo com o que realmente aconteceu durante a aula.`
+    : `A aula foi planejada para trabalhar o tema "${lessonTitle}". O planejamento foi usado como base para o registro; revise este campo para descrever como a aula realmente aconteceu.`;
   if(showToast||!$('recordContent').value.trim()) $('recordContent').value=content;
-  if(showToast||!$('recordObservation').value.trim()) $('recordObservation').value=obs?`Resumo automático do planejamento: ${obs}`:'';
+  if(showToast||!$('recordObservation').value.trim()) $('recordObservation').value=completeObservation;
   if(showToast||!$('recordHomework').value.trim()) $('recordHomework').value=homework;
   if(showToast||!$('recordNotes').value.trim()) $('recordNotes').value=notes;
   if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(studentId))} · ${l.title?`Aula: ${esc(l.title)}`:`Aula ${found.ordinal}`}.`;
