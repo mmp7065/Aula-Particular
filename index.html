@@ -2351,6 +2351,54 @@ const client = supabase.createClient(
 
 const $ = id => document.getElementById(id);
 
+
+/* =========================================================
+   SISTEMA DE ENTRADA — INICIALIZAÇÃO SEGURA
+   Este bloco fica logo no início do JavaScript para que
+   os botões "Entrar" funcionem mesmo se algum módulo
+   posterior apresentar um erro.
+   ========================================================= */
+
+function openLoginSafe(){
+  const publicHome=document.getElementById('publicHome');
+  const loginView=document.getElementById('loginView');
+
+  if(publicHome){
+    publicHome.classList.add('hidden');
+    publicHome.style.setProperty('display','none','important');
+  }
+
+  if(loginView){
+    loginView.classList.remove('hidden');
+    loginView.style.setProperty('display','flex','important');
+  }
+
+  const email=document.getElementById('email');
+  if(email){
+    setTimeout(()=>email.focus(),50);
+  }
+}
+
+function openHomeSafe(){
+  const publicHome=document.getElementById('publicHome');
+  const loginView=document.getElementById('loginView');
+
+  if(loginView){
+    loginView.classList.add('hidden');
+    loginView.style.setProperty('display','none','important');
+  }
+
+  if(publicHome){
+    publicHome.classList.remove('hidden');
+    publicHome.style.setProperty('display','block','important');
+  }
+}
+
+document.getElementById('openLogin')?.addEventListener('click',openLoginSafe);
+document.getElementById('openLoginHero')?.addEventListener('click',openLoginSafe);
+document.getElementById('backHome')?.addEventListener('click',openHomeSafe);
+
+
 const money = n =>
   new Intl.NumberFormat('pt-BR',{
     style:'currency',
@@ -5759,8 +5807,7 @@ document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
   const el=$(target); if(el)el.classList.add('active'); btn.classList.add('active');
 });
 
-['openLogin','openLoginHero'].forEach(id=>$(id).onclick=showLogin);
-$('backHome').onclick=showPublicHome;
+/* Os botões de entrada já foram inicializados no começo do script. */
 document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{await client.auth.signOut();showPublicHome();});
 
 
