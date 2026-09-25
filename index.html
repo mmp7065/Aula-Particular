@@ -2676,6 +2676,107 @@ async function loadTable(name){
 }
 
 
+
+function parsePlanningLessons(plan){
+  const raw=plan?.lessons_data;
+  if(Array.isArray(raw)) return raw;
+  if(typeof raw==='string'){
+    try{ const x=JSON.parse(raw); if(Array.isArray(x)) return x; }catch(_){ }
+  }
+  return [];
+}
+function cleanPlanText(v){
+  return String(v??'').replace(/```/g,'').replace(/^\s*#{1,6}\s*/gm,'').replace(/\*\*/g,'').replace(/\r/g,'').trim();
+}
+function firstSentences(text,max=2){
+  const t=cleanPlanText(text).replace(/\s+/g,' ').trim();
+  if(!t)return '';
+  const parts=t.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[t];
+  return parts.slice(0,max).join(' ').trim();
+}
+function lessonTitleOf(l,n){return String(l?.title||l?.tema||l?.theme||`Aula ${n}`).trim()||`Aula ${n}`;}
+function lessonObjectivesOf(l){return cleanPlanText(l?.objectives||l?.objetivos||'');}
+function lessonContentOf(l){return cleanPlanText(l?.content||l?.conteudo||l?.tema||'');}
+function lessonActivitiesOf(l){return cleanPlanText(l?.activities||l?.atividades||'');}
+function lessonExamplesOf(l){return cleanPlanText(l?.examples||l?.exemplos||'');}
+function lessonHomeworkOf(l){return cleanPlanText(l?.homework||l?.tema_de_casa||l?.temaCasa||l?.temaDeCasa||'');}
+function lessonNotesOf(l){return cleanPlanText(l?.notes||l?.observations||l?.observacoes||'');}
+function lessonDevelopmentText(plan,l,n){
+  const obj=lessonObjectivesOf(l), content=lessonContentOf(l), acts=lessonActivitiesOf(l), ex=lessonExamplesOf(l), notes=lessonNotesOf(l);
+  const theme=String(plan?.theme||plan?.title||'').trim();
+  const goal=String(plan?.student_goal||plan?.expected_result||'').trim();
+  const paragraphs=[];
+  if(obj) paragraphs.push(`Nesta aula, o objetivo é ${firstSentences(obj,2)}${/[.!?]$/.test(firstSentences(obj,2))?'':'.'}`);
+  else paragraphs.push(`Nesta aula, o objetivo é desenvolver a compreensão do tema ${theme||lessonTitleOf(l,n)}.`);
+  if(content){
+    const c=firstSentences(content,4);
+    paragraphs.push(`O conteúdo trabalhado será ${c}${/[.!?]$/.test(c)?'':'.'}`);
+  }
+  if(acts||ex){
+    let p='O desenvolvimento da aula envolverá ';
+    if(acts)p+=firstSentences(acts,3).replace(/^[.\s]+/,'');
+    if(ex)p+=(acts?' Em seguida, ':'')+`serão utilizados exemplos e aplicações práticas: ${firstSentences(ex,2)}`;
+    p=p.trim(); if(!/[.!?]$/.test(p))p+='.'; paragraphs.push(p);
+  }
+  if(notes){
+    const ntext=firstSentences(notes,2); paragraphs.push(`Também serão considerados os seguintes pontos durante a aula: ${ntext}${/[.!?]$/.test(ntext)?'':'.'}`);
+  }
+  if(goal){
+    const g=firstSentences(goal,2); paragraphs.push(`Dessa forma, a aula contribui para o objetivo do aluno de ${g.replace(/^o aluno deverá\s*/i,'')}${/[.!?]$/.test(g)?'':'.'}`);
+  }
+  return paragraphs.join('\n\n').replace(/\s+([,.!?])/g,'$1').trim();
+}
+function findPlanningForStudentAndTheme(studentId,theme){
+  const norm=x=>String(x??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const t=norm(theme);
+  const plans=(data.planning||[]).filter(p=>String(p.student_id||'')===String(studentId));
+  const matches=plans.filter(p=>[p.theme,p.title,p.name].some(v=>norm(v)===t||norm(v).includes(t)||t.includes(norm(v))));
+  const plan=matches[0];
+  if(!plan)return null;
+  const lessons=parsePlanningLessons(plan);
+  const used=new Set((data.records||[]).filter(r=>String(r.student_id||'')===String(studentId)&&String(r.planning_id||'')===String(plan.id)).map(r=>Number(r.planning_lesson_index)).filter(Number.isFinite));
+  let ordinal=lessons.findIndex((_,i)=>!used.has(i+1))+1;
+  if(!ordinal) ordinal=lessons.length?1:0;
+  return {plan,lessons,ordinal,lesson:ordinal?lessons[ordinal-1]:null};
+}
+function findPlanningLesson(studentId,theme,ordinal=1){
+  const found=findPlanningForStudentAndTheme(studentId,theme);
+  if(!found)return null;
+  const n=Math.max(1,Number(ordinal)||1);
+  return {plan:found.plan,lessons:found.lessons,ordinal:n,lesson:found.lessons[n-1]||null};
+}
+function taskDescriptionFromLesson(plan,l,n){
+  const title=lessonTitleOf(l,n), content=lessonContentOf(l), acts=lessonActivitiesOf(l), ex=lessonExamplesOf(l);
+  return [content?`Conteúdo: ${content}`:'',acts?`Atividades: ${acts}`:'',ex?`Exemplos: ${ex}`:''].filter(Boolean).join('\n\n');
+}
+async function syncPlanningToBanks(planId,plan,lessons){
+  if(!planId)return;
+  const uid=(await user()).id;
+  const oldTasks=(data.tasks||[]).filter(x=>String(x.planning_id||'')===String(planId));
+  const oldActs=(data.activities||[]).filter(x=>String(x.planning_id||'')===String(planId));
+  for(const x of oldTasks){try{await client.from('tasks').delete().eq('id',x.id).eq('user_id',uid)}catch(_){}}
+  for(const x of oldActs){try{await client.from('activities').delete().eq('id',x.id).eq('user_id',uid)}catch(_){}}
+  for(let i=0;i<lessons.length;i++){
+    const l=lessons[i]||{}, n=i+1, title=lessonTitleOf(l,n), theme=String(plan.theme||plan.title||title).trim();
+    const acts=lessonActivitiesOf(l), homework=lessonHomeworkOf(l), content=lessonContentOf(l);
+    if(acts){
+      const task={student_id:plan.student_id,student_name:plan.student_name,course:plan.course||'',title:`Atividades — Aula ${n}: ${title}`,activity:acts,theme,is_homework:false,description:taskDescriptionFromLesson(plan,l,n),due_date:null,status:'Pendente',notes:`[PLANEJAMENTO_AUTO:${planId}]` ,planning_id:planId,planning_lesson_index:n,planning_theme:theme,planning_source:true};
+      try{await insert('tasks',task)}catch(e){
+        const fallback={student_id:task.student_id,student_name:task.student_name,course:task.course,title:task.title,activity:task.activity,theme:task.theme,is_homework:false,description:task.description,status:'Pendente',notes:task.notes};
+        await insert('tasks',fallback);
+      }
+      const act={student_id:plan.student_id,student_name:plan.student_name,title:`Atividades — Aula ${n}: ${title}`,course:plan.course||'',level:plan.initial_level||'',theme,status:'Pendente',text:acts,answer:content||'',planning_id:planId,planning_lesson_index:n,planning_theme:theme,planning_source:true};
+      try{await insert('activities',act)}catch(e){
+        const fallback={title:act.title,course:act.course,level:act.level,text:act.text,answer:act.answer}; await insert('activities',fallback);
+      }
+    }
+    if(homework){
+      const task={student_id:plan.student_id,student_name:plan.student_name,course:plan.course||'',title:`Tema de casa — Aula ${n}: ${title}`,activity:homework,theme,is_homework:true,description:homework,due_date:null,status:'Pendente',notes:`[PLANEJAMENTO_AUTO:${planId}]`,planning_id:planId,planning_lesson_index:n,planning_theme:theme,planning_source:true};
+      try{await insert('tasks',task)}catch(e){const fallback={student_id:task.student_id,student_name:task.student_name,course:task.course,title:task.title,activity:task.activity,is_homework:true,description:task.description,status:'Pendente',notes:task.notes};await insert('tasks',fallback)}
+    }
+  }
+}
+
 async function ensurePlanningBanks(){
   if(!(data.planning||[]).length)return;
   let changed=false;
@@ -2684,8 +2785,7 @@ async function ensurePlanningBanks(){
     const hasTask=(data.tasks||[]).some(x=>String(x.planning_id||'')===String(plan.id)||String(x.notes||'').includes(marker));
     const hasActivity=(data.activities||[]).some(x=>String(x.planning_id||'')===String(plan.id)||String(x.answer||'').includes(marker));
     if(!hasTask||!hasActivity){
-      await syncPlanningToBanks(plan.id,plan,parsePlanningLessons(plan));
-      changed=true;
+      try{ await syncPlanningToBanks(plan.id,plan,parsePlanningLessons(plan)); changed=true; }catch(e){ console.error('Sincronização automática ignorada:',e); }
     }
   }
   if(changed){
@@ -2745,7 +2845,7 @@ async function loadAll(){
   });
 
 
-  await ensurePlanningBanks();
+  try{ await ensurePlanningBanks(); }catch(e){ console.error('Sincronização automática dos planejamentos:',e); }
   render();
 
 }
@@ -5390,6 +5490,24 @@ function fillPlanningThemesForStudent(selectId,studentId,current=''){
   if(current)sel.value=current;
 }
 
+function populatePlanningLessonSelect(selectId,studentId,theme,current='1'){
+  const sel=$(selectId); if(!sel)return;
+  const found=findPlanningForStudentAndTheme(studentId,theme);
+  const lessons=found?.lessons||[];
+  sel.innerHTML=lessons.length?lessons.map((l,i)=>`<option value="${i+1}">Aula ${i+1} — ${esc(lessonTitleOf(l,i+1))}</option>`).join(''):'<option value="">Nenhuma aula encontrada</option>';
+  if(current && lessons[Number(current)-1]) sel.value=String(current);
+}
+function parsePlanningSchedule(v){
+  const s=String(v||'').trim();
+  const m=s.match(/(?:segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)/i);
+  return {day:m?m[0]:''};
+}
+function planningAutoDate(startDate,offset=0){
+  if(!startDate)return '';
+  const d=new Date(`${startDate}T00:00:00`); if(Number.isNaN(d.getTime()))return '';
+  d.setDate(d.getDate()+Math.max(0,Number(offset)||0));
+  return d.toISOString().slice(0,10);
+}
 function autoFillTaskFromPlanning(showToast=true){
   const sid=$('taskStudent')?.value||'',theme=$('taskTheme')?.value||'',ord=$('taskPlanningLesson')?.value||'1',info=$('taskPlanningInfo');
   if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema do planejamento para buscar automaticamente.';return false}
@@ -5518,7 +5636,7 @@ window.deleteProgress=async id=>{if(!confirm('Excluir este registro de progresso
 
 async function saveSimple(table,id,row){return id?update(table,id,row):insert(table,row);}
 function setupNewModules(){
-  $('newRecord').onclick=()=>{ $('recordForm').reset();$('recordId').value='';renderNewModules();$('recordStatus').value='Realizada';openModal('recordModal'); };
+  $('newRecord')?.addEventListener('click',()=>{ $('recordForm').reset();$('recordId').value='';renderNewModules();$('recordStatus').value='Realizada';openModal('recordModal'); });
   $('newTask')?.addEventListener('click',()=>{ $('taskForm').reset();$('taskId').value='';$('taskIsHomework').value='false';$('taskStatus').value='Realizada';$('taskDue').value=todayISO();renderNewModules();fillPlanningThemesForStudent('taskTheme',$('taskStudent').value);openModal('taskModal'); });
   $('newAssessment').onclick=()=>{ $('assessmentForm').reset();$('assessmentId').value='';$('assessmentDate').value=todayISO();renderNewModules();openModal('assessmentModal'); };
   $('newReminder').onclick=()=>{ $('reminderForm').reset();$('reminderId').value='';$('reminderDate').value=todayISO();openModal('reminderModal'); };
@@ -5796,8 +5914,7 @@ async function getProfile(){
   const u=await user();
   const {data:p,error}=await client.from('portal_profiles').select('*').eq('id',u.id).maybeSingle();
   if(error){
-    // Compatibilidade: se a tabela ainda não foi criada, a conta atual continua como administrativa.
-    if(error.code==='42P01') return {id:u.id,role:'admin',owner_id:u.id};
+    if(error.code==='42P01' || error.code==='PGRST205') return {id:u.id,role:'admin',owner_id:u.id};
     throw error;
   }
   return p||{id:u.id,role:'admin',owner_id:u.id};
