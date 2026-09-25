@@ -2319,11 +2319,11 @@ th{
 <div id="scheduleModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Horário do aluno</h2><button class="close" data-close="scheduleModal">×</button></div><form id="scheduleForm"><input id="scheduleId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="scheduleStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="scheduleCourse" required></select></div><div class="field"><label>Dia da semana</label><select id="scheduleDay" required><option>Segunda</option><option>Terça</option><option>Quarta</option><option>Quinta</option><option>Sexta</option><option>Sábado</option><option>Domingo</option></select></div><div class="field"><label>Horário inicial</label><input id="scheduleStart" type="time" required></div><div class="field"><label>Horário final</label><input id="scheduleEnd" type="time" required></div><div class="field"><label>Status</label><select id="scheduleStatus"><option value="Ativo">Ativo</option><option value="Inativo">Inativo</option></select></div><div class="field full"><label>Observações</label><textarea id="scheduleNotes" placeholder="Ex.: horário fixo, aula presencial, alternância de conteúdo..." ></textarea></div></div><div class="modal-actions"><button type="button" class="btn danger" id="deleteScheduleBtn" style="display:none;margin-right:auto">Excluir horário</button><button type="button" class="btn" data-close="scheduleModal">Cancelar</button><button class="btn primary">Salvar horário</button></div></form></div></div>
 <div id="recordModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registro de aula</h2><button class="close" data-close="recordModal">×</button></div><form id="recordForm"><input id="recordId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="recordStudent" required></select></div><div class="field"><label>Tema do planejamento</label><select id="recordPlanningTheme" required><option value="">Selecione o tema</option></select></div><div class="field"><label>Status</label><select id="recordStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><div id="recordPlanningInfo" class="muted" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px">Selecione o aluno e o tema para buscar automaticamente o planejamento.</div><button type="button" id="fillRecordFromPlanning" class="btn mini" style="margin-top:8px">↻ Preencher pelo planejamento</button></div><div class="field full"><label>Conteúdo trabalhado</label><textarea id="recordContent" style="min-height:120px"></textarea></div><div class="field full"><label>Como foi a aula?</label><textarea id="recordObservation" style="min-height:120px"></textarea></div><div class="field full"><label>Tarefa de casa</label><textarea id="recordHomework"></textarea></div><div class="field full"><label>Observações</label><textarea id="recordNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="recordModal">Cancelar</button><button class="btn primary">Salvar registro</button></div></form></div></div>
 
-<div id="taskModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Tarefa / atividade</h2><button class="close" data-close="taskModal">×</button></div><form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="taskStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="taskCourse" required></select></div><div class="field"><label>Tipo</label><select id="taskIsHomework"><option value="false">Atividade</option><option value="true">Tema de casa</option></select></div><div class="field"><label>Título</label><input id="taskTitle" required></div><div class="field"><label>Atividade</label><input id="taskActivity" placeholder="Ex.: interpretação, exercícios..."></div><div class="field"><label>Tema</label><input id="taskTheme" placeholder="Ex.: pronomes"></div><div class="field full"><label>Descrição / enunciado</label><textarea id="taskDescription"></textarea></div><div class="field"><label>Entrega</label><input id="taskDue" type="date"></div><div class="field"><label>Status</label><select id="taskStatus"><option>Pendente</option><option>Entregue</option><option>Corrigida</option><option>Atrasada</option></select></div><div class="field full"><label>Observações / correção</label><textarea id="taskNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="taskModal">Cancelar</button><button class="btn primary">Salvar</button></div></form></div></div>
+<div id="taskModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Tarefa / atividade</h2><button class="close" data-close="taskModal">×</button></div><form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="taskStudent" required></select></div><div class="field"><label>Tema do planejamento</label><select id="taskTheme" required><option value="">Selecione o tema</option></select></div><div class="field"><label>Status</label><select id="taskStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><div id="taskPlanningInfo" class="muted" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px">Selecione o aluno e o tema para buscar automaticamente o planejamento.</div><button type="button" id="fillTaskFromPlanning" class="btn mini" style="margin-top:8px">↻ Preencher pelo planejamento</button></div><div class="field"><label>Matéria / curso</label><select id="taskCourse" required></select></div><div class="field"><label>Tipo</label><select id="taskIsHomework"><option value="false">Atividade</option><option value="true">Tema de casa</option></select></div><div class="field"><label>Título</label><input id="taskTitle" required></div><div class="field"><label>Atividade</label><input id="taskActivity" placeholder="Atividades da aula"></div><div class="field full"><label>Descrição / enunciado</label><textarea id="taskDescription" style="min-height:150px"></textarea></div><div class="field"><label>Entrega</label><input id="taskDue" type="date"></div><div class="field full"><label>Observações / correção</label><textarea id="taskNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="taskModal">Cancelar</button><button class="btn primary">Salvar</button></div></form></div></div>
 <div id="assessmentModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Avaliação</h2><button class="close" data-close="assessmentModal">×</button></div><form id="assessmentForm"><input id="assessmentId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="assessmentStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="assessmentCourse" required></select></div><div class="field full"><label>Título</label><input id="assessmentTitle" required></div><div class="field"><label>Nota</label><input id="assessmentScore" type="number" min="0" step="0.01"></div><div class="field"><label>Nota máxima</label><input id="assessmentMax" type="number" min="1" step="0.01" value="10"></div><div class="field"><label>Data</label><input id="assessmentDate" type="date"></div><div class="field full"><label>Conteúdos</label><textarea id="assessmentContent"></textarea></div><div class="field full"><label>Observações</label><textarea id="assessmentNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="assessmentModal">Cancelar</button><button class="btn primary">Salvar avaliação</button></div></form></div></div>
 <div id="reminderModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Lembrete</h2><button class="close" data-close="reminderModal">×</button></div><form id="reminderForm"><input id="reminderId" type="hidden"><div class="form-grid"><div class="field full"><label>Título</label><input id="reminderTitle" required></div><div class="field"><label>Data</label><input id="reminderDate" type="date" required></div><div class="field"><label>Tipo</label><select id="reminderType"><option>Aula</option><option>Tarefa</option><option>Avaliação</option><option>Pagamento</option><option>Outro</option></select></div><div class="field full"><label>Descrição</label><textarea id="reminderText"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="reminderModal">Cancelar</button><button class="btn primary">Salvar lembrete</button></div></form></div></div>
 <div id="materialModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Material</h2><button class="close" data-close="materialModal">×</button></div><form id="materialForm"><input id="materialId" type="hidden"><div class="form-grid"><div class="field full"><label>Nome</label><input id="materialName" required></div><div class="field"><label>Matéria / curso</label><select id="materialCourse"></select></div><div class="field"><label>Aluno</label><select id="materialStudent"></select></div><div class="field full"><label>Link ou caminho do arquivo</label><input id="materialUrl" placeholder="https://... ou materiais/arquivo.pdf"></div><div class="field full"><label>Descrição</label><textarea id="materialDescription"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="materialModal">Cancelar</button><button class="btn primary">Salvar material</button></div></form></div></div>
-<div id="activityModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Atividade</h2><button class="close" data-close="activityModal">×</button></div><form id="activityForm"><input id="activityId" type="hidden"><div class="form-grid"><div class="field full"><label>Título</label><input id="activityTitle" required></div><div class="field"><label>Matéria / curso</label><select id="activityCourse"></select></div><div class="field"><label>Nível</label><select id="activityLevel"><option>Fácil</option><option>Médio</option><option>Difícil</option></select></div><div class="field full"><label>Enunciado</label><textarea id="activityText" style="min-height:150px"></textarea></div><div class="field full"><label>Resposta / gabarito</label><textarea id="activityAnswer"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="activityModal">Cancelar</button><button class="btn primary">Salvar atividade</button></div></form></div></div>
+<div id="activityModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Atividade</h2><button class="close" data-close="activityModal">×</button></div><form id="activityForm"><input id="activityId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="activityStudent" required></select></div><div class="field"><label>Tema do planejamento</label><select id="activityTheme" required><option value="">Selecione o tema</option></select></div><div class="field"><label>Status</label><select id="activityStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><div id="activityPlanningInfo" class="muted" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px">Selecione o aluno e o tema para buscar automaticamente o planejamento.</div><button type="button" id="fillActivityFromPlanning" class="btn mini" style="margin-top:8px">↻ Preencher pelo planejamento</button></div><div class="field full"><label>Título</label><input id="activityTitle" required></div><div class="field"><label>Matéria / curso</label><select id="activityCourse"></select></div><div class="field"><label>Nível</label><select id="activityLevel"><option>Fácil</option><option>Médio</option><option>Difícil</option></select></div><div class="field full"><label>Enunciado / desenvolvimento</label><textarea id="activityText" style="min-height:180px"></textarea></div><div class="field full"><label>Resposta / gabarito</label><textarea id="activityAnswer"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="activityModal">Cancelar</button><button class="btn primary">Salvar atividade</button></div></form></div></div>
 <div id="templateModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Modelo de planejamento</h2><button class="close" data-close="templateModal">×</button></div><form id="templateForm"><input id="templateId" type="hidden"><div class="field"><label>Nome do modelo</label><input id="templateName" required></div><div class="field"><label>Matéria / curso</label><select id="templateCourse"></select></div><div class="field"><label>Conteúdo base</label><textarea id="templateContent" style="min-height:180px"></textarea></div><div class="modal-actions"><button type="button" class="btn" data-close="templateModal">Cancelar</button><button class="btn primary">Salvar modelo</button></div></form></div></div>
 <div id="progressModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registrar progresso</h2><button class="close" data-close="progressModal">×</button></div><form id="progressForm"><input id="progressId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="progressFormStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="progressCourse"></select></div><div class="field full"><label>Conteúdo / habilidade</label><input id="progressTopic" required></div><div class="field"><label>Progresso (%)</label><input id="progressPercent" type="number" min="0" max="100" value="0" required></div><div class="field"><label>Status</label><select id="progressStatus"><option>Em desenvolvimento</option><option>Dominado</option><option>Precisa revisar</option><option>Não iniciado</option></select></div><div class="field full"><label>Observações</label><textarea id="progressNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="progressModal">Cancelar</button><button class="btn primary">Salvar progresso</button></div></form></div></div>
 <div id="achievementModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Nova conquista</h2><button class="close" data-close="achievementModal">×</button></div><form id="achievementForm"><input id="achievementId" type="hidden"><div class="field"><label>Nome</label><input id="achievementName" required placeholder="Ex.: Mestre da interpretação"></div><div class="field"><label>Ícone</label><input id="achievementIcon" value="🏆" maxlength="4"></div><div class="field"><label>Descrição</label><textarea id="achievementDescription" placeholder="Explique o que esta conquista representa."></textarea></div><div class="modal-actions"><button type="button" class="btn" data-close="achievementModal">Cancelar</button><button class="btn primary">Salvar conquista</button></div></form></div></div>
@@ -2676,6 +2676,24 @@ async function loadTable(name){
 }
 
 
+async function ensurePlanningBanks(){
+  if(!(data.planning||[]).length)return;
+  let changed=false;
+  for(const plan of data.planning){
+    const marker=`[PLANEJAMENTO_AUTO:${plan.id}]`;
+    const hasTask=(data.tasks||[]).some(x=>String(x.planning_id||'')===String(plan.id)||String(x.notes||'').includes(marker));
+    const hasActivity=(data.activities||[]).some(x=>String(x.planning_id||'')===String(plan.id)||String(x.answer||'').includes(marker));
+    if(!hasTask||!hasActivity){
+      await syncPlanningToBanks(plan.id,plan,parsePlanningLessons(plan));
+      changed=true;
+    }
+  }
+  if(changed){
+    try{data.tasks=await loadTable('tasks')}catch(_){}
+    try{data.activities=await loadTable('activities')}catch(_){}
+  }
+}
+
 async function loadAll(){
 
   data.students=await loadTable('students');
@@ -2727,6 +2745,7 @@ async function loadAll(){
   });
 
 
+  await ensurePlanningBanks();
   render();
 
 }
@@ -5347,12 +5366,54 @@ function studentName(id){ return data.students.find(s=>s.id===id)?.name||'Aluno 
 function subjectOptions(selectId,selected=''){ const el=$(selectId); if(!el)return; const vals=[...new Set([...courseNames(),'Matemática','Português','Inglês','Ciências','História','Geografia','Programação','Inteligência Artificial','Minecraft / Comandos / Skript','Informática / PC','Canva / Apresentações'])]; el.innerHTML=vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''); if(selected)el.value=selected; }
 function studentOptions(selectId,selected=''){ const el=$(selectId); if(!el)return; el.innerHTML=data.students.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('')||'<option value="">Cadastre um aluno primeiro</option>'; if(selected)el.value=selected; }
 function renderNewModules(){
-  const rt=$('recordPlanningTheme'); if(rt){ const themes=[...new Set((data.planning||[]).map(p=>String(p.theme||p.title||'').trim()).filter(Boolean))]; const cur=rt.value; rt.innerHTML='<option value="">Selecione o tema</option>'+themes.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join(''); if(cur)rt.value=cur; }
+  const themes=[...new Set((data.planning||[]).map(p=>String(p.theme||p.title||'').trim()).filter(Boolean))];
+  ['recordPlanningTheme','taskTheme','activityTheme'].forEach(id=>{
+    const sel=$(id); if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Selecione o tema</option>'+themes.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+    if(cur)sel.value=cur;
+  });
   subjectOptions('taskCourse'); subjectOptions('assessmentCourse'); subjectOptions('materialCourse'); subjectOptions('activityCourse'); subjectOptions('templateCourse'); subjectOptions('progressCourse'); subjectOptions('scheduleCourse');
   studentOptions('recordStudent',$('recordStudent')?.value||'');
-  ['taskStudent','assessmentStudent','materialStudent','progressFormStudent','parentStudent','achievementStudent','reportStudent','scheduleStudent'].forEach(id=>studentOptions(id,$(id)?.value||''));
+  ['taskStudent','activityStudent','assessmentStudent','materialStudent','progressFormStudent','parentStudent','achievementStudent','reportStudent','scheduleStudent'].forEach(id=>studentOptions(id,$(id)?.value||''));
   renderProgress(); renderRecords(); renderTasks(); renderAssessments(); renderCalendar(); renderReminders(); renderReports(); renderSchedules(); renderMaterials(); renderActivities(); renderTemplates(); renderPublic(); renderReceipts(); renderAttendance(); renderAchievements(); renderParent();
 }
+
+function fillPlanningThemesForStudent(selectId,studentId,current=''){
+  const sel=$(selectId); if(!sel)return;
+  const sid=String(studentId||'').trim();
+  const plans=(data.planning||[]).filter(p=>!sid||String(p.student_id||'')===sid);
+  const themes=[...new Set(plans.map(p=>String(p.theme||p.title||'').trim()).filter(Boolean))];
+  sel.innerHTML='<option value="">Selecione o tema</option>'+themes.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  if(current)sel.value=current;
+}
+
+function autoFillTaskFromPlanning(showToast=true){
+  const sid=$('taskStudent')?.value||''; const theme=$('taskTheme')?.value||''; const info=$('taskPlanningInfo');
+  if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false;}
+  const found=findPlanningForStudentAndTheme(sid,theme); if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false;}
+  const l=found.lesson||{}; const p=found.plan||{};
+  $('taskCourse').value=$('taskCourse').value||p.course||'';
+  $('taskTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;
+  $('taskActivity').value=l.activities||'';
+  $('taskDescription').value=[l.objectives,l.content,l.examples].filter(Boolean).join('\n\n');
+  $('taskDue').value=planningAutoDate(p.start_date,found.ordinal-1,parsePlanningSchedule(p.schedule).day)||todayISO();
+  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · ${esc(l.title||`Aula ${found.ordinal}`)}.`;
+  if(showToast)toast('Tarefa preenchida com a aula do planejamento.'); return true;
+}
+
+function autoFillActivityFromPlanning(showToast=true){
+  const sid=$('activityStudent')?.value||''; const theme=$('activityTheme')?.value||''; const info=$('activityPlanningInfo');
+  if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false;}
+  const found=findPlanningForStudentAndTheme(sid,theme); if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false;}
+  const l=found.lesson||{}; const p=found.plan||{};
+  $('activityCourse').value=$('activityCourse').value||p.course||'';
+  $('activityTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;
+  $('activityText').value=[`Tema do planejamento: ${theme}`,l.objectives?`Objetivos:\n${l.objectives}`:'',l.content?`Conteúdo:\n${l.content}`:'',l.activities?`Atividades:\n${l.activities}`:'',l.examples?`Exemplos / demonstrações:\n${l.examples}`:''].filter(Boolean).join('\n\n');
+  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · ${esc(l.title||`Aula ${found.ordinal}`)}.`;
+  if(showToast)toast('Atividade preenchida com a aula do planejamento.'); return true;
+}
+
 function renderProgress(){const el=$('progressContent');if(!el)return;const sid=$('progressStudent')?.value||data.students[0]?.id;if($('progressStudent'))studentOptions('progressStudent',sid||'');const p=data.progress.filter(x=>!sid||x.student_id===sid);const lessons=data.lessons.filter(x=>x.student_id===sid&&x.status==='Concluída').length;const records=data.records.filter(x=>x.student_id===sid&&x.status==='Realizada').length;const tasks=data.tasks.filter(x=>x.student_id===sid);const done=tasks.filter(taskIsDone).length;const avg=p.length?p.reduce((a,x)=>a+Number(x.percent||0),0)/p.length:0;el.innerHTML=`<div class="small-grid"><div class="card"><div class="muted">AULAS CONCLUÍDAS</div><h2>${lessons||records}</h2></div><div class="card"><div class="muted">TAREFAS CONCLUÍDAS</div><h2>${done}/${tasks.length}</h2></div><div class="card"><div class="muted">PROGRESSO MÉDIO</div><h2>${Math.round(avg)}%</h2></div></div>${p.length?p.map(x=>`<div class="progress-row"><div class="top"><b>${esc(x.topic)}</b><span>${Number(x.percent||0)}% · ${esc(x.status||'')}</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,Number(x.percent||0)))}%"></span></div><small class="muted">${esc(x.course||'')} ${x.notes?'— '+esc(x.notes):''}</small><div class="row-actions" style="margin-top:7px"><button class="btn mini" onclick="editProgress('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteProgress('${x.id}')">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum progresso manual registrado para este aluno.</div>'}`;}
 function renderSchedules(){
   const el=$('schedulesList'); if(!el)return;
@@ -5421,11 +5482,29 @@ async function syncPlanningToBanks(planId,plan,lessons){
       const fallbackHome={...home};delete fallbackHome.planning_id;delete fallbackHome.planning_lesson_index;delete fallbackHome.planning_theme;delete fallbackHome.planning_source;
       await insertPlanningGenerated('tasks',{...home,planning_id:planId,planning_lesson_index:i+1,planning_theme:theme,planning_source:true},fallbackHome);
     }
-    if(activityText||l.content){
-      const activity={title:`${theme} — ${title}`,course,level,text:[`Tema: ${theme}`,l.content?`Conteúdo:\n${l.content}`:'',l.activities?`Atividades:\n${l.activities}`:'',l.examples?`Exemplos / demonstrações:\n${l.examples}`:''].filter(Boolean).join('\n\n'),answer:`${marker}\nAula ${i+1}`};
-      const fallbackActivity={...activity};
-      await insertPlanningGenerated('activities',{...activity,planning_id:planId,planning_lesson_index:i+1,planning_theme:theme,planning_source:true},fallbackActivity);
-    }
+      const activity={
+      student_id:studentId,
+      student_name:studentNameValue,
+      title:`${theme} — ${title}`,
+      course,
+      level,
+      theme,
+      status:'Realizada',
+      text:[
+        `Tema do planejamento: ${theme}`,
+        l.objectives?`Objetivos:\n${l.objectives}`:'',
+        l.content?`Conteúdo:\n${l.content}`:'',
+        l.activities?`Atividades:\n${l.activities}`:'',
+        l.examples?`Exemplos / demonstrações:\n${l.examples}`:''
+      ].filter(Boolean).join('\n\n'),
+      answer:`${marker}\nAula ${i+1}`
+    };
+    const fallbackActivity={...activity};
+    delete fallbackActivity.student_id;
+    delete fallbackActivity.student_name;
+    delete fallbackActivity.theme;
+    delete fallbackActivity.status;
+    await insertPlanningGenerated('activities',{...activity,planning_id:planId,planning_lesson_index:i+1,planning_theme:theme,planning_source:true},fallbackActivity);
   }
 }
 
@@ -5446,8 +5525,14 @@ function findPlanningForStudentAndTheme(studentId,theme){
   candidates.sort((a,b)=>String(b.start_date||b.created_at||'').localeCompare(String(a.start_date||a.created_at||'')));
   const plan=candidates[0];
   const ls=parsePlanningLessons(plan);
-  const previous=(data.records||[]).filter(r=>String(r.student_id||'')===sid).length;
-  const ordinal=ls.length ? Math.min(previous+1,ls.length) : 1;
+  const related=(data.records||[]).filter(r=>{
+    if(String(r.student_id||'')!==sid)return false;
+    const rPlan=String(r.planning_id||'');
+    const rTheme=String(r.planning_theme||r.theme||'').trim().toLowerCase();
+    return (rPlan && rPlan===String(plan.id)) || (!rPlan && (rTheme===key || rTheme===String(plan.theme||'').trim().toLowerCase()));
+  });
+  const usedIndexes=related.map(r=>Number(r.planning_lesson_index||0)).filter(n=>n>0);
+  const ordinal=usedIndexes.length ? Math.min(Math.max(...usedIndexes)+1,Math.max(ls.length,1)) : Math.min(related.length+1,Math.max(ls.length,1));
   return {plan,lesson:ls.length?ls[ordinal-1]:null,ordinal};
 }
 function autoFillRecordFromPlanning(showToast=true){
@@ -5554,7 +5639,22 @@ function reportForStudent(sid){
 }
 function renderReports(){const el=$('reportContent');if(!el)return;const sid=$('reportStudent')?.value||data.students[0]?.id;if($('reportStudent'))studentOptions('reportStudent',sid||'');el.innerHTML=reportForStudent(sid)||'<div class="empty">Cadastre um aluno.</div>';}
 function renderMaterials(){const el=$('materialsList');if(!el)return;el.innerHTML=data.materials.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.name)}</b><p>${esc(x.course||'')} · ${esc(studentName(x.student_id)||'Todos')}</p>${x.url?`<a class="btn mini" href="${esc(x.url)}" target="_blank">Abrir material</a>`:''}<button class="btn danger mini" style="margin-left:6px" onclick="deleteMaterial('${x.id}')">Excluir</button></div>`).join('')||'<div class="empty">Nenhum material.</div>';}
-function renderActivities(){const el=$('activitiesList');if(!el)return;el.innerHTML=data.activities.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(x.course||'')}</span><span class="badge purple">${esc(x.level||'')}</span></div><p class="planning-text">${esc(x.text||'')}</p><div class="row-actions"><button class="btn mini" onclick="editActivity('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteActivity('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma atividade.</div>';}
+function renderActivities(){
+  const el=$('activitiesList'); if(!el)return;
+  el.innerHTML=(data.activities||[]).slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px">
+    <b>${esc(x.title||'Atividade')}</b>
+    <div class="planning-meta">
+      ${x.student_id||x.student_name?`<span class="badge blue">${esc(studentName(x.student_id)||x.student_name||'Aluno')}</span>`:''}
+      ${x.theme?`<span class="badge purple">Tema: ${esc(x.theme)}</span>`:''}
+      <span class="badge green">${esc(x.course||'')}</span>
+      <span class="badge purple">${esc(x.level||'')}</span>
+      ${x.status?`<span class="badge yellow">${esc(x.status)}</span>`:''}
+    </div>
+    <p class="planning-text">${esc(x.text||'')}</p>
+    ${x.answer&&!String(x.answer).startsWith('[PLANEJAMENTO_AUTO:')?`<p class="muted"><b>Resposta:</b> ${esc(x.answer)}</p>`:''}
+    <div class="row-actions"><button class="btn mini" onclick="editActivity('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteActivity('${x.id}')">Excluir</button></div>
+  </div>`).join('')||'<div class="empty">Nenhuma atividade.</div>';
+}
 function renderTemplates(){const el=$('templatesList');if(!el)return;el.innerHTML=data.templates.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.name)}</b><p>${esc(x.course||'')}</p><div class="planning-text">${esc(x.content||'')}</div><div class="row-actions" style="margin-top:10px"><button class="btn danger mini" onclick="deleteTemplate('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum modelo.</div>';}
 function renderPublic(){const el=$('publicSitePreview');if(!el)return;const courses=[...new Set([...courseNames(),'Matemática','Português','Inglês','Ciências','História','Geografia','Programação','Inteligência Artificial','Minecraft / Comandos / Skript','Informática / PC','Canva / Apresentações'])];el.innerHTML=`<div class="public-hero"><h2>${esc(data.settings.title||'AULAS PARTICULARES')}</h2><p>${esc(data.settings.subtitle||'Aprenda no seu ritmo, com acompanhamento personalizado.')}</p><button class="btn primary" onclick="navigator.clipboard?.writeText(location.href);toast('Endereço do site copiado!')">Copiar endereço</button></div><div class="public-course-grid">${courses.map(c=>`<div class="public-course"><h3>${esc(c)}</h3><p>Aulas personalizadas, acompanhamento e planejamento de estudos.</p></div>`).join('')}</div><div style="text-align:center;margin-top:30px;color:#a9bdcc">${esc(data.settings.phone||'Entre em contato para saber mais.')}</div>`;}
 function renderReceipts(){const el=$('receiptsList');if(!el)return;const rows=data.lessons.filter(x=>x.paid);el.innerHTML=rows.map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.student_name)}</b> — ${esc(x.course)} — ${money(priceFor(x.course))}<button class="btn mini primary" style="margin-left:10px" onclick="openReceipt('${x.id}')">Gerar recibo</button></div>`).join('')||'<div class="empty">Nenhum pagamento de aula encontrado.</div>';}
@@ -5593,14 +5693,17 @@ window.deleteProgress=async id=>{if(!confirm('Excluir este registro de progresso
 async function saveSimple(table,id,row){return id?update(table,id,row):insert(table,row);}
 function setupNewModules(){
   $('newRecord').onclick=()=>{ $('recordForm').reset();$('recordId').value='';renderNewModules();$('recordStatus').value='Realizada';openModal('recordModal'); };
-  $('newTask').onclick=()=>{ $('taskForm').reset();$('taskId').value='';$('taskIsHomework').value='false';$('taskDue').value=todayISO();renderNewModules();openModal('taskModal'); };
+  $('newTask').onclick=()=>{ $('taskForm').reset();$('taskId').value='';$('taskIsHomework').value='false';$('taskStatus').value='Realizada';$('taskDue').value=todayISO();renderNewModules();fillPlanningThemesForStudent('taskTheme',$('taskStudent').value);openModal('taskModal'); };
   $('newAssessment').onclick=()=>{ $('assessmentForm').reset();$('assessmentId').value='';$('assessmentDate').value=todayISO();renderNewModules();openModal('assessmentModal'); };
   $('newReminder').onclick=()=>{ $('reminderForm').reset();$('reminderId').value='';$('reminderDate').value=todayISO();openModal('reminderModal'); };
   $('newMaterial').onclick=()=>{ $('materialForm').reset();$('materialId').value='';renderNewModules();openModal('materialModal'); };
-  $('newActivity').onclick=()=>{ $('activityForm').reset();$('activityId').value='';renderNewModules();openModal('activityModal'); };
+  $('newActivity').onclick=()=>{ $('activityForm').reset();$('activityId').value='';$('activityStatus').value='Realizada';renderNewModules();fillPlanningThemesForStudent('activityTheme',$('activityStudent').value);openModal('activityModal'); };
   $('newTemplate').onclick=()=>{ $('templateForm').reset();$('templateId').value='';renderNewModules();openModal('templateModal'); };
   $('newProgress').onclick=()=>{ $('progressForm').reset();$('progressId').value='';renderNewModules();openModal('progressModal'); };
-  $('recordPlanningTheme')?.addEventListener('change',()=>autoFillRecordFromPlanning(true)); $('recordStudent')?.addEventListener('change',()=>{if($('recordPlanningTheme')?.value)autoFillRecordFromPlanning(true)}); $('fillRecordFromPlanning')?.addEventListener('click',()=>autoFillRecordFromPlanning(true)); $('progressStudent').onchange=renderProgress;$('parentStudent')?.addEventListener('change',renderParent);$('reportStudent')?.addEventListener('change',renderReports);$('achievementStudent')?.addEventListener('change',renderAchievements);$('globalSearch').oninput=globalSearch;
+  $('recordPlanningTheme')?.addEventListener('change',()=>autoFillRecordFromPlanning(true)); $('recordStudent')?.addEventListener('change',()=>{fillPlanningThemesForStudent('recordPlanningTheme',$('recordStudent').value,$('recordPlanningTheme').value);if($('recordPlanningTheme')?.value)autoFillRecordFromPlanning(true)}); $('fillRecordFromPlanning')?.addEventListener('click',()=>autoFillRecordFromPlanning(true));
+  $('taskStudent')?.addEventListener('change',()=>fillPlanningThemesForStudent('taskTheme',$('taskStudent').value,$('taskTheme').value)); $('taskTheme')?.addEventListener('change',()=>autoFillTaskFromPlanning(true)); $('fillTaskFromPlanning')?.addEventListener('click',()=>autoFillTaskFromPlanning(true));
+  $('activityStudent')?.addEventListener('change',()=>fillPlanningThemesForStudent('activityTheme',$('activityStudent').value,$('activityTheme').value)); $('activityTheme')?.addEventListener('change',()=>autoFillActivityFromPlanning(true)); $('fillActivityFromPlanning')?.addEventListener('click',()=>autoFillActivityFromPlanning(true));
+  $('progressStudent').onchange=renderProgress;$('parentStudent')?.addEventListener('change',renderParent);$('reportStudent')?.addEventListener('change',renderReports);$('achievementStudent')?.addEventListener('change',renderAchievements);$('globalSearch').oninput=globalSearch;
   $('planCourses')?.addEventListener('change',updatePlanCalculatedPrice);$('planWeekly')?.addEventListener('input',updatePlanCalculatedPrice);$('planMonthly')?.addEventListener('input',updatePlanCalculatedPrice);$('planType')?.addEventListener('change',updatePlanCalculatedPrice);
   $('newAchievement')?.addEventListener('click',()=>{$('achievementForm').reset();$('achievementId').value='';$('achievementIcon').value='🏆';openModal('achievementModal');});
   $('achievementForm')?.addEventListener('submit',async e=>{e.preventDefault();try{await saveSimple('achievements',$('achievementId').value,{name:$('achievementName').value.trim(),icon:$('achievementIcon').value.trim()||'🏆',description:$('achievementDescription').value.trim()});closeModal('achievementModal');await loadAll();toast('Conquista salva!')}catch(err){toast(err.message)}});
@@ -5634,16 +5737,43 @@ function setupNewModules(){
     const student=data.students.find(x=>String(x.id)===String(s));
     const studentLessons=data.lessons.filter(x=>String(x.student_id||'')===String(s)).slice().sort((a,b)=>String(a.date||'9999-99-99').localeCompare(String(b.date||'9999-99-99'))||String(timeOf(a)||'').localeCompare(String(timeOf(b)||'')));
     const fallbackLesson=studentLessons[0]||null;
-    const payload={student_id:s,student_name:student?.name||'',course:found.plan.course||'',status:$('recordStatus').value,content:$('recordContent').value.trim(),observation:$('recordObservation').value.trim(),homework:$('recordHomework').value.trim(),notes:$('recordNotes').value.trim(),date:todayISO()};
+    const payload={student_id:s,student_name:student?.name||'',course:found.plan.course||'',status:$('recordStatus').value,content:$('recordContent').value.trim(),observation:$('recordObservation').value.trim(),homework:$('recordHomework').value.trim(),notes:$('recordNotes').value.trim(),date:todayISO(),planning_id:found.plan.id,planning_lesson_index:found.ordinal,planning_theme:found.plan.theme||theme};
     if(fallbackLesson?.id) payload.lesson_id=fallbackLesson.id;
-    await saveSimple('lesson_records',$('recordId').value,payload);
+    const recordId=$('recordId').value;
+    try{await saveSimple('lesson_records',recordId,payload)}catch(err){
+      const fallback={...payload};delete fallback.planning_id;delete fallback.planning_lesson_index;delete fallback.planning_theme;
+      await saveSimple('lesson_records',recordId,fallback);
+    }
     closeModal('recordModal');await loadAll();toast('Registro salvo usando aluno + tema do planejamento!');
   }catch(e){toast(e.message)}};
-  $('taskForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('tasks',$('taskId').value,{student_id:$('taskStudent').value,student_name:studentName($('taskStudent').value),course:$('taskCourse').value,title:$('taskTitle').value.trim(),activity:$('taskActivity').value.trim(),theme:$('taskTheme').value.trim(),is_homework:$('taskIsHomework').value==='true',description:$('taskDescription').value.trim(),due_date:$('taskDue').value||null,status:$('taskStatus').value,notes:$('taskNotes').value.trim()});closeModal('taskModal');await loadAll();toast('Tarefa salva!')}catch(e){toast(e.message)}};
+  $('taskForm').onsubmit=async e=>{e.preventDefault();try{
+    const studentId=$('taskStudent').value;
+    const theme=$('taskTheme').value.trim();
+    if(!studentId||!theme)return toast('Selecione o aluno e o tema do planejamento.');
+    const found=findPlanningForStudentAndTheme(studentId,theme);
+    if(!found)return toast('Não encontrei um planejamento com esse aluno e tema.');
+    const student=data.students.find(x=>String(x.id)===String(studentId));
+    const row={student_id:studentId,student_name:student?.name||'',course:$('taskCourse').value||found.plan.course||'',title:$('taskTitle').value.trim(),activity:$('taskActivity').value.trim(),theme,is_homework:$('taskIsHomework').value==='true',description:$('taskDescription').value.trim(),due_date:$('taskDue').value||null,status:$('taskStatus').value,notes:$('taskNotes').value.trim()};
+    await saveSimple('tasks',$('taskId').value,row);
+    closeModal('taskModal');await loadAll();toast('Tarefa salva com aluno + tema do planejamento!');
+  }catch(e){toast(e.message)}};
   $('assessmentForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('assessments',$('assessmentId').value,{student_id:$('assessmentStudent').value,student_name:studentName($('assessmentStudent').value),course:$('assessmentCourse').value,title:$('assessmentTitle').value.trim(),score:Number($('assessmentScore').value||0),max_score:Number($('assessmentMax').value||10),date:$('assessmentDate').value||null,content:$('assessmentContent').value.trim(),notes:$('assessmentNotes').value.trim()});closeModal('assessmentModal');await loadAll();toast('Avaliação salva!')}catch(e){toast(e.message)}};
   $('reminderForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('reminders',$('reminderId').value,{title:$('reminderTitle').value.trim(),date:$('reminderDate').value,type:$('reminderType').value,text:$('reminderText').value.trim(),done:false});closeModal('reminderModal');await loadAll();toast('Lembrete salvo!')}catch(e){toast(e.message)}};
   $('materialForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('materials',$('materialId').value,{name:$('materialName').value.trim(),course:$('materialCourse').value,student_id:$('materialStudent').value||null,url:$('materialUrl').value.trim(),description:$('materialDescription').value.trim()});closeModal('materialModal');await loadAll();toast('Material salvo!')}catch(e){toast(e.message)}};
-  $('activityForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('activities',$('activityId').value,{title:$('activityTitle').value.trim(),course:$('activityCourse').value,level:$('activityLevel').value,text:$('activityText').value.trim(),answer:$('activityAnswer').value.trim()});closeModal('activityModal');await loadAll();toast('Atividade salva!')}catch(e){toast(e.message)}};
+  $('activityForm').onsubmit=async e=>{e.preventDefault();try{
+    const studentId=$('activityStudent').value;
+    const theme=$('activityTheme').value.trim();
+    if(!studentId||!theme)return toast('Selecione o aluno e o tema do planejamento.');
+    const found=findPlanningForStudentAndTheme(studentId,theme);
+    if(!found)return toast('Não encontrei um planejamento com esse aluno e tema.');
+    const row={student_id:studentId,student_name:studentName(studentId),title:$('activityTitle').value.trim(),course:$('activityCourse').value||found.plan.course||'',level:$('activityLevel').value,theme,status:$('activityStatus').value,text:$('activityText').value.trim(),answer:$('activityAnswer').value.trim()};
+    const id=$('activityId').value;
+    try{await saveSimple('activities',id,row)}catch(err){
+      const fallback={...row};delete fallback.student_id;delete fallback.student_name;delete fallback.theme;delete fallback.status;
+      await saveSimple('activities',id,fallback);
+    }
+    closeModal('activityModal');await loadAll();toast('Atividade salva com aluno + tema do planejamento!');
+  }catch(e){toast(e.message)}};
   $('templateForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('planning_templates',$('templateId').value,{name:$('templateName').value.trim(),course:$('templateCourse').value,content:$('templateContent').value.trim()});closeModal('templateModal');await loadAll();toast('Modelo salvo!')}catch(e){toast(e.message)}};
   $('progressForm').onsubmit=async e=>{e.preventDefault();try{await saveSimple('student_progress',$('progressId').value,{student_id:$('progressFormStudent').value,student_name:studentName($('progressFormStudent').value),course:$('progressCourse').value,topic:$('progressTopic').value.trim(),percent:Number($('progressPercent').value||0),status:$('progressStatus').value,notes:$('progressNotes').value.trim()});closeModal('progressModal');await loadAll();toast('Progresso salvo!')}catch(e){toast(e.message)}};
 }
@@ -5686,7 +5816,16 @@ window.deleteAssessment=async id=>{if(!confirm('Excluir avaliação?'))return;tr
 window.deleteMaterial=async id=>{if(!confirm('Excluir material?'))return;try{await remove('materials',id);await loadAll();toast('Material excluído.')}catch(e){toast(e.message)}};
 window.deleteActivity=async id=>{if(!confirm('Excluir atividade?'))return;try{await remove('activities',id);await loadAll();toast('Atividade excluída.')}catch(e){toast(e.message)}};
 window.deleteTemplate=async id=>{if(!confirm('Excluir modelo?'))return;try{await remove('planning_templates',id);await loadAll();toast('Modelo excluído.')}catch(e){toast(e.message)}};
-window.editTask=id=>{const x=data.tasks.find(a=>a.id===id);if(!x)return;$('taskId').value=id;studentOptions('taskStudent',x.student_id);subjectOptions('taskCourse',x.course);$('taskTitle').value=x.title||'';$('taskActivity').value=x.activity||'';$('taskTheme').value=x.theme||'';$('taskIsHomework').value=String(x.is_homework===true);$('taskDescription').value=x.description||'';$('taskDue').value=x.due_date||'';$('taskStatus').value=x.status||'Pendente';$('taskNotes').value=x.notes||'';openModal('taskModal')};
+window.editActivity=id=>{
+  const x=(data.activities||[]).find(a=>a.id===id); if(!x)return;
+  $('activityId').value=id; renderNewModules();
+  studentOptions('activityStudent',x.student_id||''); fillPlanningThemesForStudent('activityTheme',x.student_id||'',x.theme||'');
+  $('activityCourse').value=x.course||''; $('activityLevel').value=x.level||'Médio'; $('activityStatus').value=x.status||'Realizada';
+  $('activityTitle').value=x.title||''; $('activityText').value=x.text||''; $('activityAnswer').value=String(x.answer||'').replace(/^\[PLANEJAMENTO_AUTO:[^\]]+\]\nAula \d+$/,'');
+  openModal('activityModal');
+};
+window.deleteActivity=async id=>{if(!confirm('Excluir esta atividade?'))return;try{await remove('activities',id);await loadAll();toast('Atividade excluída.')}catch(e){toast(e.message)}};
+window.editTask=id=>{const x=data.tasks.find(a=>a.id===id);if(!x)return;$('taskId').value=id;studentOptions('taskStudent',x.student_id);fillPlanningThemesForStudent('taskTheme',x.student_id,x.theme||'');subjectOptions('taskCourse');$('taskCourse').value=x.course||'';$('taskTitle').value=x.title||'';$('taskActivity').value=x.activity||'';$('taskIsHomework').value=String(x.is_homework===true);$('taskDescription').value=x.description||'';$('taskDue').value=x.due_date||'';$('taskStatus').value=x.status||'Realizada';$('taskNotes').value=x.notes||'';openModal('taskModal')};
 window.editAssessment=id=>{const x=data.assessments.find(a=>a.id===id);if(!x)return;$('assessmentId').value=id;studentOptions('assessmentStudent',x.student_id);subjectOptions('assessmentCourse',x.course);$('assessmentTitle').value=x.title||'';$('assessmentScore').value=x.score||0;$('assessmentMax').value=x.max_score||10;$('assessmentDate').value=x.date||'';$('assessmentContent').value=x.content||'';$('assessmentNotes').value=x.notes||'';openModal('assessmentModal')};
 window.openReceipt=id=>{const x=data.lessons.find(a=>a.id===id);if(!x)return;$('receiptContent').innerHTML=`<h2>RECIBO DE PAGAMENTO</h2><p><b>Aulas Particulares</b></p><div class="view-block"><h4>Aluno</h4><div>${esc(x.student_name)}</div></div><div class="view-block"><h4>Curso / matéria</h4><div>${esc(x.course)}</div></div><div class="view-block"><h4>Valor</h4><div>${money(priceFor(x.course))}</div></div><div class="view-block"><h4>Status</h4><div>Pago</div></div><div class="view-block"><h4>Data</h4><div>${todayISO()}</div></div>`;openModal('receiptModal')};
 window.printReceipt=()=>{const html=$('receiptContent')?.innerHTML||'';const w=window.open('','_blank','width=800,height=900');if(!w)return;w.document.write(`<html><head><title>Recibo</title><style>body{font-family:Arial;padding:40px;color:#111}h2{margin-bottom:25px}.view-block{border-top:1px solid #ddd;padding:14px 0}</style></head><body>${html}</body></html>`);w.document.close();w.print()};
