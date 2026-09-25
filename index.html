@@ -5625,6 +5625,63 @@ function lessonDevelopmentText(plan,lesson,ordinal){
 }
 
 function populatePlanningLessonSelect(selectId,studentId,theme,current=''){const sel=$(selectId);if(!sel)return null;const found=findPlanningForStudentAndTheme(studentId,theme);if(!found){sel.innerHTML='<option value="">Nenhum planejamento encontrado</option>';return null}const lessons=parsePlanningLessons(found.plan);sel.innerHTML='<option value="">Selecione a aula</option>'+lessons.map((l,i)=>`<option value="${i+1}">Aula ${i+1} — ${esc(l.title||`Aula ${i+1}`)}</option>`).join('');sel.value=String(current||found.ordinal||1);if(!sel.value&&lessons.length)sel.value='1';return found}
+function normalizePlanningKey(value){
+  return String(value??'')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase()
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function findPlanningForStudentAndTheme(studentId,theme){
+  const sid=String(studentId||'').trim();
+  const wantedTheme=normalizePlanningKey(theme);
+  if(!sid||!wantedTheme)return null;
+
+  const candidates=(data.planning||[]).filter(p=>{
+    const sameStudent=String(p.student_id||'').trim()===sid ||
+      (!p.student_id && normalizePlanningKey(p.student_name)===normalizePlanningKey(studentName(sid)));
+    if(!sameStudent)return false;
+    const planTheme=normalizePlanningKey(p.theme||p.title||'');
+    return planTheme===wantedTheme;
+  });
+
+  if(!candidates.length)return null;
+
+  // Se houver mais de um planejamento com o mesmo aluno e tema,
+  // prioriza o mais recente/último salvo que ainda tenha aulas válidas.
+  const withLessons=candidates.map(p=>({
+    plan:p,
+    lessons:parsePlanningLessons(p)
+  })).filter(x=>x.lessons.length);
+  if(!withLessons.length)return null;
+
+  const chosen=withLessons[withLessons.length-1];
+  const plan=chosen.plan;
+  const lessons=chosen.lessons;
+
+  // Para o Registro de aulas, encontra automaticamente a próxima aula
+  // ainda não registrada para esse aluno + tema + planejamento.
+  const used=new Set(
+    (data.records||[])
+      .filter(r=>String(r.student_id||'')===sid &&
+        normalizePlanningKey(r.planning_theme||r.theme||'')===wantedTheme &&
+        (!r.planning_id || String(r.planning_id)===String(plan.id)))
+      .map(r=>Number(r.planning_lesson_index||r.lesson_index||0))
+      .filter(n=>n>0)
+  );
+  let ordinal=1;
+  while(used.has(ordinal) && ordinal<lessons.length)ordinal++;
+
+  return {
+    plan,
+    lesson:lessons[ordinal-1]||lessons[0],
+    ordinal:ordinal,
+    lessons
+  };
+}
+
 function findPlanningLesson(studentId,theme,ordinal){const found=findPlanningForStudentAndTheme(studentId,theme);if(!found)return null;const n=Math.max(1,Number(ordinal||1)),lessons=parsePlanningLessons(found.plan);return {plan:found.plan,lesson:lessons[n-1]||null,ordinal:n}}
 function autoFillTaskFromPlanning(showToast=true){const sid=$('taskStudent')?.value||'',theme=$('taskTheme')?.value||'',ord=$('taskPlanningLesson')?.value||'1',info=$('taskPlanningInfo');if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningLesson(sid,theme,ord);if(!found||!found.lesson){if(info)info.textContent='Nenhuma aula encontrada neste planejamento.';return false}const l=found.lesson,p=found.plan;$('taskCourse').value=$('taskCourse').value||p.course||'';$('taskTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;$('taskActivity').value=l.activities||'';$('taskDescription').value=[l.objectives?`Objetivo:\n${l.objectives}`:'',l.content?`Conteúdo:\n${l.content}`:'',l.examples?`Exemplos / prática:\n${l.examples}`:''].filter(Boolean).join('\n\n');$('taskDue').value=planningAutoDate(p.start_date,found.ordinal-1,parsePlanningSchedule(p.schedule).day)||todayISO();if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(l.title||'')}.`;if(showToast)toast(`Tarefa preenchida com a Aula ${found.ordinal} do planejamento.`);return true}
 function autoFillActivityFromPlanning(showToast=true){const sid=$('activityStudent')?.value||'',theme=$('activityTheme')?.value||'',ord=$('activityPlanningLesson')?.value||'1',info=$('activityPlanningInfo');if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningLesson(sid,theme,ord);if(!found||!found.lesson){if(info)info.textContent='Nenhuma aula encontrada neste planejamento.';return false}const l=found.lesson,p=found.plan;$('activityCourse').value=$('activityCourse').value||p.course||'';$('activityTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;$('activityText').value=lessonDevelopmentText(p,l,found.ordinal)+`\n\nAtividades propostas:\n${l.activities||'Não informado.'}`;if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(l.title||'')}.`;if(showToast)toast(`Atividade preenchida com a Aula ${found.ordinal} do planejamento.`);return true}
