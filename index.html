@@ -2317,7 +2317,14 @@ th{
 
 <!-- MODAIS DOS NOVOS MÓDULOS -->
 <div id="scheduleModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Horário do aluno</h2><button class="close" data-close="scheduleModal">×</button></div><form id="scheduleForm"><input id="scheduleId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="scheduleStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="scheduleCourse" required></select></div><div class="field"><label>Dia da semana</label><select id="scheduleDay" required><option>Segunda</option><option>Terça</option><option>Quarta</option><option>Quinta</option><option>Sexta</option><option>Sábado</option><option>Domingo</option></select></div><div class="field"><label>Horário inicial</label><input id="scheduleStart" type="time" required></div><div class="field"><label>Horário final</label><input id="scheduleEnd" type="time" required></div><div class="field"><label>Status</label><select id="scheduleStatus"><option value="Ativo">Ativo</option><option value="Inativo">Inativo</option></select></div><div class="field full"><label>Observações</label><textarea id="scheduleNotes" placeholder="Ex.: horário fixo, aula presencial, alternância de conteúdo..." ></textarea></div></div><div class="modal-actions"><button type="button" class="btn danger" id="deleteScheduleBtn" style="display:none;margin-right:auto">Excluir horário</button><button type="button" class="btn" data-close="scheduleModal">Cancelar</button><button class="btn primary">Salvar horário</button></div></form></div></div>
-<div id="recordModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registro de aula</h2><button class="close" data-close="recordModal">×</button></div><form id="recordForm"><input id="recordId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="recordStudent" required></select></div><div class="field"><label>Tema do planejamento</label><select id="recordPlanningTheme" required><option value="">Selecione o tema</option></select></div><div class="field"><label>Status</label><select id="recordStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><div id="recordPlanningInfo" class="muted" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px">Selecione o aluno e o tema para buscar automaticamente o planejamento.</div><button type="button" id="fillRecordFromPlanning" class="btn mini" style="margin-top:8px">↻ Preencher pelo planejamento</button></div><div class="field full"><label>Conteúdo trabalhado</label><textarea id="recordContent" style="min-height:120px"></textarea></div><div class="field full"><label>Como foi a aula?</label><textarea id="recordObservation" style="min-height:120px"></textarea></div><div class="field full"><label>Tarefa de casa</label><textarea id="recordHomework"></textarea></div><div class="field full"><label>Observações</label><textarea id="recordNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="recordModal">Cancelar</button><button class="btn primary">Salvar registro</button></div></form></div></div>
+<div id="recordModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Registro de aula</h2><button class="close" data-close="recordModal">×</button></div><form id="recordForm"><input id="recordId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label>\1
+<div class="form-group">
+  <label for="recordTheme">Tema do planejamento</label>
+  <select id="recordTheme" required>
+    <option value="">Selecione o tema</option>
+  </select>
+  <small>O planejamento será encontrado usando o aluno + tema.</small>
+</div></div><div class="field"><label>Tema do planejamento</label><select id="recordPlanningTheme" required><option value="">Selecione o tema</option></select></div><div class="field"><label>Status</label><select id="recordStatus"><option>Realizada</option><option>Faltou</option><option>Cancelada</option><option>Reagendada</option></select></div><div class="field full"><div id="recordPlanningInfo" class="muted" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px">Selecione o aluno e o tema para buscar automaticamente o planejamento.</div><button type="button" id="fillRecordFromPlanning" class="btn mini" style="margin-top:8px">↻ Preencher pelo planejamento</button></div><div class="field full"><label>Conteúdo trabalhado</label><textarea id="recordContent" style="min-height:120px"></textarea></div><div class="field full"><label>Como foi a aula?</label><textarea id="recordObservation" style="min-height:120px"></textarea></div><div class="field full"><label>Tarefa de casa</label><textarea id="recordHomework"></textarea></div><div class="field full"><label>Observações</label><textarea id="recordNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="recordModal">Cancelar</button><button class="btn primary">Salvar registro</button></div></form></div></div>
 
 <div id="taskModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Tarefa / atividade</h2><button class="close" data-close="taskModal">×</button></div><form id="taskForm"><input id="taskId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="taskStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="taskCourse" required></select></div><div class="field"><label>Tipo</label><select id="taskIsHomework"><option value="false">Atividade</option><option value="true">Tema de casa</option></select></div><div class="field"><label>Título</label><input id="taskTitle" required></div><div class="field"><label>Atividade</label><input id="taskActivity" placeholder="Ex.: interpretação, exercícios..."></div><div class="field"><label>Tema</label><input id="taskTheme" placeholder="Ex.: pronomes"></div><div class="field full"><label>Descrição / enunciado</label><textarea id="taskDescription"></textarea></div><div class="field"><label>Entrega</label><input id="taskDue" type="date"></div><div class="field"><label>Status</label><select id="taskStatus"><option>Pendente</option><option>Entregue</option><option>Corrigida</option><option>Atrasada</option></select></div><div class="field full"><label>Observações / correção</label><textarea id="taskNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="taskModal">Cancelar</button><button class="btn primary">Salvar</button></div></form></div></div>
 <div id="assessmentModal" class="modal"><div class="modal-box"><div class="modal-head"><h2>Avaliação</h2><button class="close" data-close="assessmentModal">×</button></div><form id="assessmentForm"><input id="assessmentId" type="hidden"><div class="form-grid"><div class="field"><label>Aluno</label><select id="assessmentStudent" required></select></div><div class="field"><label>Matéria / curso</label><select id="assessmentCourse" required></select></div><div class="field full"><label>Título</label><input id="assessmentTitle" required></div><div class="field"><label>Nota</label><input id="assessmentScore" type="number" min="0" step="0.01"></div><div class="field"><label>Nota máxima</label><input id="assessmentMax" type="number" min="1" step="0.01" value="10"></div><div class="field"><label>Data</label><input id="assessmentDate" type="date"></div><div class="field full"><label>Conteúdos</label><textarea id="assessmentContent"></textarea></div><div class="field full"><label>Observações</label><textarea id="assessmentNotes"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" data-close="assessmentModal">Cancelar</button><button class="btn primary">Salvar avaliação</button></div></form></div></div>
@@ -5382,6 +5389,32 @@ function autoFillRecordFromPlanning(showToast=true){
   if(showToast)toast('Registro preenchido pelo aluno + tema do planejamento. Revise antes de salvar.');
   return true;
 }
+
+function populateRecordThemes(studentId, selectedTheme=''){
+  const el=document.getElementById('recordTheme');
+  if(!el) return;
+  const plans=Array.isArray(data.planning)?data.planning:[];
+  const sid=String(studentId||'');
+  const seen=new Set();
+  const options=[];
+  plans.forEach(p=>{
+    const ps=String(p.student_id ?? p.studentId ?? '');
+    const pn=String(p.student_name ?? p.studentName ?? '');
+    const st=data.students.find(s=>String(s.id)===sid);
+    const sn=String(st?.name||'');
+    const matchesStudent=(ps && ps===sid) || (pn && sn && pn===sn);
+    if(!matchesStudent) return;
+    const theme=String(p.theme ?? p.tema ?? p.title ?? p.name ?? '').trim();
+    if(theme && !seen.has(theme)){
+      seen.add(theme);
+      options.push(theme);
+    }
+  });
+  el.innerHTML='<option value="">Selecione o tema</option>'+
+    options.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+  if(selectedTheme) el.value=selectedTheme;
+}
+
 function renderRecords(){const el=$('recordsList');if(!el)return;el.innerHTML=data.records.slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px"><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id)||x.student_name||'Aluno')}</span><span class="badge green">${esc(x.status||'')}</span>${x.date?`<span class="badge purple">${esc(x.date)}</span>`:''}</div><div class="view-block"><h4>Conteúdo trabalhado</h4><div class="planning-text">${esc(x.content||'Não informado.')}</div></div><div class="view-block"><h4>Como foi a aula?</h4><div class="planning-text">${esc(x.observation||'Não informado.')}</div></div><div class="view-block"><h4>Tarefa de casa</h4><div class="planning-text">${esc(x.homework||'Não informado.')}</div></div><div class="view-block"><h4>Observações</h4><div class="planning-text">${esc(x.notes||'Não informado.')}</div></div><div class="row-actions" style="margin-top:10px"><button class="btn mini" onclick="editRecord('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';}
 function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge purple">${x.is_homework?'TEMA DE CASA':'ATIVIDADE'}</span><span class="badge yellow">${esc(x.status)}</span><span class="badge purple">${esc(x.due_date||'Sem data')}</span></div>${x.activity?`<p><b>Atividade:</b> ${esc(x.activity)}</p>`:''}${x.theme?`<p><b>Tema:</b> ${esc(x.theme)}</p>`:''}<p>${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editTask('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteTask('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>';}
 function renderAssessments(){const el=$('assessmentsList');if(!el)return;el.innerHTML=data.assessments.slice().reverse().map(x=>{const pct=Number(x.max_score)?Number(x.score||0)/Number(x.max_score)*100:0;return `<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge green">${Number(x.score||0)} / ${Number(x.max_score||10)}</span><span class="badge purple">${Math.round(pct)}%</span></div><p>${esc(x.content||'')}</p><div class="row-actions"><button class="btn mini" onclick="editAssessment('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteAssessment('${x.id}')">Excluir</button></div></div>`}).join('')||'<div class="empty">Nenhuma avaliação.</div>';}
@@ -6336,6 +6369,54 @@ async function boot(){
 }
 
 boot();
+
+
+function findPlanningByStudentAndTheme(studentId, theme){
+  const sid=String(studentId||'').trim();
+  const th=String(theme||'').trim().toLowerCase();
+  if(!sid || !th) return null;
+  const st=data.students.find(s=>String(s.id)===sid);
+  const sn=String(st?.name||'').trim().toLowerCase();
+  return (data.planning||[]).find(p=>{
+    const ps=String(p.student_id ?? p.studentId ?? '').trim();
+    const pn=String(p.student_name ?? p.studentName ?? '').trim().toLowerCase();
+    const pt=String(p.theme ?? p.tema ?? p.title ?? p.name ?? '').trim().toLowerCase();
+    return pt===th && ((ps && ps===sid) || (pn && sn && pn===sn));
+  }) || null;
+}
+
+function fillRecordFromStudentAndTheme(){
+  const sid=document.getElementById('recordStudent')?.value||'';
+  const theme=document.getElementById('recordTheme')?.value||'';
+  const plan=findPlanningByStudentAndTheme(sid,theme);
+  if(!plan) return;
+  const lessons=plan.lessons||plan.aulas||plan.lesson_plans||[];
+  const nextIndex=Number(plan.current_lesson ?? plan.currentLesson ?? 1)-1;
+  const lesson=Array.isArray(lessons) && lessons.length ? (lessons[Math.max(0,Math.min(nextIndex,lessons.length-1))]||{}) : {};
+  const content=lesson.content ?? lesson.conteudo ?? lesson.topic ?? plan.content ?? plan.conteudo ?? '';
+  const how=lesson.objective ?? lesson.objetivo ?? lesson.activities ?? lesson.atividades ?? plan.objective ?? plan.objetivo ?? '';
+  const homework=lesson.homework ?? lesson.tarefa ?? lesson.tema_casa ?? plan.homework ?? plan.tarefa ?? '';
+  const obs=lesson.observations ?? lesson.observacoes ?? plan.observations ?? plan.observacoes ?? '';
+  const set=(id,val)=>{const e=document.getElementById(id); if(e && !e.value.trim()) e.value=shortenPlanningText(val);};
+  set('recordContent',content); set('recordObservation',how); set('recordHomework',homework); set('recordNotes',obs);
+}
+function shortenPlanningText(v,max=900){
+  v=String(v||'').replace(/\s+/g,' ').trim();
+  if(v.length<=max) return v;
+  return v.slice(0,max-1).trimEnd()+'…';
+}
+(function setupRecordStudentTheme(){
+  const s=document.getElementById('recordStudent');
+  const t=document.getElementById('recordTheme');
+  if(s && !s.dataset.themeBound){
+    s.addEventListener('change',()=>{populateRecordThemes(s.value);});
+    s.dataset.themeBound='1';
+  }
+  if(t && !t.dataset.autoFillBound){
+    t.addEventListener('change',fillRecordFromStudentAndTheme);
+    t.dataset.autoFillBound='1';
+  }
+})();
 
 </script>
 
