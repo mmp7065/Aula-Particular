@@ -2338,18 +2338,22 @@ th{
    ========================================================= */
 
 const cfg = window.SUPABASE_CONFIG || {};
-const supabaseReady = !!(cfg.url && cfg.key && window.supabase && typeof window.supabase.createClient === 'function');
 
-// O site continua carregando mesmo se o config.js estiver ausente.
-// Nesse caso, o usuário recebe a mensagem diretamente na tela de login.
-const client = supabaseReady ? supabase.createClient(cfg.url, cfg.key) : null;
+if(!cfg.url || !cfg.key){
 
-function requireSupabase(){
-  if(!client){
-    throw new Error('Supabase não configurado. Verifique o arquivo config.js e confirme a Project URL e a Publishable Key.');
-  }
-  return client;
+  document.body.innerHTML=
+    '<div style="padding:30px;color:white;background:#030c19;font-family:Arial">'+
+    '<h1>Configuração necessária</h1>'+
+    '<p>Abra <b>config.js</b> e coloque a Project URL e a Publishable Key do Supabase.</p>'+
+    '</div>';
+
+  throw new Error('Configuração Supabase ausente');
 }
+
+const client = supabase.createClient(
+  cfg.url,
+  cfg.key
+);
 
 const $ = id => document.getElementById(id);
 
@@ -2672,107 +2676,6 @@ async function loadTable(name){
 }
 
 
-
-function parsePlanningLessons(plan){
-  const raw=plan?.lessons_data;
-  if(Array.isArray(raw)) return raw;
-  if(typeof raw==='string'){
-    try{ const x=JSON.parse(raw); if(Array.isArray(x)) return x; }catch(_){ }
-  }
-  return [];
-}
-function cleanPlanText(v){
-  return String(v??'').replace(/```/g,'').replace(/^\s*#{1,6}\s*/gm,'').replace(/\*\*/g,'').replace(/\r/g,'').trim();
-}
-function firstSentences(text,max=2){
-  const t=cleanPlanText(text).replace(/\s+/g,' ').trim();
-  if(!t)return '';
-  const parts=t.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[t];
-  return parts.slice(0,max).join(' ').trim();
-}
-function lessonTitleOf(l,n){return String(l?.title||l?.tema||l?.theme||`Aula ${n}`).trim()||`Aula ${n}`;}
-function lessonObjectivesOf(l){return cleanPlanText(l?.objectives||l?.objetivos||'');}
-function lessonContentOf(l){return cleanPlanText(l?.content||l?.conteudo||l?.tema||'');}
-function lessonActivitiesOf(l){return cleanPlanText(l?.activities||l?.atividades||'');}
-function lessonExamplesOf(l){return cleanPlanText(l?.examples||l?.exemplos||'');}
-function lessonHomeworkOf(l){return cleanPlanText(l?.homework||l?.tema_de_casa||l?.temaCasa||l?.temaDeCasa||'');}
-function lessonNotesOf(l){return cleanPlanText(l?.notes||l?.observations||l?.observacoes||'');}
-function lessonDevelopmentText(plan,l,n){
-  const obj=lessonObjectivesOf(l), content=lessonContentOf(l), acts=lessonActivitiesOf(l), ex=lessonExamplesOf(l), notes=lessonNotesOf(l);
-  const theme=String(plan?.theme||plan?.title||'').trim();
-  const goal=String(plan?.student_goal||plan?.expected_result||'').trim();
-  const paragraphs=[];
-  if(obj) paragraphs.push(`Nesta aula, o objetivo é ${firstSentences(obj,2)}${/[.!?]$/.test(firstSentences(obj,2))?'':'.'}`);
-  else paragraphs.push(`Nesta aula, o objetivo é desenvolver a compreensão do tema ${theme||lessonTitleOf(l,n)}.`);
-  if(content){
-    const c=firstSentences(content,4);
-    paragraphs.push(`O conteúdo trabalhado será ${c}${/[.!?]$/.test(c)?'':'.'}`);
-  }
-  if(acts||ex){
-    let p='O desenvolvimento da aula envolverá ';
-    if(acts)p+=firstSentences(acts,3).replace(/^[.\s]+/,'');
-    if(ex)p+=(acts?' Em seguida, ':'')+`serão utilizados exemplos e aplicações práticas: ${firstSentences(ex,2)}`;
-    p=p.trim(); if(!/[.!?]$/.test(p))p+='.'; paragraphs.push(p);
-  }
-  if(notes){
-    const ntext=firstSentences(notes,2); paragraphs.push(`Também serão considerados os seguintes pontos durante a aula: ${ntext}${/[.!?]$/.test(ntext)?'':'.'}`);
-  }
-  if(goal){
-    const g=firstSentences(goal,2); paragraphs.push(`Dessa forma, a aula contribui para o objetivo do aluno de ${g.replace(/^o aluno deverá\s*/i,'')}${/[.!?]$/.test(g)?'':'.'}`);
-  }
-  return paragraphs.join('\n\n').replace(/\s+([,.!?])/g,'$1').trim();
-}
-function findPlanningForStudentAndTheme(studentId,theme){
-  const norm=x=>String(x??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-  const t=norm(theme);
-  const plans=(data.planning||[]).filter(p=>String(p.student_id||'')===String(studentId));
-  const matches=plans.filter(p=>[p.theme,p.title,p.name].some(v=>norm(v)===t||norm(v).includes(t)||t.includes(norm(v))));
-  const plan=matches[0];
-  if(!plan)return null;
-  const lessons=parsePlanningLessons(plan);
-  const used=new Set((data.records||[]).filter(r=>String(r.student_id||'')===String(studentId)&&String(r.planning_id||'')===String(plan.id)).map(r=>Number(r.planning_lesson_index)).filter(Number.isFinite));
-  let ordinal=lessons.findIndex((_,i)=>!used.has(i+1))+1;
-  if(!ordinal) ordinal=lessons.length?1:0;
-  return {plan,lessons,ordinal,lesson:ordinal?lessons[ordinal-1]:null};
-}
-function findPlanningLesson(studentId,theme,ordinal=1){
-  const found=findPlanningForStudentAndTheme(studentId,theme);
-  if(!found)return null;
-  const n=Math.max(1,Number(ordinal)||1);
-  return {plan:found.plan,lessons:found.lessons,ordinal:n,lesson:found.lessons[n-1]||null};
-}
-function taskDescriptionFromLesson(plan,l,n){
-  const title=lessonTitleOf(l,n), content=lessonContentOf(l), acts=lessonActivitiesOf(l), ex=lessonExamplesOf(l);
-  return [content?`Conteúdo: ${content}`:'',acts?`Atividades: ${acts}`:'',ex?`Exemplos: ${ex}`:''].filter(Boolean).join('\n\n');
-}
-async function syncPlanningToBanks(planId,plan,lessons){
-  if(!planId)return;
-  const uid=(await user()).id;
-  const oldTasks=(data.tasks||[]).filter(x=>String(x.planning_id||'')===String(planId));
-  const oldActs=(data.activities||[]).filter(x=>String(x.planning_id||'')===String(planId));
-  for(const x of oldTasks){try{await client.from('tasks').delete().eq('id',x.id).eq('user_id',uid)}catch(_){}}
-  for(const x of oldActs){try{await client.from('activities').delete().eq('id',x.id).eq('user_id',uid)}catch(_){}}
-  for(let i=0;i<lessons.length;i++){
-    const l=lessons[i]||{}, n=i+1, title=lessonTitleOf(l,n), theme=String(plan.theme||plan.title||title).trim();
-    const acts=lessonActivitiesOf(l), homework=lessonHomeworkOf(l), content=lessonContentOf(l);
-    if(acts){
-      const task={student_id:plan.student_id,student_name:plan.student_name,course:plan.course||'',title:`Atividades — Aula ${n}: ${title}`,activity:acts,theme,is_homework:false,description:taskDescriptionFromLesson(plan,l,n),due_date:null,status:'Pendente',notes:`[PLANEJAMENTO_AUTO:${planId}]` ,planning_id:planId,planning_lesson_index:n,planning_theme:theme,planning_source:true};
-      try{await insert('tasks',task)}catch(e){
-        const fallback={student_id:task.student_id,student_name:task.student_name,course:task.course,title:task.title,activity:task.activity,theme:task.theme,is_homework:false,description:task.description,status:'Pendente',notes:task.notes};
-        await insert('tasks',fallback);
-      }
-      const act={student_id:plan.student_id,student_name:plan.student_name,title:`Atividades — Aula ${n}: ${title}`,course:plan.course||'',level:plan.initial_level||'',theme,status:'Pendente',text:acts,answer:content||'',planning_id:planId,planning_lesson_index:n,planning_theme:theme,planning_source:true};
-      try{await insert('activities',act)}catch(e){
-        const fallback={title:act.title,course:act.course,level:act.level,text:act.text,answer:act.answer}; await insert('activities',fallback);
-      }
-    }
-    if(homework){
-      const task={student_id:plan.student_id,student_name:plan.student_name,course:plan.course||'',title:`Tema de casa — Aula ${n}: ${title}`,activity:homework,theme,is_homework:true,description:homework,due_date:null,status:'Pendente',notes:`[PLANEJAMENTO_AUTO:${planId}]`,planning_id:planId,planning_lesson_index:n,planning_theme:theme,planning_source:true};
-      try{await insert('tasks',task)}catch(e){const fallback={student_id:task.student_id,student_name:task.student_name,course:task.course,title:task.title,activity:task.activity,is_homework:true,description:task.description,status:'Pendente',notes:task.notes};await insert('tasks',fallback)}
-    }
-  }
-}
-
 async function ensurePlanningBanks(){
   if(!(data.planning||[]).length)return;
   let changed=false;
@@ -2781,7 +2684,8 @@ async function ensurePlanningBanks(){
     const hasTask=(data.tasks||[]).some(x=>String(x.planning_id||'')===String(plan.id)||String(x.notes||'').includes(marker));
     const hasActivity=(data.activities||[]).some(x=>String(x.planning_id||'')===String(plan.id)||String(x.answer||'').includes(marker));
     if(!hasTask||!hasActivity){
-      try{ await syncPlanningToBanks(plan.id,plan,parsePlanningLessons(plan)); changed=true; }catch(e){ console.error('Sincronização automática ignorada:',e); }
+      await syncPlanningToBanks(plan.id,plan,parsePlanningLessons(plan));
+      changed=true;
     }
   }
   if(changed){
@@ -2841,7 +2745,7 @@ async function loadAll(){
   });
 
 
-  try{ await ensurePlanningBanks(); }catch(e){ console.error('Sincronização automática dos planejamentos:',e); }
+  await ensurePlanningBanks();
   render();
 
 }
@@ -5486,65 +5390,284 @@ function fillPlanningThemesForStudent(selectId,studentId,current=''){
   if(current)sel.value=current;
 }
 
-function populatePlanningLessonSelect(selectId,studentId,theme,current='1'){
-  const sel=$(selectId); if(!sel)return;
-  const found=findPlanningForStudentAndTheme(studentId,theme);
-  const lessons=found?.lessons||[];
-  sel.innerHTML=lessons.length?lessons.map((l,i)=>`<option value="${i+1}">Aula ${i+1} — ${esc(lessonTitleOf(l,i+1))}</option>`).join(''):'<option value="">Nenhuma aula encontrada</option>';
-  if(current && lessons[Number(current)-1]) sel.value=String(current);
+function autoFillTaskFromPlanning(showToast=true){
+  const sid=$('taskStudent')?.value||''; const theme=$('taskTheme')?.value||''; const info=$('taskPlanningInfo');
+  if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false;}
+  const found=findPlanningForStudentAndTheme(sid,theme); if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false;}
+  const l=found.lesson||{}; const p=found.plan||{};
+  $('taskCourse').value=$('taskCourse').value||p.course||'';
+  $('taskTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;
+  $('taskActivity').value=l.activities||'';
+  $('taskDescription').value=[l.objectives,l.content,l.examples].filter(Boolean).join('\n\n');
+  $('taskDue').value=planningAutoDate(p.start_date,found.ordinal-1,parsePlanningSchedule(p.schedule).day)||todayISO();
+  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · ${esc(l.title||`Aula ${found.ordinal}`)}.`;
+  if(showToast)toast('Tarefa preenchida com a aula do planejamento.'); return true;
 }
-function parsePlanningSchedule(v){
-  const s=String(v||'').trim();
-  const m=s.match(/(?:segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)/i);
-  return {day:m?m[0]:''};
+
+function autoFillActivityFromPlanning(showToast=true){
+  const sid=$('activityStudent')?.value||''; const theme=$('activityTheme')?.value||''; const info=$('activityPlanningInfo');
+  if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false;}
+  const found=findPlanningForStudentAndTheme(sid,theme); if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false;}
+  const l=found.lesson||{}; const p=found.plan||{};
+  $('activityCourse').value=$('activityCourse').value||p.course||'';
+  $('activityTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;
+  $('activityText').value=[`Tema do planejamento: ${theme}`,l.objectives?`Objetivos:\n${l.objectives}`:'',l.content?`Conteúdo:\n${l.content}`:'',l.activities?`Atividades:\n${l.activities}`:'',l.examples?`Exemplos / demonstrações:\n${l.examples}`:''].filter(Boolean).join('\n\n');
+  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · ${esc(l.title||`Aula ${found.ordinal}`)}.`;
+  if(showToast)toast('Atividade preenchida com a aula do planejamento.'); return true;
 }
-function planningAutoDate(startDate,offset=0){
-  if(!startDate)return '';
-  const d=new Date(`${startDate}T00:00:00`); if(Number.isNaN(d.getTime()))return '';
-  d.setDate(d.getDate()+Math.max(0,Number(offset)||0));
+
+function renderProgress(){const el=$('progressContent');if(!el)return;const sid=$('progressStudent')?.value||data.students[0]?.id;if($('progressStudent'))studentOptions('progressStudent',sid||'');const p=data.progress.filter(x=>!sid||x.student_id===sid);const lessons=data.lessons.filter(x=>x.student_id===sid&&x.status==='Concluída').length;const records=data.records.filter(x=>x.student_id===sid&&x.status==='Realizada').length;const tasks=data.tasks.filter(x=>x.student_id===sid);const done=tasks.filter(taskIsDone).length;const avg=p.length?p.reduce((a,x)=>a+Number(x.percent||0),0)/p.length:0;el.innerHTML=`<div class="small-grid"><div class="card"><div class="muted">AULAS CONCLUÍDAS</div><h2>${lessons||records}</h2></div><div class="card"><div class="muted">TAREFAS CONCLUÍDAS</div><h2>${done}/${tasks.length}</h2></div><div class="card"><div class="muted">PROGRESSO MÉDIO</div><h2>${Math.round(avg)}%</h2></div></div>${p.length?p.map(x=>`<div class="progress-row"><div class="top"><b>${esc(x.topic)}</b><span>${Number(x.percent||0)}% · ${esc(x.status||'')}</span></div><div class="progress-bar"><span style="width:${Math.max(0,Math.min(100,Number(x.percent||0)))}%"></span></div><small class="muted">${esc(x.course||'')} ${x.notes?'— '+esc(x.notes):''}</small><div class="row-actions" style="margin-top:7px"><button class="btn mini" onclick="editProgress('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteProgress('${x.id}')">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum progresso manual registrado para este aluno.</div>'}`;}
+function renderSchedules(){
+  const el=$('schedulesList'); if(!el)return;
+  const rows=(data.schedules||[]).slice().sort((a,b)=>String(a.day||'').localeCompare(String(b.day||''))||String(a.start_time||'').localeCompare(String(b.start_time||'')));
+  el.innerHTML=rows.map(x=>`<div class="feature-card"><div class="planning-meta"><span class="badge blue">${esc(x.day||'')}</span><span class="badge green">${esc(String(x.start_time||'').slice(0,5))}–${esc(String(x.end_time||'').slice(0,5))}</span><span class="badge ${String(x.status||'Ativo')==='Ativo'?'green':'yellow'}">${esc(x.status||'Ativo')}</span></div><h3>${esc(x.student_name||studentName(x.student_id))}</h3><p><b>Curso:</b> ${esc(x.course||'Não definido')}</p>${x.notes?`<p>${esc(x.notes)}</p>`:''}<div class="row-actions"><button class="btn mini" onclick="editSchedule('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteSchedule('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum horário cadastrado. Clique em “+ Novo horário”.</div>';
+}
+
+function planningAutoDate(startDate,index,day){
+  if(!startDate)return null;
+  const names={Domingo:0,Segunda:1,Terça:2,Quarta:3,Quinta:4,Sexta:5,Sábado:6};
+  const target=names[String(day||'').trim()];
+  if(target===undefined)return null;
+  const d=new Date(String(startDate)+'T00:00:00');
+  if(Number.isNaN(d.getTime()))return null;
+  const first=(target-d.getDay()+7)%7;
+  d.setDate(d.getDate()+first+(Number(index)||0)*7);
   return d.toISOString().slice(0,10);
 }
-function autoFillTaskFromPlanning(showToast=true){
-  const sid=$('taskStudent')?.value||'',theme=$('taskTheme')?.value||'',ord=$('taskPlanningLesson')?.value||'1',info=$('taskPlanningInfo');
-  if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema do planejamento para buscar automaticamente.';return false}
-  const found=findPlanningLesson(sid,theme,ord);
-  if(!found||!found.lesson){if(info)info.textContent='O planejamento foi encontrado, mas não há aulas salvas nele. Edite o planejamento e salve novamente com as aulas preenchidas.';return false}
-  const l=found.lesson,p=found.plan;
-  const title=lessonTitleOf(l,found.ordinal),activities=lessonActivitiesOf(l),content=lessonContentOf(l),objectives=lessonObjectivesOf(l),examples=lessonExamplesOf(l),homework=lessonHomeworkOf(l);
-  if($('taskCourse'))$('taskCourse').value=$('taskCourse').value||p.course||'';
-  if($('taskTitle'))$('taskTitle').value=title;
-  if($('taskActivity'))$('taskActivity').value=activities;
-  if($('taskDescription'))$('taskDescription').value=[objectives?`Objetivo:\n${objectives}`:'',content?`Conteúdo:\n${content}`:'',examples?`Exemplos / prática:\n${examples}`:'',homework?`Tema de casa:\n${homework}`:''].filter(Boolean).join('\n\n');
-  if($('taskDue'))$('taskDue').value=planningAutoDate(p.start_date,found.ordinal-1,parsePlanningSchedule(p.schedule).day)||todayISO();
-  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(title)}.`;
-  if(showToast)toast(`Tarefa preenchida com a Aula ${found.ordinal} do planejamento.`);return true;
+function parsePlanningSchedule(schedule){
+  const raw=String(schedule||'').trim();
+  const dayMatch=raw.match(/(segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)/i);
+  const timeMatch=raw.match(/([01]?\d|2[0-3])[:h]([0-5]\d)/i);
+  return {day:dayMatch?dayMatch[1].replace(/^terca$/i,'Terça').replace(/^sabado$/i,'Sábado').replace(/^segunda$/i,'Segunda').replace(/^terça$/i,'Terça').replace(/^quarta$/i,'Quarta').replace(/^quinta$/i,'Quinta').replace(/^sexta$/i,'Sexta').replace(/^domingo$/i,'Domingo'):null,start:timeMatch?String(timeMatch[1]).padStart(2,'0')+':'+timeMatch[2]:null};
 }
-function autoFillActivityFromPlanning(showToast=true){
-  const sid=$('activityStudent')?.value||'',theme=$('activityTheme')?.value||'',ord=$('activityPlanningLesson')?.value||'1',info=$('activityPlanningInfo');
-  if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema do planejamento para buscar automaticamente.';return false}
-  const found=findPlanningLesson(sid,theme,ord);
-  if(!found||!found.lesson){if(info)info.textContent='O planejamento foi encontrado, mas não há aulas salvas nele. Edite o planejamento e salve novamente com as aulas preenchidas.';return false}
-  const l=found.lesson,p=found.plan,title=lessonTitleOf(l,found.ordinal),activities=lessonActivitiesOf(l);
-  if($('activityCourse'))$('activityCourse').value=$('activityCourse').value||p.course||'';
-  if($('activityTitle'))$('activityTitle').value=title;
-  if($('activityText'))$('activityText').value=lessonDevelopmentText(p,l,found.ordinal)+(activities?`\n\nAtividades propostas:\n${activities}`:'');
-  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(title)}.`;
-  if(showToast)toast(`Atividade preenchida com a Aula ${found.ordinal} do planejamento.`);return true;
+async function deletePlanningGeneratedRows(table,planId,marker){
+  try{
+    const q=client.from(table).delete().eq('user_id',(await user()).id).eq('planning_id',planId);
+    const {error}=await q;
+    if(!error)return;
+  }catch(_){ }
+  try{
+    const {data:rows}=await client.from(table).select('id').eq('user_id',(await user()).id);
+    for(const r of (rows||[])){
+      const source=(table==='tasks'?data.tasks:data.activities).find(x=>x.id===r.id);
+      if(source && marker(source)) await remove(table,r.id);
+    }
+  }catch(_){ }
 }
-function autoFillRecordFromPlanning(showToast=true){
-  const studentId=$('recordStudent')?.value?.trim(),theme=$('recordPlanningTheme')?.value?.trim(),info=$('recordPlanningInfo');
-  if(!studentId||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}
+async function insertPlanningGenerated(table,row,fallbackRow){
+  try{return await insert(table,row)}catch(e){
+    if(fallbackRow)return await insert(table,fallbackRow);
+    throw e;
+  }
+}
+async function insertGeneratedRobust(table,variants){let lastErr=null;for(const row of variants){try{return await insert(table,row)}catch(e){lastErr=e}}throw lastErr||new Error('Não foi possível inserir o registro gerado.')}
+async function syncPlanningToBanks(planId,plan,lessons){
+  if(!planId)return;
+  const studentId=plan.student_id;
+  const studentNameValue=plan.student_name||studentName(studentId);
+  const course=plan.course||'';
+  const theme=plan.theme||plan.title||'Planejamento';
+  const level=plan.initial_level||'Médio';
+  const marker=`[PLANEJAMENTO_AUTO:${planId}]`;
+
+  // Remove somente os registros automáticos deste planejamento.
+  // Também remove os registros antigos criados pelas versões anteriores,
+  // que podiam não ter planning_id por causa de tabelas antigas.
+  const autoTaskRows=(data.tasks||[]).filter(x=>
+    String(x.planning_id||'')===String(planId)||
+    String(x.notes||'').includes(marker)||
+    (String(x.student_id||'')===String(studentId) &&
+     String(x.theme||'')===String(theme) &&
+     /^((Atividades|Tema) — )/.test(String(x.title||'')))
+  );
+  for(const x of autoTaskRows){try{await remove('tasks',x.id)}catch(_) {}}
+
+  const autoActivityRows=(data.activities||[]).filter(x=>
+    String(x.planning_id||'')===String(planId)||
+    String(x.answer||'').includes(marker)||
+    (String(x.student_id||'')===String(studentId) &&
+     String(x.theme||'')===String(theme) &&
+     /^((Atividades|Tema) — )/.test(String(x.title||'')))
+  );
+  for(const x of autoActivityRows){try{await remove('activities',x.id)}catch(_) {}}
+
+  for(let i=0;i<lessons.length;i++){
+    const l=lessons[i]||{};
+    const ordinal=i+1;
+    const lessonTitle=String(l.title||`Aula ${ordinal}`).trim();
+    const activityText=String(l.activities||'').trim();
+    const contentText=String(l.content||'').trim();
+    const objectiveText=String(l.objectives||'').trim();
+    const examplesText=String(l.examples||'').trim();
+    const homeworkText=String(l.homework||'').trim();
+    const due=planningAutoDate(plan.start_date,i,parsePlanningSchedule(plan.schedule).day);
+    const notes=`${marker}\nGerado automaticamente a partir do planejamento "${theme}" — Aula ${ordinal}.`;
+
+    // UMA tarefa de atividades por aula: todas as atividades ficam juntas.
+    // Se a aula não tiver atividades cadastradas, NÃO cria tarefa de atividades.
+    if(activityText){
+      const activityTask={
+        student_id:studentId, student_name:studentNameValue, course,
+        title:`Atividades — Aula ${ordinal} — ${lessonTitle}`,
+        activity:activityText, theme, is_homework:false,
+        description:[
+          objectiveText?`Objetivo:\n${objectiveText}`:'',
+          contentText?`Conteúdo:\n${contentText}`:'',
+          examplesText?`Exemplos / prática:\n${examplesText}`:''
+        ].filter(Boolean).join('\n\n'),
+        due_date:due, status:'Pendente', notes,
+        planning_id:planId, planning_lesson_index:ordinal,
+        planning_theme:theme, planning_source:true
+      };
+      await insertGeneratedRobust('tasks',[
+        activityTask,
+        {...activityTask,planning_id:undefined,planning_lesson_index:undefined,planning_theme:undefined,planning_source:undefined},
+        {student_id:studentId,student_name:studentNameValue,course,title:activityTask.title,activity:activityTask.activity,is_homework:false,description:activityTask.description,due_date:due,status:'Pendente',notes}
+      ]);
+    }
+
+    // UMA tarefa separada somente para o tema/conteúdo principal daquela aula.
+    const themeTask={
+      student_id:studentId, student_name:studentNameValue, course,
+      title:`Tema — Aula ${ordinal} — ${lessonTitle}`,
+      activity:'Tema da aula', theme, is_homework:false,
+      description:contentText||lessonTitle,
+      due_date:due, status:'Pendente', notes,
+      planning_id:planId, planning_lesson_index:ordinal,
+      planning_theme:theme, planning_source:true
+    };
+    await insertGeneratedRobust('tasks',[
+      themeTask,
+      {...themeTask,planning_id:undefined,planning_lesson_index:undefined,planning_theme:undefined,planning_source:undefined},
+      {student_id:studentId,student_name:studentNameValue,course,title:themeTask.title,activity:'Tema da aula',description:themeTask.description,due_date:due,status:'Pendente',notes}
+    ]);
+
+    // No Banco de atividades, só cria a entrada de ATIVIDADES quando
+    // realmente existem atividades cadastradas nessa aula.
+    if(activityText){
+      const activityBank={
+        student_id:studentId,student_name:studentNameValue,
+        title:`Atividades — Aula ${ordinal} — ${lessonTitle}`,
+        course,level,theme,status:'Disponível',
+        text:activityText,
+        answer:'',
+        planning_id:planId,planning_lesson_index:ordinal,
+        planning_theme:theme,planning_source:true
+      };
+      await insertGeneratedRobust('activities',[activityBank]);
+    }
+
+    // O TEMA continua sendo criado para todas as aulas, independentemente
+    // de existir ou não um campo de atividades.
+    const themeBank={
+      student_id:studentId,student_name:studentNameValue,
+      title:`Tema — Aula ${ordinal} — ${lessonTitle}`,
+      course,level,theme,status:'Disponível',
+      text:contentText||lessonTitle,
+      answer:'',
+      planning_id:planId,planning_lesson_index:ordinal,
+      planning_theme:theme,planning_source:true
+    };
+    await insertGeneratedRobust('activities',[themeBank]);
+  }
+}
+
+function parsePlanningLessons(plan){if(!plan)return [];try{return Array.isArray(plan.lessons_data)?plan.lessons_data:JSON.parse(plan.lessons_data||'[]')}catch(_){return []}}
+function compactPlanningText(text,max=1800){
+  const raw=String(text||'').replace(/\r/g,'').replace(/\n{3,}/g,'\n\n').trim();
+  if(!raw)return '';
+  if(raw.length<=max)return raw;
+  const cut=raw.slice(0,max);
+  const last=Math.max(cut.lastIndexOf('.'),cut.lastIndexOf('!'),cut.lastIndexOf('?'));
+  return (last>max*.68?cut.slice(0,last+1):cut.replace(/\s+\S*$/,''))+'…';
+}
+
+function summarizePlanningPart(text,max=650){
+  let raw=String(text||'').replace(/\r/g,'').trim();
+  if(!raw)return '';
+  raw=raw.replace(/^#{1,6}\s*/gm,'').replace(/^[-*+]\s*/gm,'').replace(/\*\*/g,'').replace(/\|/g,' ').replace(/\n{2,}/g,'\n').replace(/[ \t]+/g,' ').trim();
+  if(raw.length<=max)return raw;
+  const sentences=raw.split(/(?<=[.!?])\s+/).filter(Boolean);
+  let out='';
+  for(const sentence of sentences){
+    if((out+' '+sentence).trim().length>max)break;
+    out=(out+' '+sentence).trim();
+  }
+  return out||raw.slice(0,max).replace(/\s+\S*$/,'')+'…';
+}
+
+function lessonDevelopmentText(plan,lesson,ordinal){
+  const l=lesson||{},p=plan||{};
+  const clean=v=>String(v??'').replace(/\r/g,'').trim();
+  const title=clean(l.title)||`Aula ${ordinal}`;
+  const objective=summarizePlanningPart(l.objectives,420);
+  const content=summarizePlanningPart(l.content,620);
+  const activities=summarizePlanningPart(l.activities,760);
+  const examples=summarizePlanningPart(l.examples,620);
+  const goal=summarizePlanningPart(p.student_goal,380);
+  const parts=[];
+
+  if(objective)parts.push(`Nesta aula, o objetivo é ${objective.replace(/[.!?]+$/,'')}.`);
+  if(content)parts.push(`O conteúdo trabalhado será ${content.replace(/^[.:\s]+/,'').replace(/[.!?]+$/,'')}.`);
+  if(activities)parts.push(`O desenvolvimento começará e avançará por meio das atividades planejadas: ${activities.replace(/[.!?]+$/,'')}.`);
+  if(examples)parts.push(`Também serão utilizados exemplos, situações práticas e explicações para consolidar o conteúdo: ${examples.replace(/[.!?]+$/,'')}.`);
+  if(goal)parts.push(`Dessa forma, a aula contribui para o objetivo do aluno de ${goal.replace(/[.!?]+$/,'')}.`);
+
+  return compactPlanningText(parts.join('\n\n'),1800)||`Nesta aula, será desenvolvido o tema "${title}" de acordo com o planejamento.`;
+}
+
+function populatePlanningLessonSelect(selectId,studentId,theme,current=''){
+  const sel=$(selectId); if(!sel)return null;
   const found=findPlanningForStudentAndTheme(studentId,theme);
-  if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false}
-  if(!found.lesson){if(info)info.textContent='Planejamento encontrado, mas nenhuma aula foi encontrada. Salve novamente o planejamento com as aulas preenchidas.';return false}
-  const p=found.plan||{},l=found.lesson||{},content=lessonContentOf(l),development=lessonDevelopmentText(p,l,found.ordinal),homework=lessonHomeworkOf(l),notes=lessonNotesOf(l)||String(p.notes||'').trim(),lessonTitle=lessonTitleOf(l,found.ordinal);
-  $('recordContent').value=content||`Tema trabalhado: ${theme}.`;
-  $('recordObservation').value=development;
-  $('recordHomework').value=homework;
-  $('recordNotes').value=notes;
-  if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(studentId))} · <b>Aula ${found.ordinal}</b> — ${esc(lessonTitle)}.<br><span class="muted">O desenvolvimento foi organizado em um resumo detalhado, mantendo objetivo, conteúdo, desenvolvimento, atividades e exemplos essenciais.</span>`;
-  if(showToast)toast(`Registro preenchido com a Aula ${found.ordinal} do planejamento.`);return true;
+  if(!found){sel.innerHTML='<option value="">Nenhum planejamento encontrado</option>';return null;}
+  const lessons=found.lessons||[];
+  if(!lessons.length){
+    sel.innerHTML='<option value="">Planejamento encontrado, mas sem aulas salvas</option>';
+    return found;
+  }
+  sel.innerHTML='<option value="">Selecione a aula</option>'+lessons.map((l,i)=>`<option value="${i+1}">Aula ${i+1} — ${esc(l.title||`Aula ${i+1}`)}</option>`).join('');
+  sel.value=String(current||found.ordinal||1);
+  if(!sel.value&&lessons.length)sel.value='1';
+  return found;
 }
+
+function normalizePlanningKey(value){
+  return String(value??'')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase()
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function findPlanningForStudentAndTheme(studentId,theme){
+  const sid=String(studentId||'').trim();
+  const wantedTheme=normalizePlanningKey(theme);
+  if(!sid||!wantedTheme)return null;
+  const candidates=(data.planning||[]).filter(p=>{
+    const sameStudent=String(p.student_id||'').trim()===sid ||
+      (!p.student_id && normalizePlanningKey(p.student_name)===normalizePlanningKey(studentName(sid)));
+    if(!sameStudent)return false;
+    const planTheme=normalizePlanningKey(p.theme||p.title||'');
+    return planTheme===wantedTheme;
+  });
+  if(!candidates.length)return null;
+  const chosen=candidates[candidates.length-1];
+  const lessons=parsePlanningLessons(chosen);
+  const used=new Set((data.records||[])
+    .filter(r=>String(r.student_id||'')===sid &&
+      normalizePlanningKey(r.planning_theme||r.theme||'')===wantedTheme &&
+      (!r.planning_id || String(r.planning_id)===String(chosen.id)))
+    .map(r=>Number(r.planning_lesson_index||r.lesson_index||0)).filter(n=>n>0));
+  let ordinal=1;
+  while(used.has(ordinal) && ordinal<Math.max(lessons.length,Number(chosen.total_lessons||0)||1)) ordinal++;
+  return {plan:chosen,lesson:lessons[ordinal-1]||null,ordinal,lessons};
+}
+
+function findPlanningLesson(studentId,theme,ordinal){const found=findPlanningForStudentAndTheme(studentId,theme);if(!found)return null;const n=Math.max(1,Number(ordinal||1)),lessons=parsePlanningLessons(found.plan);return {plan:found.plan,lesson:lessons[n-1]||null,ordinal:n}}
+function autoFillTaskFromPlanning(showToast=true){const sid=$('taskStudent')?.value||'',theme=$('taskTheme')?.value||'',ord=$('taskPlanningLesson')?.value||'1',info=$('taskPlanningInfo');if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningLesson(sid,theme,ord);if(!found||!found.lesson){if(info)info.textContent='Nenhuma aula encontrada neste planejamento.';return false}const l=found.lesson,p=found.plan;$('taskCourse').value=$('taskCourse').value||p.course||'';$('taskTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;$('taskActivity').value=l.activities||'';$('taskDescription').value=[l.objectives?`Objetivo:\n${l.objectives}`:'',l.content?`Conteúdo:\n${l.content}`:'',l.examples?`Exemplos / prática:\n${l.examples}`:''].filter(Boolean).join('\n\n');$('taskDue').value=planningAutoDate(p.start_date,found.ordinal-1,parsePlanningSchedule(p.schedule).day)||todayISO();if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(l.title||'')}.`;if(showToast)toast(`Tarefa preenchida com a Aula ${found.ordinal} do planejamento.`);return true}
+function autoFillActivityFromPlanning(showToast=true){const sid=$('activityStudent')?.value||'',theme=$('activityTheme')?.value||'',ord=$('activityPlanningLesson')?.value||'1',info=$('activityPlanningInfo');if(!sid||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningLesson(sid,theme,ord);if(!found||!found.lesson){if(info)info.textContent='Nenhuma aula encontrada neste planejamento.';return false}const l=found.lesson,p=found.plan;$('activityCourse').value=$('activityCourse').value||p.course||'';$('activityTitle').value=l.title||`Aula ${found.ordinal} — ${theme}`;$('activityText').value=String(l.activities||'').trim();if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(sid))} · <b>Aula ${found.ordinal}</b> — ${esc(l.title||'')}.`;if(showToast)toast(`Atividade preenchida com a Aula ${found.ordinal} do planejamento.`);return true}
+function autoFillRecordFromPlanning(showToast=true){const studentId=$('recordStudent')?.value?.trim(),theme=$('recordPlanningTheme')?.value?.trim(),info=$('recordPlanningInfo');if(!studentId||!theme){if(info)info.textContent='Selecione o aluno e o tema para buscar automaticamente o planejamento.';return false}const found=findPlanningForStudentAndTheme(studentId,theme);if(!found){if(info)info.textContent='Nenhum planejamento encontrado para este aluno e tema.';return false}const p=found.plan||{},l=found.lesson||{},content=String(l.content||'').trim(),development=lessonDevelopmentText(p,l,found.ordinal),homework=String(l.homework||'').trim(),notes=String(l.notes||p.notes||'').trim(),lessonTitle=String(l.title||`Aula ${found.ordinal}`).trim();$('recordContent').value=content||`Tema trabalhado: ${theme}.`;$('recordObservation').value=development;$('recordHomework').value=homework;$('recordNotes').value=notes;if(info)info.innerHTML=`<b>Planejamento encontrado:</b> ${esc(p.theme||p.title||theme)} · ${esc(studentName(studentId))} · <b>Aula ${found.ordinal}</b> — ${esc(lessonTitle)}.<br><span class="muted">O desenvolvimento foi organizado e resumido sem retirar as etapas, explicações, exemplos e atividades essenciais da aula.</span>`;if(showToast)toast(`Registro preenchido com a Aula ${found.ordinal} do planejamento.`);return true}
 
 function renderRecords(){const el=$('recordsList');if(!el)return;el.innerHTML=data.records.slice().reverse().map(x=>`<div class="feature-card" style="margin-bottom:10px"><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id)||x.student_name||'Aluno')}</span><span class="badge green">${esc(x.status||'')}</span>${x.date?`<span class="badge purple">${esc(x.date)}</span>`:''}</div><div class="view-block"><h4>Conteúdo trabalhado</h4><div class="planning-text">${esc(x.content||'Não informado.')}</div></div><div class="view-block"><h4>Como foi a aula?</h4><div class="planning-text">${esc(x.observation||'Não informado.')}</div></div><div class="view-block"><h4>Tarefa de casa</h4><div class="planning-text">${esc(x.homework||'Não informado.')}</div></div><div class="view-block"><h4>Observações</h4><div class="planning-text">${esc(x.notes||'Não informado.')}</div></div><div class="row-actions" style="margin-top:10px"><button class="btn mini" onclick="editRecord('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteRecord('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';}
 function renderTasks(){const el=$('tasksList');if(!el)return;el.innerHTML=data.tasks.slice().sort((a,b)=>String(a.due_date||'').localeCompare(String(b.due_date||''))).map(x=>`<div class="feature-card" style="margin-bottom:10px"><b>${esc(x.title)}</b><div class="planning-meta"><span class="badge blue">${esc(studentName(x.student_id))}</span><span class="badge purple">${x.is_homework?'TEMA DE CASA':'ATIVIDADE'}</span><span class="badge yellow">${esc(x.status)}</span><span class="badge purple">${esc(x.due_date||'Sem data')}</span></div>${x.activity?`<p><b>Atividade:</b> ${esc(x.activity)}</p>`:''}${x.theme?`<p><b>Tema:</b> ${esc(x.theme)}</p>`:''}<p>${esc(x.description||'')}</p><div class="row-actions"><button class="btn mini" onclick="editTask('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteTask('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhuma tarefa.</div>';}
@@ -5632,12 +5755,12 @@ window.deleteProgress=async id=>{if(!confirm('Excluir este registro de progresso
 
 async function saveSimple(table,id,row){return id?update(table,id,row):insert(table,row);}
 function setupNewModules(){
-  $('newRecord')?.addEventListener('click',()=>{ $('recordForm').reset();$('recordId').value='';renderNewModules();$('recordStatus').value='Realizada';openModal('recordModal'); });
-  $('newTask')?.addEventListener('click',()=>{ $('taskForm').reset();$('taskId').value='';$('taskIsHomework').value='false';$('taskStatus').value='Realizada';$('taskDue').value=todayISO();renderNewModules();fillPlanningThemesForStudent('taskTheme',$('taskStudent').value);openModal('taskModal'); });
+  $('newRecord').onclick=()=>{ $('recordForm').reset();$('recordId').value='';renderNewModules();studentOptions('recordStudent',data.students[0]?.id||'');fillPlanningThemesForStudent('recordPlanningTheme',$('recordStudent').value);$('recordStatus').value='Realizada';openModal('recordModal'); };
+  $('newTask').onclick=()=>{ $('taskForm').reset();$('taskId').value='';$('taskIsHomework').value='false';$('taskStatus').value='Realizada';$('taskDue').value=todayISO();renderNewModules();studentOptions('taskStudent',data.students[0]?.id||'');fillPlanningThemesForStudent('taskTheme',$('taskStudent').value);$('taskPlanningLesson').innerHTML='<option value="">Selecione primeiro o aluno e o tema</option>';openModal('taskModal'); };
   $('newAssessment').onclick=()=>{ $('assessmentForm').reset();$('assessmentId').value='';$('assessmentDate').value=todayISO();renderNewModules();openModal('assessmentModal'); };
   $('newReminder').onclick=()=>{ $('reminderForm').reset();$('reminderId').value='';$('reminderDate').value=todayISO();openModal('reminderModal'); };
   $('newMaterial').onclick=()=>{ $('materialForm').reset();$('materialId').value='';renderNewModules();openModal('materialModal'); };
-  $('newActivity')?.addEventListener('click',()=>{ $('activityForm').reset();$('activityId').value='';$('activityStatus').value='Realizada';renderNewModules();fillPlanningThemesForStudent('activityTheme',$('activityStudent').value);openModal('activityModal'); });
+  $('newActivity').onclick=()=>{ $('activityForm').reset();$('activityId').value='';$('activityStatus').value='Realizada';renderNewModules();studentOptions('activityStudent',data.students[0]?.id||'');fillPlanningThemesForStudent('activityTheme',$('activityStudent').value);$('activityPlanningLesson').innerHTML='<option value="">Selecione primeiro o aluno e o tema</option>';openModal('activityModal'); };
   $('newTemplate').onclick=()=>{ $('templateForm').reset();$('templateId').value='';renderNewModules();openModal('templateModal'); };
   $('newProgress').onclick=()=>{ $('progressForm').reset();$('progressId').value='';renderNewModules();openModal('progressModal'); };
   $('recordPlanningTheme')?.addEventListener('change',()=>autoFillRecordFromPlanning(true)); $('recordStudent')?.addEventListener('change',()=>{fillPlanningThemesForStudent('recordPlanningTheme',$('recordStudent').value,$('recordPlanningTheme').value);if($('recordPlanningTheme')?.value)autoFillRecordFromPlanning(true)}); $('fillRecordFromPlanning')?.addEventListener('click',()=>autoFillRecordFromPlanning(true));
@@ -5910,7 +6033,8 @@ async function getProfile(){
   const u=await user();
   const {data:p,error}=await client.from('portal_profiles').select('*').eq('id',u.id).maybeSingle();
   if(error){
-    if(error.code==='42P01' || error.code==='PGRST205') return {id:u.id,role:'admin',owner_id:u.id};
+    // Compatibilidade: se a tabela ainda não foi criada, a conta atual continua como administrativa.
+    if(error.code==='42P01') return {id:u.id,role:'admin',owner_id:u.id};
     throw error;
   }
   return p||{id:u.id,role:'admin',owner_id:u.id};
@@ -6054,77 +6178,57 @@ document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
 
 ['openLogin','openLoginHero'].forEach(id=>$(id).onclick=showLogin);
 $('backHome').onclick=showPublicHome;
-document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{if(client) await client.auth.signOut();showPublicHome();});
+document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{await client.auth.signOut();showPublicHome();});
 
 
 /* =========================================================
    LOGIN
    ========================================================= */
 
-$('loginForm').onsubmit = async e => {
-  e.preventDefault();
-  const msg = $('loginMsg');
-  if(msg) msg.textContent = 'Entrando...';
-
-  try{
-    const sb = requireSupabase();
-    const email = $('email')?.value.trim() || '';
-    const password = $('password')?.value || '';
-
-    if(!email || !password){
-      throw new Error('Informe o e-mail e a senha.');
-    }
-
-    const {data:authData,error} = await sb.auth.signInWithPassword({email,password});
-    if(error) throw error;
-    if(!authData?.session) throw new Error('Login realizado, mas nenhuma sessão foi criada. Verifique a configuração do Supabase Auth.');
-
-    if(msg) msg.textContent = 'Login realizado. Carregando...';
-
-    let profile;
+$('loginForm').onsubmit=
+  async e=>{
+    e.preventDefault();
+    $('loginMsg').textContent='Entrando...';
     try{
-      profile = await getProfile();
-    }catch(profileError){
-      console.error('Erro ao carregar perfil após login:', profileError);
-      throw new Error('Login realizado, mas não foi possível carregar o perfil: ' + (profileError?.message || 'erro desconhecido'));
-    }
-
-    currentRole = profile.role || 'admin';
-
-    if(currentRole === 'admin'){
-      showAdminPortal();
-      try{
-        await loadAll();
-        await seed();
-        await loadAll();
-      }catch(adminLoadError){
-        console.error('Erro ao carregar o painel administrativo:', adminLoadError);
-        toast(adminLoadError?.message || 'O painel abriu, mas houve um erro ao carregar os dados.');
-      }
-    }else{
-      try{
-        await loadPortal();
-        showPortal(currentRole);
-      }catch(portalError){
-        console.error('Erro ao carregar o portal:',portalError);
-        const target=String(currentRole||'').toLowerCase();
-        hideAllViews();
-        const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
-        if(el){
-          el.classList.remove('hidden');
-          el.style.setProperty('display','block','important');
-          const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
-          if(home) home.innerHTML=`<div class="portal-card"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
+      const {error}=await client.auth.signInWithPassword({
+        email:$('email').value.trim(),
+        password:$('password').value
+      });
+      if(error)throw error;
+      const profile=await getProfile();
+      currentRole=profile.role||'admin';
+      if(currentRole==='admin'){
+        showAdminPortal();
+        try{
+          await loadAll();
+          await seed();
+          await loadAll();
+        }catch(adminLoadError){
+          console.error('Erro ao carregar o painel administrativo:',adminLoadError);
+          toast(adminLoadError?.message||'O painel abriu, mas houve um erro ao carregar os dados.');
+        }
+      }else{
+        try{
+          await loadPortal();
+          showPortal(currentRole);
+        }catch(portalError){
+          console.error('Erro ao carregar o portal:',portalError);
+          const target=String(currentRole||'').toLowerCase();
+          hideAllViews();
+          const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
+          if(el){
+            el.classList.remove('hidden');
+            el.style.setProperty('display','block','important');
+            const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
+            if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
+          }
         }
       }
+    }catch(err){
+      console.error(err);
+      $('loginMsg').textContent=err.message||'Não foi possível entrar.';
     }
-  }catch(err){
-    console.error('Erro no login:',err);
-    if(msg) msg.textContent = err?.message || 'Não foi possível entrar.';
-    showLogin();
-  }
-};
-
+  };
 
 
 /* =========================================================
@@ -6133,9 +6237,6 @@ $('loginForm').onsubmit = async e => {
 
 $('signup').onclick=
   async()=>{
-
-    try{
-      const sb=requireSupabase();
 
     const email=
       $('email')
@@ -6170,16 +6271,11 @@ $('signup').onclick=
     });
 
 
-      $('loginMsg').textContent=
-        error
-        ? error.message
-        :
-        'Conta criada. Se o Supabase pedir confirmação, confirme seu e-mail e depois entre.';
-
-    }catch(err){
-      console.error('Erro no cadastro:',err);
-      $('loginMsg').textContent=err?.message||'Não foi possível criar a conta.';
-    }
+    $('loginMsg').textContent=
+      error
+      ? error.message
+      :
+      'Conta criada. Se o Supabase pedir confirmação, confirme seu e-mail e depois entre.';
 
   };
 
@@ -6191,7 +6287,7 @@ $('signup').onclick=
 $('logout').onclick=
   async()=>{
 
-    if(client) await client.auth.signOut();
+    await client.auth.signOut();
 
     location.reload();
 
@@ -6516,11 +6612,6 @@ renderBannerSlide();
 
 async function boot(){
   try{
-    if(!client){
-      showPublicHome();
-      console.warn('Supabase não configurado. O login exibirá a mensagem de configuração.');
-      return;
-    }
     const {data:d}=await client.auth.getSession();
     if(!d?.session){
       showPublicHome();
