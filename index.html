@@ -2338,22 +2338,18 @@ th{
    ========================================================= */
 
 const cfg = window.SUPABASE_CONFIG || {};
+const supabaseReady = !!(cfg.url && cfg.key && window.supabase && typeof window.supabase.createClient === 'function');
 
-if(!cfg.url || !cfg.key){
+// O site continua carregando mesmo se o config.js estiver ausente.
+// Nesse caso, o usuário recebe a mensagem diretamente na tela de login.
+const client = supabaseReady ? supabase.createClient(cfg.url, cfg.key) : null;
 
-  document.body.innerHTML=
-    '<div style="padding:30px;color:white;background:#030c19;font-family:Arial">'+
-    '<h1>Configuração necessária</h1>'+
-    '<p>Abra <b>config.js</b> e coloque a Project URL e a Publishable Key do Supabase.</p>'+
-    '</div>';
-
-  throw new Error('Configuração Supabase ausente');
+function requireSupabase(){
+  if(!client){
+    throw new Error('Supabase não configurado. Verifique o arquivo config.js e confirme a Project URL e a Publishable Key.');
+  }
+  return client;
 }
-
-const client = supabase.createClient(
-  cfg.url,
-  cfg.key
-);
 
 const $ = id => document.getElementById(id);
 
@@ -6058,57 +6054,77 @@ document.querySelectorAll('[data-portal]').forEach(btn=>btn.onclick=()=>{
 
 ['openLogin','openLoginHero'].forEach(id=>$(id).onclick=showLogin);
 $('backHome').onclick=showPublicHome;
-document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{await client.auth.signOut();showPublicHome();});
+document.querySelectorAll('.portalLogout').forEach(b=>b.onclick=async()=>{if(client) await client.auth.signOut();showPublicHome();});
 
 
 /* =========================================================
    LOGIN
    ========================================================= */
 
-$('loginForm').onsubmit=
-  async e=>{
-    e.preventDefault();
-    $('loginMsg').textContent='Entrando...';
+$('loginForm').onsubmit = async e => {
+  e.preventDefault();
+  const msg = $('loginMsg');
+  if(msg) msg.textContent = 'Entrando...';
+
+  try{
+    const sb = requireSupabase();
+    const email = $('email')?.value.trim() || '';
+    const password = $('password')?.value || '';
+
+    if(!email || !password){
+      throw new Error('Informe o e-mail e a senha.');
+    }
+
+    const {data:authData,error} = await sb.auth.signInWithPassword({email,password});
+    if(error) throw error;
+    if(!authData?.session) throw new Error('Login realizado, mas nenhuma sessão foi criada. Verifique a configuração do Supabase Auth.');
+
+    if(msg) msg.textContent = 'Login realizado. Carregando...';
+
+    let profile;
     try{
-      const {error}=await client.auth.signInWithPassword({
-        email:$('email').value.trim(),
-        password:$('password').value
-      });
-      if(error)throw error;
-      const profile=await getProfile();
-      currentRole=profile.role||'admin';
-      if(currentRole==='admin'){
-        showAdminPortal();
-        try{
-          await loadAll();
-          await seed();
-          await loadAll();
-        }catch(adminLoadError){
-          console.error('Erro ao carregar o painel administrativo:',adminLoadError);
-          toast(adminLoadError?.message||'O painel abriu, mas houve um erro ao carregar os dados.');
-        }
-      }else{
-        try{
-          await loadPortal();
-          showPortal(currentRole);
-        }catch(portalError){
-          console.error('Erro ao carregar o portal:',portalError);
-          const target=String(currentRole||'').toLowerCase();
-          hideAllViews();
-          const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
-          if(el){
-            el.classList.remove('hidden');
-            el.style.setProperty('display','block','important');
-            const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
-            if(home) home.innerHTML=`<div class=\"portal-card\"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
-          }
+      profile = await getProfile();
+    }catch(profileError){
+      console.error('Erro ao carregar perfil após login:', profileError);
+      throw new Error('Login realizado, mas não foi possível carregar o perfil: ' + (profileError?.message || 'erro desconhecido'));
+    }
+
+    currentRole = profile.role || 'admin';
+
+    if(currentRole === 'admin'){
+      showAdminPortal();
+      try{
+        await loadAll();
+        await seed();
+        await loadAll();
+      }catch(adminLoadError){
+        console.error('Erro ao carregar o painel administrativo:', adminLoadError);
+        toast(adminLoadError?.message || 'O painel abriu, mas houve um erro ao carregar os dados.');
+      }
+    }else{
+      try{
+        await loadPortal();
+        showPortal(currentRole);
+      }catch(portalError){
+        console.error('Erro ao carregar o portal:',portalError);
+        const target=String(currentRole||'').toLowerCase();
+        hideAllViews();
+        const el=(target==='responsible'||target==='responsavel'||target==='responsável')?$('responsiblePortal'):$('studentPortal');
+        if(el){
+          el.classList.remove('hidden');
+          el.style.setProperty('display','block','important');
+          const home=target==='responsible'||target==='responsavel'||target==='responsável'?$('respHome'):$('studentHome');
+          if(home) home.innerHTML=`<div class="portal-card"><h3>Não foi possível carregar os dados</h3><p>${esc(portalError?.message||'Erro desconhecido.')}</p></div>`;
         }
       }
-    }catch(err){
-      console.error(err);
-      $('loginMsg').textContent=err.message||'Não foi possível entrar.';
     }
-  };
+  }catch(err){
+    console.error('Erro no login:',err);
+    if(msg) msg.textContent = err?.message || 'Não foi possível entrar.';
+    showLogin();
+  }
+};
+
 
 
 /* =========================================================
@@ -6117,6 +6133,9 @@ $('loginForm').onsubmit=
 
 $('signup').onclick=
   async()=>{
+
+    try{
+      const sb=requireSupabase();
 
     const email=
       $('email')
@@ -6151,11 +6170,16 @@ $('signup').onclick=
     });
 
 
-    $('loginMsg').textContent=
-      error
-      ? error.message
-      :
-      'Conta criada. Se o Supabase pedir confirmação, confirme seu e-mail e depois entre.';
+      $('loginMsg').textContent=
+        error
+        ? error.message
+        :
+        'Conta criada. Se o Supabase pedir confirmação, confirme seu e-mail e depois entre.';
+
+    }catch(err){
+      console.error('Erro no cadastro:',err);
+      $('loginMsg').textContent=err?.message||'Não foi possível criar a conta.';
+    }
 
   };
 
@@ -6167,7 +6191,7 @@ $('signup').onclick=
 $('logout').onclick=
   async()=>{
 
-    await client.auth.signOut();
+    if(client) await client.auth.signOut();
 
     location.reload();
 
@@ -6492,6 +6516,11 @@ renderBannerSlide();
 
 async function boot(){
   try{
+    if(!client){
+      showPublicHome();
+      console.warn('Supabase não configurado. O login exibirá a mensagem de configuração.');
+      return;
+    }
     const {data:d}=await client.auth.getSession();
     if(!d?.session){
       showPublicHome();
