@@ -3863,9 +3863,11 @@ $('planningForm').onsubmit=async e=>{
     const id=
       $('planningId').value;
 
+    let savedPlan;
+
     if(id){
 
-      await update(
+      savedPlan=await update(
         'lesson_plans',
         id,
         row
@@ -3873,11 +3875,28 @@ $('planningForm').onsubmit=async e=>{
 
     }else{
 
-      await insert(
+      savedPlan=await insert(
         'lesson_plans',
         row
       );
 
+    }
+
+    try{
+      await syncPlanningToBanks(
+        savedPlan?.id||id,
+        savedPlan||{...row,id},
+        lessons
+      );
+    }catch(syncError){
+      console.error(
+        'Erro ao sincronizar planejamento com tarefas e banco de atividades:',
+        syncError
+      );
+      toast(
+        'Planejamento salvo, mas houve erro ao gerar tarefas/atividades: '+
+        (syncError.message||syncError)
+      );
     }
 
     closeModal('planningModal');
@@ -3886,8 +3905,8 @@ $('planningForm').onsubmit=async e=>{
 
     toast(
       id
-      ? 'Planejamento atualizado!'
-      : 'Planejamento criado!'
+      ? 'Planejamento atualizado e sincronizado!'
+      : 'Planejamento criado e sincronizado!'
     );
 
   }catch(e){
@@ -5339,6 +5358,75 @@ function renderSchedules(){
   const el=$('schedulesList'); if(!el)return;
   const rows=(data.schedules||[]).slice().sort((a,b)=>String(a.day||'').localeCompare(String(b.day||''))||String(a.start_time||'').localeCompare(String(b.start_time||'')));
   el.innerHTML=rows.map(x=>`<div class="feature-card"><div class="planning-meta"><span class="badge blue">${esc(x.day||'')}</span><span class="badge green">${esc(String(x.start_time||'').slice(0,5))}–${esc(String(x.end_time||'').slice(0,5))}</span><span class="badge ${String(x.status||'Ativo')==='Ativo'?'green':'yellow'}">${esc(x.status||'Ativo')}</span></div><h3>${esc(x.student_name||studentName(x.student_id))}</h3><p><b>Curso:</b> ${esc(x.course||'Não definido')}</p>${x.notes?`<p>${esc(x.notes)}</p>`:''}<div class="row-actions"><button class="btn mini" onclick="editSchedule('${x.id}')">Editar</button><button class="btn danger mini" onclick="deleteSchedule('${x.id}')">Excluir</button></div></div>`).join('')||'<div class="empty">Nenhum horário cadastrado. Clique em “+ Novo horário”.</div>';
+}
+
+function planningAutoDate(startDate,index,day){
+  if(!startDate)return null;
+  const names={Domingo:0,Segunda:1,Terça:2,Quarta:3,Quinta:4,Sexta:5,Sábado:6};
+  const target=names[String(day||'').trim()];
+  if(target===undefined)return null;
+  const d=new Date(String(startDate)+'T00:00:00');
+  if(Number.isNaN(d.getTime()))return null;
+  const first=(target-d.getDay()+7)%7;
+  d.setDate(d.getDate()+first+(Number(index)||0)*7);
+  return d.toISOString().slice(0,10);
+}
+function parsePlanningSchedule(schedule){
+  const raw=String(schedule||'').trim();
+  const dayMatch=raw.match(/(segunda|terça|terca|quarta|quinta|sexta|sábado|sabado|domingo)/i);
+  const timeMatch=raw.match(/([01]?\d|2[0-3])[:h]([0-5]\d)/i);
+  return {day:dayMatch?dayMatch[1].replace(/^terca$/i,'Terça').replace(/^sabado$/i,'Sábado').replace(/^segunda$/i,'Segunda').replace(/^terça$/i,'Terça').replace(/^quarta$/i,'Quarta').replace(/^quinta$/i,'Quinta').replace(/^sexta$/i,'Sexta').replace(/^domingo$/i,'Domingo'):null,start:timeMatch?String(timeMatch[1]).padStart(2,'0')+':'+timeMatch[2]:null};
+}
+async function deletePlanningGeneratedRows(table,planId,marker){
+  try{
+    const q=client.from(table).delete().eq('user_id',(await user()).id).eq('planning_id',planId);
+    const {error}=await q;
+    if(!error)return;
+  }catch(_){ }
+  try{
+    const {data:rows}=await client.from(table).select('id').eq('user_id',(await user()).id);
+    for(const r of (rows||[])){
+      const source=(table==='tasks'?data.tasks:data.activities).find(x=>x.id===r.id);
+      if(source && marker(source)) await remove(table,r.id);
+    }
+  }catch(_){ }
+}
+async function insertPlanningGenerated(table,row,fallbackRow){
+  try{return await insert(table,row)}catch(e){
+    if(fallbackRow)return await insert(table,fallbackRow);
+    throw e;
+  }
+}
+async function syncPlanningToBanks(planId,plan,lessons){
+  const studentId=plan.student_id;
+  const studentNameValue=plan.student_name||studentName(studentId);
+  const course=plan.course||'';
+  const theme=plan.theme||plan.title||'Planejamento';
+  const level=plan.initial_level||'Médio';
+  const marker=`[PLANEJAMENTO_AUTO:${planId}]`;
+  const oldTasks=(data.tasks||[]).filter(x=>String(x.planning_id||'')===String(planId)||String(x.notes||'').includes(marker));
+  for(const x of oldTasks){try{await remove('tasks',x.id)}catch(_){} }
+  const oldActivities=(data.activities||[]).filter(x=>String(x.planning_id||'')===String(planId)||String(x.answer||'').includes(marker));
+  for(const x of oldActivities){try{await remove('activities',x.id)}catch(_){} }
+  for(let i=0;i<lessons.length;i++){
+    const l=lessons[i]||{};
+    const title=l.title||`Aula ${i+1} — ${theme}`;
+    const activityText=[l.activities,l.examples].filter(Boolean).join('\n\n');
+    const description=[l.content,l.objectives].filter(Boolean).join('\n\n');
+    const baseTask={student_id:studentId,student_name:studentNameValue,course,title,activity:activityText,theme, is_homework:false,description,due_date:planningAutoDate(plan.start_date,i,parsePlanningSchedule(plan.schedule).day),status:'Pendente',notes:`${marker}\nGerado automaticamente a partir do planejamento "${theme}" — Aula ${i+1}.`};
+    const fallbackTask={...baseTask};delete fallbackTask.planning_id;delete fallbackTask.planning_lesson_index;delete fallbackTask.planning_theme;delete fallbackTask.planning_source;
+    await insertPlanningGenerated('tasks',{...baseTask,planning_id:planId,planning_lesson_index:i+1,planning_theme:theme,planning_source:true},fallbackTask);
+    if(l.homework){
+      const home={student_id:studentId,student_name:studentNameValue,course,title:`Tema de casa — ${title}`,activity:'Tema de casa',theme, is_homework:true,description:l.homework,due_date:planningAutoDate(plan.start_date,i,parsePlanningSchedule(plan.schedule).day),status:'Pendente',notes:`${marker}\nGerado automaticamente a partir do planejamento "${theme}" — Aula ${i+1}.`};
+      const fallbackHome={...home};delete fallbackHome.planning_id;delete fallbackHome.planning_lesson_index;delete fallbackHome.planning_theme;delete fallbackHome.planning_source;
+      await insertPlanningGenerated('tasks',{...home,planning_id:planId,planning_lesson_index:i+1,planning_theme:theme,planning_source:true},fallbackHome);
+    }
+    if(activityText||l.content){
+      const activity={title:`${theme} — ${title}`,course,level,text:[`Tema: ${theme}`,l.content?`Conteúdo:\n${l.content}`:'',l.activities?`Atividades:\n${l.activities}`:'',l.examples?`Exemplos / demonstrações:\n${l.examples}`:''].filter(Boolean).join('\n\n'),answer:`${marker}\nAula ${i+1}`};
+      const fallbackActivity={...activity};
+      await insertPlanningGenerated('activities',{...activity,planning_id:planId,planning_lesson_index:i+1,planning_theme:theme,planning_source:true},fallbackActivity);
+    }
+  }
 }
 
 function parsePlanningLessons(plan){if(!plan)return [];try{return Array.isArray(plan.lessons_data)?plan.lessons_data:JSON.parse(plan.lessons_data||'[]')}catch(_){return []}}
